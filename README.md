@@ -23,8 +23,8 @@ doStuff (24, "lolz", 25);
 **Tabs will be 4 Spaces**
 
 **Naming Conventions**
-Class names will be capitalized with camel case: `MyDopeClass`
-Member variables will be lowercase with camel case: `myDopeVariable`
+- Class names will be capitalized with camel case: `MyDopeClass`
+- Member variables will be lowercase with camel case: `myDopeVariable`
 
 
 ## General Rules
