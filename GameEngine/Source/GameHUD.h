@@ -6,8 +6,41 @@
 //
 //
 
-#ifndef GameHUD_h
-#define GameHUD_h
+#pragma once
 
+#include "../JuceLibraryCode/JuceHeader.h"
 
-#endif /* GameHUD_h */
+/** Renders a Heads Up Display with a transparent background.
+ */
+class GameHUD : public Component
+{
+public:
+
+    GameHUD()
+    {
+        addAndMakeVisible(slider);
+        setOpaque(false);
+    }
+    
+    ~GameHUD()
+    {
+        
+    }
+    
+    
+    // JUCE Callbacks ==========================================================
+    
+    void paint (Graphics &g) override
+    {
+    }
+    
+    void resized () override
+    {
+        slider.setBounds(20, 20, 200, 50);
+    }
+    
+private:
+    Slider slider;
+    
+    
+};

@@ -12,11 +12,13 @@
 //==============================================================================
 MainContentComponent::MainContentComponent()
 {
-    button.setButtonText ("Lolz wutt");
-    addAndMakeVisible (button);
+    //button.setButtonText ("Lolz wutt");
+    //addAndMakeVisible (button);
     
-    backgroundColour = Colours::black;
-    button.addListener (this);
+    //backgroundColour = Colours::black;
+    //button.addListener (this);
+    
+    addAndMakeVisible (gameView);
     
     setSize (600, 400);
 }
@@ -30,7 +32,8 @@ void MainContentComponent::paint (Graphics& g)
     
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     //g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
-    g.fillAll (backgroundColour);
+    //g.fillAll (backgroundColour);
+    g.fillAll (Colours::white);
 
     //g.setFont (Font (16.0f));
     //g.setColour (Colours::white);
@@ -43,6 +46,8 @@ void MainContentComponent::resized()
     // If you add any child components, this is where you should
     // update their positions.
     button.setBounds (30, 30, 200, 200);
+    
+    gameView.setBounds(getLocalBounds());
 }
 
 void MainContentComponent::buttonClicked (Button * buttonPtr)

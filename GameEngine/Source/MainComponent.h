@@ -9,6 +9,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "GameView.h"
 
 
 //==============================================================================
@@ -31,6 +32,7 @@ private:
     //==============================================================================
     TextButton button;
     Colour backgroundColour;
+    GameView gameView;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainContentComponent)
 };
