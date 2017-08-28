@@ -205,7 +205,7 @@ private:
         "out vec4 color;\n"
         "void main()\n"
         "{\n"
-        "    color = vec4 (0.0f, 1.0f, 0.0f, 1.0f);\n"
+        "    color = vec4 (0.0f, 1.0f, 1.0f, 1.0f);\n"
         "}\n";
         
         
@@ -216,7 +216,6 @@ private:
             && newShader->addFragmentShader ((fragmentShader))
             && newShader->link())
         {
-            //attributes = nullptr;
             uniforms = nullptr;
             
             shader = newShader;
@@ -269,8 +268,6 @@ private:
     GLuint VBO;
     GLuint VAO;
     GLuint EBO;
-    //GLuint xzVBO;
-    //GLuint yVBO;
     
     const char* vertexShader;
     const char* fragmentShader;
