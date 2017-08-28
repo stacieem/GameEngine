@@ -19,6 +19,7 @@ MainContentComponent::MainContentComponent()
     //button.addListener (this);
     
     addAndMakeVisible (gameView);
+    gameView.setOpenGLEnabled (true);
     
     setSize (600, 400);
 }

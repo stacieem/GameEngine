@@ -36,11 +36,11 @@ public:
         openGLContext.detach();
     }
     
-    /** Enables or disables the GameView. Enabling continuously
-     renders and repaints with OpenGL. Disabling will set a solid colour fill
-     for the component and the component will do no processing.
+    /** Enables or disables the OpenGL layer of GameView. Enabling continuously
+        renders and repaints with OpenGL. Disabling will set a solid colour fill
+        for the component and the component will do no processing.
      */
-    void setEnabled (bool enabled)
+    void setOpenGLEnabled (bool enabled)
     {
         if (enabled)
         {
