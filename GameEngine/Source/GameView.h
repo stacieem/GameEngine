@@ -10,7 +10,6 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "GameHUD.h"
-
 /** Represents the view of any game being rendered.
     It includes an OpenGL Renderer to render either 2D or 3D graphics and a
     GameHUD component to render elements over the top of the OpenGL Renderer.
@@ -87,6 +86,10 @@ public:
         uniforms = nullptr;
     }
     
+	/*
+	
+		main loop
+	*/
     void renderOpenGL() override
     {
         jassert (OpenGLHelpers::isContextActive());
@@ -145,9 +148,36 @@ public:
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
         openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
         //openGLContext.extensions.glBindVertexArray(0);
+		
 
+		/*
+			Startin with box2d: http://box2d.org/manual.pdf			
+		*/
+		b2Vec2 gravity(0.0f, -15.0f);
+		b2World world(gravity);
 
+		b2BodyDef groundBodyDef;
+		groundBodyDef.position.Set(0.0f, -10.0f);
+		b2Body* groundBody = world.CreateBody(&groundBodyDef);		b2PolygonShape groundBox;
+		groundBox.SetAsBox(50.0f, 10.0f);		groundBody->CreateFixture(&groundBox, 0.0f);		b2BodyDef bodyDef;
+		bodyDef.type = b2_dynamicBody;
+		bodyDef.position.Set(0.0f, 4.0f);
+		b2Body* body = world.CreateBody(&bodyDef);
+		b2PolygonShape dynamicBox;
+		dynamicBox.SetAsBox(1.0f, 1.0f);		b2FixtureDef fixtureDef;
+		fixtureDef.shape = &dynamicBox;
+		fixtureDef.density = 1.0f;
+		fixtureDef.friction = 0.3f;
+		body->CreateFixture(&fixtureDef);
+		float32 timeStep = 1.0f / 60.0f;		juce::int32 velocityIterations = 6;
+		juce::int32 positionIterations = 2;		for (juce::int32 i = 0; i < 60; ++i)
+		{
+			world.Step(timeStep, velocityIterations, positionIterations);
+			b2Vec2 position = body->GetPosition();
+			float32 angle = body->GetAngle();
 
+			DBG(position.x << " " << position.y << " " << angle);
+		}
     }
     
     
