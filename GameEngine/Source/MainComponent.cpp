@@ -49,7 +49,12 @@ void MainContentComponent::buttonClicked (Button * buttonPtr)
 {
     if (buttonPtr == &button)
     {
-        backgroundColour = Colours::white;
+		if (backgroundColour == Colours::black) {
+			backgroundColour = Colours::white;
+		}
+		else {
+			backgroundColour = Colours::black;
+		}
         repaint();
     }
 }
