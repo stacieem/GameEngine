@@ -18,8 +18,18 @@ class GameView :    public Component,
                     private OpenGLRenderer
 {
     
+<<<<<<< HEAD
 public:
     GameView()
+=======
+public:		
+	b2Vec2 gravity;
+	b2World world;
+	float32 timeStep;	b2Body* body;	b2Body* body2;	juce::int32 velocityIterations;
+	juce::int32 positionIterations;
+
+    GameView() : gravity(0.0f, -10.0f), world(gravity)
+>>>>>>> 58a93c915723aea177b0b4e7aa87d38594eafd5e
     {
         // Sets the OpenGL version to 3.2
         // This is very important, if this is not included, new shader syntax
@@ -37,10 +47,74 @@ public:
         statusLabel.setFont (Font (14.0f));
         statusLabel.toBack();
         
+<<<<<<< HEAD
+=======
+
+		
+>>>>>>> 58a93c915723aea177b0b4e7aa87d38594eafd5e
         // GameView Variables
         isEnabled = false;
         
         setOpaque(true);
+<<<<<<< HEAD
+=======
+
+		/*
+		Startin with box2d: http://box2d.org/manual.pdf
+		*/
+
+		/*
+			create the body first, giving it a position
+		*/
+		b2BodyDef groundBodyDef;
+		groundBodyDef.position.Set(0.0f, -11.0f);
+
+		/*
+			body is created in the world
+		*/
+		b2Body* groundBody = world.CreateBody(&groundBodyDef);		
+		/*
+			create a shape(box for this instance)
+		*/
+		b2PolygonShape groundBox;
+		groundBox.SetAsBox(50.0f, 10.0f);				/*			assign the box shape and density to the body			When you attach a shape to a body using a fixture, the shape’s coordinates become local to the body. So
+			when the body moves, so does the shape.		*/		groundBody->CreateFixture(&groundBox, 0.0f);		/*			DYNAMIC			create the body first(set it to dynamic this time)		*/
+		b2BodyDef bodyDef;
+		bodyDef.type = b2_dynamicBody;
+		bodyDef.position.Set(0.0f, 3.0f);
+
+		b2BodyDef bodyDef2;
+		bodyDef2.type = b2_dynamicBody;
+		bodyDef2.position.Set(0.0f, 4.0f);
+		/*
+			body is created in the world
+		*/
+		body = world.CreateBody(&bodyDef);
+		body2 = world.CreateBody(&bodyDef2);
+		/*
+			create shape(box for this instance)
+		*/
+		b2PolygonShape dynamicBox;
+		dynamicBox.SetAsBox(.25f, .25f);
+		b2PolygonShape dynamicBox2;
+		dynamicBox2.SetAsBox(.15f, .15f);		/*			define fixtures physical properties		*/		b2FixtureDef fixtureDef;
+		fixtureDef.shape = &dynamicBox;
+		fixtureDef.density = 1.0f;
+		fixtureDef.friction = 0.3f;
+		fixtureDef.restitution = .9f;
+
+		b2FixtureDef fixtureDef2;
+		fixtureDef2.shape = &dynamicBox2;
+		fixtureDef2.density = 1.0f;
+		fixtureDef2.friction = 0.3f;
+		fixtureDef2.restitution = 0.3f;
+		/*
+			assign the shape and its properties to the body
+		*/
+		body->CreateFixture(&fixtureDef);
+		body2->CreateFixture(&fixtureDef2);		timeStep = 1.0f / 60.0f;		velocityIterations = 6;
+		positionIterations = 2;
+>>>>>>> 58a93c915723aea177b0b4e7aa87d38594eafd5e
     }
     
     ~GameView()
@@ -93,7 +167,13 @@ public:
     void renderOpenGL() override
     {
         jassert (OpenGLHelpers::isContextActive());
+<<<<<<< HEAD
         
+=======
+
+
+
+>>>>>>> 58a93c915723aea177b0b4e7aa87d38594eafd5e
         // Setup Viewport
         const float renderingScale = (float) openGLContext.getRenderingScale();
         glViewport (0, 0, roundToInt (renderingScale * getWidth()), roundToInt (renderingScale * getHeight()));
@@ -108,6 +188,7 @@ public:
         // Use Shader Program that's been defined
         shader->use();
 
+<<<<<<< HEAD
         // Define Vertices for a Square (the view plane)
         GLfloat vertices[] = {
             1.0f,   1.0f,  0.0f,  // Top Right
@@ -124,13 +205,75 @@ public:
         // VBO (Vertex Buffer Object) - Bind and Write to Buffer
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, VBO);
         openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
+=======
+		        /*
+			Box2d logic		
+		*/
+		
+		world.Step(timeStep, velocityIterations, positionIterations);
+		b2Vec2 position = body->GetPosition();
+		float32 angle = body->GetAngle();
+
+		b2Vec2 position2 = body2->GetPosition();
+		float32 angle2 = body2->GetAngle();
+		DBG(position.x << " " << position.y << " " << angle);
+
+        // Define Vertices for a Square (the view plane)
+      /*  GLfloat vertices[] = {
+			position.x + .25f,   position.y - .25f,  0.0f,  // Top Right	0
+			position.x + .25f,  position.y + .25f,  0.0f,  // Bottom Right	1
+			position.x -.25f, position.y +.25f,  0.0f,  // Bottom Left		2
+			position.x - .25f,  position.y - .25f,  0.0f,   // Top Left		3
+
+			position2.x + .15f,   position2.y - .15f,  0.0f,  // Top Right	4
+			position2.x + .15f,  position2.y + .15f,  0.0f,  // Bottom Right5
+			position2.x - .15f, position2.y + .15f,  0.0f,  // Bottom Left	6
+			position2.x - .15f,  position2.y - .15f,  0.0f   // Top Left	7
+        };
+		
+        // Define Which Vertex Indexes Make the Square
+        GLuint indices[] = {  // Note that we start from 0!
+            0, 1, 3,   // First Triangle
+            1, 2, 3,   // Second Triangle
+			4, 5, 7,   // First Triangle
+			5, 6, 7    // Second Triangle
+        };
+		*/
+
+		GLfloat vertices1[] = {
+			position.x + .25f,   position.y - .25f,  0.0f,  // Top Right	0
+			position.x + .25f,  position.y + .25f,  0.0f,  // Bottom Right	1
+			position.x - .25f, position.y + .25f,  0.0f,  // Bottom Left		2
+			position.x - .25f,  position.y - .25f,  0.0f   // Top Left		3
+		};
+		GLfloat vertices2[] = {
+			position2.x + .15f,   position2.y - .15f,  0.0f,  // Top Right	4
+			position2.x + .15f,  position2.y + .15f,  0.0f,  // Bottom Right5
+			position2.x - .15f, position2.y + .15f,  0.0f,  // Bottom Left	6
+			position2.x - .15f,  position2.y - .15f,  0.0f   // Top Left	7
+		};
+
+		// Define Which Vertex Indexes Make the Square
+		GLuint indices[] = {  // Note that we start from 0!
+			0, 1, 3,   // First Triangle
+			1, 2, 3   // Second Triangle
+		};
+
+        // VBO (Vertex Buffer Object) - Bind and Write to Buffer
+        openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, VBO);
+        openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, sizeof(vertices1), vertices1, GL_DYNAMIC_DRAW);
+>>>>>>> 58a93c915723aea177b0b4e7aa87d38594eafd5e
                                                                                         // GL_DYNAMIC_DRAW or GL_STREAM_DRAW
                                                                                         // We may want GL_DYNAMIC_DRAW since it is for
                                                                                         // vertex data that will be changing alot.
         
         // EBO (Element Buffer Object) - Bind and Write to Buffer
         openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, EBO);
+<<<<<<< HEAD
         openGLContext.extensions.glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STREAM_DRAW);
+=======
+        openGLContext.extensions.glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
+>>>>>>> 58a93c915723aea177b0b4e7aa87d38594eafd5e
                                                                                 // GL_DYNAMIC_DRAW or GL_STREAM_DRAW
                                                                                 // We may want GL_DYNAMIC_DRAW since it is for
                                                                                 // vertex data that will be changing alot.
@@ -140,7 +283,34 @@ public:
         openGLContext.extensions.glEnableVertexAttribArray (0);
         
         // Draw Vertices
+<<<<<<< HEAD
         glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // For EBO's (Element Buffer Objects) (Indices)
+=======
+        glDrawElements (GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0); // For EBO's (Element Buffer Objects) (Indices)
+
+
+																			// VBO (Vertex Buffer Object) - Bind and Write to Buffer
+		openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		openGLContext.extensions.glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_DYNAMIC_DRAW);
+		// GL_DYNAMIC_DRAW or GL_STREAM_DRAW
+		// We may want GL_DYNAMIC_DRAW since it is for
+		// vertex data that will be changing alot.
+
+		// EBO (Element Buffer Object) - Bind and Write to Buffer
+		openGLContext.extensions.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		openGLContext.extensions.glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_DYNAMIC_DRAW);
+		// GL_DYNAMIC_DRAW or GL_STREAM_DRAW
+		// We may want GL_DYNAMIC_DRAW since it is for
+		// vertex data that will be changing alot.
+
+		// Setup Vertex Attributes
+		openGLContext.extensions.glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
+		openGLContext.extensions.glEnableVertexAttribArray(0);
+
+		// Draw Vertices
+		glDrawElements(GL_TRIANGLES, sizeof(indices), GL_UNSIGNED_INT, 0); // For EBO's (Element Buffer Objects) (Indices)
+
+>>>>>>> 58a93c915723aea177b0b4e7aa87d38594eafd5e
         //glDrawArrays (GL_TRIANGLES, 0, 6); // For just VBO's (Vertex Buffer Objects)
         
         
@@ -150,6 +320,7 @@ public:
         //openGLContext.extensions.glBindVertexArray(0);
 		
 
+<<<<<<< HEAD
 		/*
 			Startin with box2d: http://box2d.org/manual.pdf			
 		*/
@@ -178,6 +349,10 @@ public:
 
 			DBG(position.x << " " << position.y << " " << angle);
 		}
+=======
+		
+
+>>>>>>> 58a93c915723aea177b0b4e7aa87d38594eafd5e
     }
     
     

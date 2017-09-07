@@ -4061,6 +4061,12 @@
     <ClInclude Include="..\..\Source\GameView.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
+<<<<<<< HEAD
+=======
+    <ClInclude Include="..\..\Source\GameObject.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+>>>>>>> 58a93c915723aea177b0b4e7aa87d38594eafd5e
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt">

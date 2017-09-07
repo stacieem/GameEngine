@@ -1837,6 +1837,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\GameHUD.h" />
+<<<<<<< HEAD
+=======
+    <ClInclude Include="..\..\Source\GameObject.h" />
+>>>>>>> 58a93c915723aea177b0b4e7aa87d38594eafd5e
     <ClInclude Include="..\..\Source\GameView.h" />
     <ClInclude Include="..\..\Source\MainComponent.h" />
     <ClInclude Include="..\..\..\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h" />
