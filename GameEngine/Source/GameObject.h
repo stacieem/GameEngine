@@ -12,78 +12,95 @@
 #include "PhysicsProperties.h"
 #include "WorldPhysics.h"
 
+/** Represents an Object that holds vertices that can be rendered by OpenGL.
+ */
 class GameObject
 {
 public:
+    /** Constructs a GameObject and attatches it to the world's physics.
+     */
     GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.world)
     {
         // Default vertices
-//        vertices.add(Vector3D<GLfloat>(0.0f, 0.5f, 0.0f));
-//        vertices.add(Vector3D<GLfloat>(-0.5f, -0.5f, 0.0f));
-//        vertices.add(Vector3D<GLfloat>(0.5f, -0.5f, 0.0f));
+        vertices.add(new Vector3D<GLfloat>(0.5f,   0.5f,  0.0f));
+        vertices.add(new Vector3D<GLfloat>(0.5f,  -0.5f,  0.0f));
+        vertices.add(new Vector3D<GLfloat>(-0.5f, -0.5f,  0.0f));
+        vertices.add(new Vector3D<GLfloat>(-0.5f,   0.5f,  0.0f));
+        vertices.add(new Vector3D<GLfloat>(-0.5f, -0.5f,  0.0f));
+        vertices.add(new Vector3D<GLfloat>(0.5f,   0.5f,  0.0f));
         
-        // Makes a triangle
-        numVertices = 6;
-        vertices = new GLfloat[numVertices * 3] {
-            0.5f,   0.5f,  0.0f,  // Top Right
-            0.5f,  -0.5f,  0.0f,  // Bottom Right
-            -0.5f, -0.5f,  0.0f,  // Bottom Left
-            -0.5f,   0.5f,  0.0f,  // Top Left
-            -0.5f, -0.5f,  0.0f,  // Bottom Left
-            0.5f,   0.5f,  0.0f  // Top Right
-        };
+        // Vertices sent to OpenGL
+        glVertices = new GLfloat[vertices.size() * 3];
     }
     
+    /** Get the
+     */
     GLfloat * getVertices()
     {
-        // Calculate vertices based on position, transformations, etc. . .
-        b2Vec2 position = physicsProperties.getBody()->GetPosition();
+        // Calculate vertices based on Box2D's transformations
         
-        for (int i = 0; i < numVertices * 3; i += 3)
+        b2Vec2 box2DPos = physicsProperties.getBody()->GetPosition();
+        position.x = box2DPos.x;
+        position.y = box2DPos.y;
+        
+        // Calculate GLVertices
+        for (int i = 0; i < vertices.size() * 3; i += 3)
         {
-            //vertices[i] += position.x;
-            vertices[i+1] += position.y;
+            glVertices[i] = vertices[i / 3]->x + position.x;
+            glVertices[i + 1] = vertices[(i+1) / 3]->y + position.y;
+            glVertices[i + 2] = vertices[(i+2) / 3]->z + position.z;
         }
-
         
-        return vertices.get();
+        return glVertices.get();
     }
     
     std::size_t getSizeOfVertices()
     {
-        return sizeof(GLfloat) * numVertices * 3;
+        return sizeof(GLfloat) * vertices.size() * 3;
     }
     
     int getNumVertices()
     {
-        return numVertices;
+        return vertices.size();
     }
     
-    GLuint * getVBOPtr()
+    /** Get the VBO for the object.
+     */
+    GLuint & getVBO()
     {
-        return &VBO;
+        return VBO;
     }
     
     void translate (GLfloat x, GLfloat y)
     {
-        for (int i = 0; i < numVertices * 3; i += 3)
-        {
-            vertices[i] += x;
-            vertices[i+1] += y;
-        }
+        Vector3D<GLfloat> transformation (x, y, 0.0);
+        
+        position += transformation;
+        
+        physicsProperties.getBody()->SetTransform(b2Vec2(x, y), 0.0);
+    }
+    
+    PhysicsProperties getPhysicsProperties()
+    {
+        return physicsProperties;
+    }
+    
+    // CRAP CODE:
+    GLfloat getHeight()
+    {
+        return position.y;
     }
     
 private:
     
     // GLAttributes
-    GLuint VBO;
+    GLuint VBO; // The ID of the OpenGL Vertex buffer that has been registered
     
-    ScopedPointer<GLfloat> vertices;
-    int numVertices;
+    OwnedArray<Vector3D<GLfloat>> vertices; // The vertices from the origin
+    ScopedPointer<GLfloat> glVertices;
     
-    //Array<Vector3D<GLfloat>> vertices;
     Vector3D<GLfloat> position;
-    Matrix3D<GLfloat> transformations;
+    //Matrix3D<GLfloat> transformations;
     
     PhysicsProperties physicsProperties;
     

@@ -18,7 +18,7 @@
     GameHUD component to render elements over the top of the OpenGL Renderer.
  */
 class GameView :    public Component,
-                    private OpenGLRenderer
+                    private OpenGLRenderer, public ChangeBroadcaster
 {
     
 public:
@@ -33,6 +33,7 @@ public:
         openGLContext.attachTo(*this);
         
         addAndMakeVisible(gameHUD);
+        gameHUD.takeThisMagicalPointer(gameObjects, wrld);
         
         // Setup GUI Overlay Label: Status of Shaders, compiler errors, etc.
         addAndMakeVisible (statusLabel);
@@ -43,12 +44,21 @@ public:
         // Create game objects
         gameObjects.add(new GameObject(wrld));
         gameObjects.add(new GameObject(wrld));
-        gameObjects.getLast()->translate(1.0f, 1.0f);
+        gameObjects.getLast()->translate(1.3f, 1.0f);
+        gameObjects.add(new GameObject(wrld));
+        gameObjects.getLast()->translate(0.0f, 1.0f);
+        gameObjects.add(new GameObject(wrld));
+        gameObjects.getLast()->translate(-0.3f, 1.0f);
                     
         // GameView Variables
         isEnabled = false;
         
         setOpaque(true);
+        
+        
+        // CRAP CODE:
+        addChangeListener(&gameHUD);
+        gameHUD.setMaxHeightPointer(&MAX_HEIGHT);
     }
     
     ~GameView()
@@ -90,7 +100,7 @@ public:
         // Initialize Object Buffers
         for (auto gameObject : gameObjects)
         {
-            openGLContext.extensions.glGenBuffers(1, gameObject->getVBOPtr());
+            openGLContext.extensions.glGenBuffers(1, &(gameObject->getVBO()));
         }
         
     }
@@ -132,7 +142,6 @@ public:
             scale.mat[10] = 2.0;
             Matrix3D<float> finalMatrix = scale * getViewMatrix();
             uniforms->viewMatrix->setMatrix4 (finalMatrix.mat, 1, false);
-            
         }
 
         
@@ -147,12 +156,20 @@ public:
         // Draw all the game objects
         for (auto gameObject : gameObjects)
         {
-            openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, *(gameObject->getVBOPtr()));
+            
+            openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, gameObject->getVBO());
             openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, gameObject->getSizeOfVertices(), gameObject->getVertices(), GL_DYNAMIC_DRAW);
             openGLContext.extensions.glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
             openGLContext.extensions.glEnableVertexAttribArray (0);
             glDrawArrays (GL_TRIANGLES, 0, gameObject->getNumVertices()); // For just VBO's (Vertex Buffer Objects)
         }
+        
+        // CRAP HEIGHT:
+        // GET MAX HEIGHT THO
+        MAX_HEIGHT = gameObjects[1]->getHeight();
+
+        
+        
 
         // VBO (Vertex Buffer Object) - Bind and Write to Buffer
         //openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, VBO);
@@ -180,11 +197,14 @@ public:
         // Reset the element buffers so child Components draw correctly
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
         //openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
-        //openGLContext.extensions.glBindVertexArray(0);
+        openGLContext.extensions.glBindVertexArray(0);
 
         
         // Move Physics to next step
         wrld.Step();
+        
+        // CRAP CODE:
+        sendChangeMessage();
 
     }
     
@@ -321,5 +341,9 @@ private:
     
     // DEBUGGING
     Label statusLabel;
+    
+    
+    // CRAP CODE:
+    GLfloat MAX_HEIGHT;
     
 };
