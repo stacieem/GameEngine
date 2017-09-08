@@ -9,6 +9,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "HealthBar.h"
 
 /** Renders a Heads Up Display with a transparent background.
  */
@@ -18,7 +19,8 @@ public:
 
     GameHUD()
     {
-        addAndMakeVisible(slider);
+        addAndMakeVisible(healthBar);
+        healthBar.setRange(0, 10, 1.0);
         setOpaque(false);
     }
     
@@ -36,11 +38,18 @@ public:
     
     void resized () override
     {
-        slider.setBounds(20, 20, 200, 50);
+        const int w = getWidth();
+        const int h = getHeight();
+        
+        const int healthBarW = w / 14;
+        const int healthBarH = h * 0.9;
+        const int margin = 20;
+        
+        healthBar.setBounds(margin, (h - healthBarH) / 2, healthBarW, healthBarH);
     }
     
 private:
-    Slider slider;
+    HealthBar healthBar;
     
     
 };

@@ -1,4 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
+
 <Project ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="GameEngine\Source">
@@ -117,6 +118,36 @@
     </Filter>
     <Filter Include="Juce Modules\juce_audio_processors">
       <UniqueIdentifier>{0B0E7392-324B-088C-FBEB-5FE999D61782}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_box2d\box2d\Collision\Shapes">
+      <UniqueIdentifier>{2F7C09E9-B2E5-4570-B21C-4B7380C2DECE}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_box2d\box2d\Collision">
+      <UniqueIdentifier>{D788F8CE-816F-E50B-0137-362EA8202CD8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_box2d\box2d\Common">
+      <UniqueIdentifier>{811DEACE-EEEF-A25E-BA5D-69D777C4AC93}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_box2d\box2d\Dynamics\Contacts">
+      <UniqueIdentifier>{EF6F967F-1105-9944-3B6F-A65C987E517B}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_box2d\box2d\Dynamics\Joints">
+      <UniqueIdentifier>{C3146994-CDF2-4547-65EA-A3FF3A0E5B3A}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_box2d\box2d\Dynamics">
+      <UniqueIdentifier>{D2A5FD6A-3D6F-A91D-1565-50F7DA71C436}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_box2d\box2d\Rope">
+      <UniqueIdentifier>{B15524AD-C161-4E76-F3FD-D6E68A3C6FF6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_box2d\box2d">
+      <UniqueIdentifier>{141B1452-6821-88F4-FFF8-F13BC738929D}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_box2d\utils">
+      <UniqueIdentifier>{E3D8F4B4-33E2-B3AA-1F4F-CD78351C6C37}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Juce Modules\juce_box2d">
+      <UniqueIdentifier>{B2912FF0-8ED6-7123-C74F-BA4CF0F436AB}</UniqueIdentifier>
     </Filter>
     <Filter Include="Juce Modules\juce_core\containers">
       <UniqueIdentifier>{0608ADE9-66EF-1A19-6D57-12D07F76EB53}</UniqueIdentifier>
@@ -456,6 +487,9 @@
     <ClCompile Include="..\..\..\JUCE\modules\juce_audio_basics\juce_audio_basics.cpp">
       <Filter>Juce Modules\juce_audio_basics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_audio_basics\juce_audio_basics.mm">
+      <Filter>Juce Modules\juce_audio_basics</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_audio_devices\audio_io\juce_AudioDeviceManager.cpp">
       <Filter>Juce Modules\juce_audio_devices\audio_io</Filter>
     </ClCompile>
@@ -517,6 +551,9 @@
       <Filter>Juce Modules\juce_audio_devices\sources</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_audio_devices\juce_audio_devices.cpp">
+      <Filter>Juce Modules\juce_audio_devices</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_audio_devices\juce_audio_devices.mm">
       <Filter>Juce Modules\juce_audio_devices</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_audio_formats\codecs\flac\libFLAC\bitmath.c">
@@ -687,11 +724,17 @@
     <ClCompile Include="..\..\..\JUCE\modules\juce_audio_formats\juce_audio_formats.cpp">
       <Filter>Juce Modules\juce_audio_formats</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_audio_formats\juce_audio_formats.mm">
+      <Filter>Juce Modules\juce_audio_formats</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_audio_processors\format\juce_AudioPluginFormat.cpp">
       <Filter>Juce Modules\juce_audio_processors\format</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_audio_processors\format\juce_AudioPluginFormatManager.cpp">
       <Filter>Juce Modules\juce_audio_processors\format</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_audio_processors\format_types\juce_AudioUnitPluginFormat.mm">
+      <Filter>Juce Modules\juce_audio_processors\format_types</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_audio_processors\format_types\juce_LADSPAPluginFormat.cpp">
       <Filter>Juce Modules\juce_audio_processors\format_types</Filter>
@@ -734,6 +777,150 @@
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_audio_processors\juce_audio_processors.cpp">
       <Filter>Juce Modules\juce_audio_processors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_audio_processors\juce_audio_processors.mm">
+      <Filter>Juce Modules\juce_audio_processors</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\Shapes\b2ChainShape.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\Shapes\b2CircleShape.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\Shapes\b2EdgeShape.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\Shapes\b2PolygonShape.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision\Shapes</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\b2BroadPhase.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\b2CollideCircle.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\b2CollideEdge.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\b2CollidePolygon.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\b2Collision.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\b2Distance.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\b2DynamicTree.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\b2TimeOfImpact.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Common\b2BlockAllocator.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Common\b2Draw.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Common\b2Math.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Common\b2Settings.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Common\b2StackAllocator.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Common\b2Timer.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2ChainAndCircleContact.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2ChainAndPolygonContact.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2CircleContact.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2Contact.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2ContactSolver.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2EdgeAndCircleContact.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2EdgeAndPolygonContact.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2PolygonAndCircleContact.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2PolygonContact.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2DistanceJoint.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2FrictionJoint.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2GearJoint.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2Joint.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2MouseJoint.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2PrismaticJoint.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2PulleyJoint.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2RevoluteJoint.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2RopeJoint.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2WeldJoint.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2WheelJoint.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\b2Body.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\b2ContactManager.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\b2Fixture.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\b2Island.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\b2World.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\b2WorldCallbacks.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Rope\b2Rope.cpp">
+      <Filter>Juce Modules\juce_box2d\box2d\Rope</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\utils\juce_Box2DRenderer.cpp">
+      <Filter>Juce Modules\juce_box2d\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\modules\juce_box2d\juce_box2d.cpp">
+      <Filter>Juce Modules\juce_box2d</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_core\containers\juce_AbstractFifo.cpp">
       <Filter>Juce Modules\juce_core\containers</Filter>
@@ -850,6 +1037,21 @@
       <Filter>Juce Modules\juce_core\native</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_core\native\juce_linux_Threads.cpp">
+      <Filter>Juce Modules\juce_core\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_core\native\juce_mac_Files.mm">
+      <Filter>Juce Modules\juce_core\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_core\native\juce_mac_Network.mm">
+      <Filter>Juce Modules\juce_core\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_core\native\juce_mac_Strings.mm">
+      <Filter>Juce Modules\juce_core\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_core\native\juce_mac_SystemStats.mm">
+      <Filter>Juce Modules\juce_core\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_core\native\juce_mac_Threads.mm">
       <Filter>Juce Modules\juce_core\native</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_core\native\juce_posix_NamedPipe.cpp">
@@ -1020,6 +1222,9 @@
     <ClCompile Include="..\..\..\JUCE\modules\juce_core\juce_core.cpp">
       <Filter>Juce Modules\juce_core</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_core\juce_core.mm">
+      <Filter>Juce Modules\juce_core</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_cryptography\encryption\juce_BlowFish.cpp">
       <Filter>Juce Modules\juce_cryptography\encryption</Filter>
     </ClCompile>
@@ -1039,6 +1244,9 @@
       <Filter>Juce Modules\juce_cryptography\hashing</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_cryptography\juce_cryptography.cpp">
+      <Filter>Juce Modules\juce_cryptography</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_cryptography\juce_cryptography.mm">
       <Filter>Juce Modules\juce_cryptography</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_data_structures\app_properties\juce_ApplicationProperties.cpp">
@@ -1063,6 +1271,9 @@
       <Filter>Juce Modules\juce_data_structures\values</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_data_structures\juce_data_structures.cpp">
+      <Filter>Juce Modules\juce_data_structures</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_data_structures\juce_data_structures.mm">
       <Filter>Juce Modules\juce_data_structures</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_events\broadcasters\juce_ActionBroadcaster.cpp">
@@ -1098,7 +1309,13 @@
     <ClCompile Include="..\..\..\JUCE\modules\juce_events\native\juce_android_Messaging.cpp">
       <Filter>Juce Modules\juce_events\native</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_events\native\juce_ios_MessageManager.mm">
+      <Filter>Juce Modules\juce_events\native</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_events\native\juce_linux_Messaging.cpp">
+      <Filter>Juce Modules\juce_events\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_events\native\juce_mac_MessageManager.mm">
       <Filter>Juce Modules\juce_events\native</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_events\native\juce_win32_Messaging.cpp">
@@ -1114,6 +1331,9 @@
       <Filter>Juce Modules\juce_events\timers</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_events\juce_events.cpp">
+      <Filter>Juce Modules\juce_events</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_events\juce_events.mm">
       <Filter>Juce Modules\juce_events</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_graphics\colour\juce_Colour.cpp">
@@ -1398,6 +1618,12 @@
     <ClCompile Include="..\..\..\JUCE\modules\juce_graphics\native\juce_linux_IconHelpers.cpp">
       <Filter>Juce Modules\juce_graphics\native</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_graphics\native\juce_mac_CoreGraphicsContext.mm">
+      <Filter>Juce Modules\juce_graphics\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_graphics\native\juce_mac_Fonts.mm">
+      <Filter>Juce Modules\juce_graphics\native</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_graphics\native\juce_mac_IconHelpers.cpp">
       <Filter>Juce Modules\juce_graphics\native</Filter>
     </ClCompile>
@@ -1420,6 +1646,9 @@
       <Filter>Juce Modules\juce_graphics\placement</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_graphics\juce_graphics.cpp">
+      <Filter>Juce Modules\juce_graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_graphics\juce_graphics.mm">
       <Filter>Juce Modules\juce_graphics</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_gui_basics\application\juce_Application.cpp">
@@ -1659,6 +1888,12 @@
     <ClCompile Include="..\..\..\JUCE\modules\juce_gui_basics\native\juce_android_Windowing.cpp">
       <Filter>Juce Modules\juce_gui_basics\native</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_gui_basics\native\juce_ios_UIViewComponentPeer.mm">
+      <Filter>Juce Modules\juce_gui_basics\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_gui_basics\native\juce_ios_Windowing.mm">
+      <Filter>Juce Modules\juce_gui_basics\native</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_gui_basics\native\juce_linux_FileChooser.cpp">
       <Filter>Juce Modules\juce_gui_basics\native</Filter>
     </ClCompile>
@@ -1669,6 +1904,21 @@
       <Filter>Juce Modules\juce_gui_basics\native</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_gui_basics\native\juce_linux_X11_Windowing.cpp">
+      <Filter>Juce Modules\juce_gui_basics\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_gui_basics\native\juce_mac_FileChooser.mm">
+      <Filter>Juce Modules\juce_gui_basics\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_gui_basics\native\juce_mac_MainMenu.mm">
+      <Filter>Juce Modules\juce_gui_basics\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_gui_basics\native\juce_mac_MouseCursor.mm">
+      <Filter>Juce Modules\juce_gui_basics\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_gui_basics\native\juce_mac_NSViewComponentPeer.mm">
+      <Filter>Juce Modules\juce_gui_basics\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_gui_basics\native\juce_mac_Windowing.mm">
       <Filter>Juce Modules\juce_gui_basics\native</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_gui_basics\native\juce_win32_DragAndDrop.cpp">
@@ -1791,6 +2041,9 @@
     <ClCompile Include="..\..\..\JUCE\modules\juce_gui_basics\juce_gui_basics.cpp">
       <Filter>Juce Modules\juce_gui_basics</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_gui_basics\juce_gui_basics.mm">
+      <Filter>Juce Modules\juce_gui_basics</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_gui_extra\code_editor\juce_CodeDocument.cpp">
       <Filter>Juce Modules\juce_gui_extra\code_editor</Filter>
     </ClCompile>
@@ -1839,6 +2092,9 @@
     <ClCompile Include="..\..\..\JUCE\modules\juce_gui_extra\native\juce_android_WebBrowserComponent.cpp">
       <Filter>Juce Modules\juce_gui_extra\native</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_gui_extra\native\juce_ios_UIViewComponent.mm">
+      <Filter>Juce Modules\juce_gui_extra\native</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_gui_extra\native\juce_linux_X11_SystemTrayIcon.cpp">
       <Filter>Juce Modules\juce_gui_extra\native</Filter>
     </ClCompile>
@@ -1848,7 +2104,16 @@
     <ClCompile Include="..\..\..\JUCE\modules\juce_gui_extra\native\juce_linux_XEmbedComponent.cpp">
       <Filter>Juce Modules\juce_gui_extra\native</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_gui_extra\native\juce_mac_AppleRemote.mm">
+      <Filter>Juce Modules\juce_gui_extra\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_gui_extra\native\juce_mac_NSViewComponent.mm">
+      <Filter>Juce Modules\juce_gui_extra\native</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_gui_extra\native\juce_mac_SystemTrayIcon.cpp">
+      <Filter>Juce Modules\juce_gui_extra\native</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_gui_extra\native\juce_mac_WebBrowserComponent.mm">
       <Filter>Juce Modules\juce_gui_extra\native</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_gui_extra\native\juce_win32_ActiveXComponent.cpp">
@@ -1861,6 +2126,9 @@
       <Filter>Juce Modules\juce_gui_extra\native</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_gui_extra\juce_gui_extra.cpp">
+      <Filter>Juce Modules\juce_gui_extra</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_gui_extra\juce_gui_extra.mm">
       <Filter>Juce Modules\juce_gui_extra</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_opengl\opengl\juce_OpenGLContext.cpp">
@@ -1893,6 +2161,9 @@
     <ClCompile Include="..\..\..\JUCE\modules\juce_opengl\juce_opengl.cpp">
       <Filter>Juce Modules\juce_opengl</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_opengl\juce_opengl.mm">
+      <Filter>Juce Modules\juce_opengl</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_video\capture\juce_CameraDevice.cpp">
       <Filter>Juce Modules\juce_video\capture</Filter>
     </ClCompile>
@@ -1900,6 +2171,9 @@
       <Filter>Juce Modules\juce_video\playback</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\JUCE\modules\juce_video\juce_video.cpp">
+      <Filter>Juce Modules\juce_video</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\JUCE\modules\juce_video\juce_video.mm">
       <Filter>Juce Modules\juce_video</Filter>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_basics.cpp">
@@ -1912,6 +2186,9 @@
       <Filter>Juce Library Code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_audio_processors.cpp">
+      <Filter>Juce Library Code</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\JuceLibraryCode\include_juce_box2d.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_core.cpp">
@@ -2479,6 +2756,153 @@
     </ClInclude>
     <ClInclude Include="..\..\..\JUCE\modules\juce_audio_processors\juce_audio_processors.h">
       <Filter>Juce Modules\juce_audio_processors</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\Shapes\b2ChainShape.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\Shapes\b2CircleShape.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\Shapes\b2EdgeShape.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\Shapes\b2PolygonShape.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\Shapes\b2Shape.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision\Shapes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\b2BroadPhase.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\b2Collision.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\b2Distance.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\b2DynamicTree.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Collision\b2TimeOfImpact.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Collision</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Common\b2BlockAllocator.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Common\b2Draw.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Common\b2GrowableStack.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Common\b2Math.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Common\b2Settings.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Common\b2StackAllocator.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Common\b2Timer.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2ChainAndCircleContact.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2ChainAndPolygonContact.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2CircleContact.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2Contact.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2ContactSolver.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2EdgeAndCircleContact.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2EdgeAndPolygonContact.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2PolygonAndCircleContact.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Contacts\b2PolygonContact.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Contacts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2DistanceJoint.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2FrictionJoint.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2GearJoint.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2Joint.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2MouseJoint.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2PrismaticJoint.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2PulleyJoint.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2RevoluteJoint.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2RopeJoint.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2WeldJoint.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\Joints\b2WheelJoint.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics\Joints</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\b2Body.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\b2ContactManager.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\b2Fixture.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\b2Island.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\b2TimeStep.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\b2World.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Dynamics\b2WorldCallbacks.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Dynamics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Rope\b2Rope.h">
+      <Filter>Juce Modules\juce_box2d\box2d\Rope</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\Box2D.h">
+      <Filter>Juce Modules\juce_box2d\box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\utils\juce_Box2DRenderer.h">
+      <Filter>Juce Modules\juce_box2d\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\JuceLibraryCode\modules\juce_box2d\juce_box2d.h">
+      <Filter>Juce Modules\juce_box2d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\JUCE\modules\juce_box2d\juce_box2d.h">
+      <Filter>Juce Modules\juce_box2d</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\JUCE\modules\juce_core\containers\juce_AbstractFifo.h">
       <Filter>Juce Modules\juce_core\containers</Filter>
@@ -3741,6 +4165,9 @@
     </None>
     <None Include="..\..\..\JUCE\modules\juce_audio_formats\codecs\oggvorbis\Ogg Vorbis Licence.txt">
       <Filter>Juce Modules\juce_audio_formats\codecs\oggvorbis</Filter>
+    </None>
+    <None Include="..\..\JuceLibraryCode\modules\juce_box2d\box2d\README.txt">
+      <Filter>Juce Modules\juce_box2d\box2d</Filter>
     </None>
     <None Include="..\..\..\JUCE\modules\juce_graphics\image_formats\jpglib\changes to libjpeg for JUCE.txt">
       <Filter>Juce Modules\juce_graphics\image_formats\jpglib</Filter>
