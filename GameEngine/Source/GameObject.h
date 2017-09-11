@@ -39,7 +39,7 @@ public:
     {
         // Calculate vertices based on Box2D's transformations
         
-        b2Vec2 box2DPos = physicsProperties.getBody()->GetPosition();
+        b2Vec2 box2DPos = physicsProperties.GetPosition();
         position.x = box2DPos.x;
         position.y = box2DPos.y;
         
@@ -77,7 +77,7 @@ public:
         
         position += transformation;
         
-        physicsProperties.getBody()->SetTransform(b2Vec2(x, y), 0.0);
+		physicsProperties.translate(x, y);
     }
     
     PhysicsProperties getPhysicsProperties()

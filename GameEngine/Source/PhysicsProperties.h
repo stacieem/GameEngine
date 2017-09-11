@@ -54,11 +54,47 @@ public:
 	{
 
 	}
-
+	/// body accessors and modifiers
 	b2Body* getBody()
 	{
 		return body;
 	}
+
+	void translate(GLfloat x, GLfloat y)
+	{
+		body->SetTransform(b2Vec2(x, y), 0.0);
+	}
+	void rotate(float deg)
+	{
+		body->SetTransform(body->GetPosition(), (deg * PI) /180);
+	}
+	float getRotation()
+	{
+		return body->GetAngle();
+	}
+	b2Vec2 GetPosition()
+	{
+		return body->GetPosition();
+	}
+
+	/// FixtureDef Properties
+	void setRestitution(float32 rest)
+	{
+		fixtureDef.restitution = rest;
+	}
+	void setFriction(float32 fric)
+	{
+		fixtureDef.friction = fric;
+	}
+	void setDensity(float32 dens)
+	{
+		fixtureDef.density = dens;
+		body->ResetMassData();
+	}
+
 private:
+	float radToDeg;
+	float DegToRad;
+	const float PI = 3.14159;
 	b2Body* body;
 };

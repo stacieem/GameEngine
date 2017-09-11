@@ -197,8 +197,7 @@ public:
         // Reset the element buffers so child Components draw correctly
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
         //openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
-        openGLContext.extensions.glBindVertexArray(0);
-
+        //openGLContext.extensions.glBindVertexArray(0);
         
         // Move Physics to next step
         wrld.Step();

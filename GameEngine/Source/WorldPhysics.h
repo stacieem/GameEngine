@@ -47,6 +47,16 @@ public:
 	{
 
 	}
+	void clearWorld() 
+	{
+		/*for (auto bodyObject : world.GetBodyList)
+		{
+			//destroy fixtures
+			//nullify data
+			//destroy object
+			world.DestroyBody(bodyObject);
+		}*/
+	}
 
 	void Step()
 	{
