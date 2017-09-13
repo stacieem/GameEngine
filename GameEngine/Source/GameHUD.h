@@ -66,10 +66,7 @@ public:
     {
         if (button == &resetButton)
         {
-            (*gameObjects)[0]->translate(0.0f, 0.0f);
-            (*gameObjects)[1]->translate(1.3f, 1.0f);
-            (*gameObjects)[2]->translate(0.0f, 1.0f);
-            (*gameObjects)[3]->translate(-0.3f, 1.0f);
+            (*gameObjects)[0]->getPhysicsProperties().setImpulse(0, 8);
         }
     }
     

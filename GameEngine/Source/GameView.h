@@ -42,14 +42,14 @@ public:
         statusLabel.toBack();
         
         // Create game objects
+        //gameObjects.add(new GameObject(wrld));
+        // gameObjects.add(new GameObject(wrld));
+        // gameObjects.getLast()->translate(1.3f, 1.0f);
         gameObjects.add(new GameObject(wrld));
+        gameObjects.getLast()->translateTo(0.0f, 2.0f);
         gameObjects.add(new GameObject(wrld));
-        gameObjects.getLast()->translate(1.3f, 1.0f);
-        gameObjects.add(new GameObject(wrld));
-        gameObjects.getLast()->translate(0.0f, 1.0f);
-        gameObjects.add(new GameObject(wrld));
-        gameObjects.getLast()->translate(-0.3f, 1.0f);
-                    
+		gameObjects.getLast()->translateTo(0.0f, 1.0f);
+		gameObjects.getLast()->getPhysicsProperties().resizeCollisionBox(.3f,.3f);
         // GameView Variables
         isEnabled = false;
         

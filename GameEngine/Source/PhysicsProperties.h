@@ -10,10 +10,6 @@
 class PhysicsProperties
 {
 public:
-	b2FixtureDef fixtureDef;	//provide access to internal variables
-	b2BodyDef bodyDef;
-	b2PolygonShape dynamicBox;
-
 	PhysicsProperties(b2World& world) 
 	{
 		bodyDef.type = b2_dynamicBody;
@@ -21,7 +17,8 @@ public:
 
 		body = world.CreateBody(&bodyDef);
 		dynamicBox.SetAsBox(0.5f, 0.5f);
-
+		dynamicCircle.m_radius = .5;
+		dynamicCircle.m_p.Set(0, 0);
 		fixtureDef.shape = &dynamicBox;
 
 		//default properties
@@ -29,7 +26,7 @@ public:
 		fixtureDef.restitution = 0.0f;
 		fixtureDef.density = 1.0f;
 
-		body->CreateFixture(&fixtureDef);
+		this->myFixture = body->CreateFixture(&fixtureDef);
 	}
 	
 	PhysicsProperties(b2World& world, float originx, float originy,float width,float height) 
@@ -47,7 +44,7 @@ public:
 		fixtureDef.restitution = 0.0f;
 		fixtureDef.density = 1.0f;
 
-		body->CreateFixture(&fixtureDef);
+		this->myFixture = body->CreateFixture(&fixtureDef);
 	}
 	
 	~PhysicsProperties()
@@ -55,46 +52,197 @@ public:
 
 	}
 	/// body accessors and modifiers
-	b2Body* getBody()
+
+	/**************************************************************************
+	*
+	*	Set the linear Velocity of the body along the x
+	*
+	**************************************************************************/
+	void setLinearVelocity(GLfloat x, GLfloat y)
 	{
-		return body;
+		body->SetLinearVelocity(b2Vec2(x,y));
+	}
+	/**************************************************************************
+	*
+	*	Set the linear Damping of the body by damping amount
+	*	a value used to represent the value reduce the linear velocity on
+	*	each step()
+	**************************************************************************/
+	void setLinearDamping(GLfloat damping)
+	{
+		body->SetLinearDamping(damping);
 	}
 
-	void translate(GLfloat x, GLfloat y)
+	/**************************************************************************
+	*
+	*	Set the angular velocity
+	*
+	**************************************************************************/
+	void setAngularVelocity(GLfloat angVel)
 	{
-		body->SetTransform(b2Vec2(x, y), 0.0);
+		body->SetAngularVelocity(angVel);
 	}
+	/**************************************************************************
+	*
+	*	Set the angular Damping of the body by damping amount
+	*
+	**************************************************************************/
+	void setAngularDamping(GLfloat damping)
+	{
+		body->SetAngularDamping(damping);
+	}
+
+	/**************************************************************************
+	*
+	*	Set the torque on the body
+	*
+	**************************************************************************/
+	void setTorque(GLfloat torque)
+	{
+		body->ApplyTorque(torque);
+	}
+	/**************************************************************************
+	*
+	*	Check for any collisions with other objects
+	*
+	**************************************************************************/
+	void checkCollisionsWithOtherObjects()
+	{
+		for (b2ContactEdge* otherBody = body->GetContactList(); otherBody; otherBody = otherBody->next)
+		{
+			if (otherBody->contact->IsTouching())
+			{
+				/// we have a collision with this object
+				/// additional information
+				///http://www.iforce2d.net/b2dtut/collision-anatomy
+			}
+		}
+	}
+
+	/**************************************************************************
+	*
+	*	moves the center of the object over by x and y units
+	*	Note: Conversion equation would be nice from pixels/coords to position
+	*
+	**************************************************************************/
+	void translateBy(GLfloat x, GLfloat y)
+	{
+		b2Vec2 center = body->GetPosition();
+		center.x += x;
+		center.y += y;
+		body->SetTransform(center, 0.0);
+	}
+	/**************************************************************************
+	*
+	*	moves the center of the object over by x and y units
+	*	Note: Conversion equation would be nice from pixels/coords to position
+	*
+	**************************************************************************/
+	void translateTo(GLfloat x, GLfloat y)
+	{
+		body->SetTransform(b2Vec2(x,y), 0.0);
+	}
+	/**************************************************************************
+	*
+	*	rotates the body around the current center a certain number of degrees
+	*
+	**************************************************************************/
 	void rotate(float deg)
 	{
-		body->SetTransform(body->GetPosition(), (deg * PI) /180);
+		body->SetTransform(body->GetPosition(), (deg * DEGTORAD));
 	}
+
+	/**************************************************************************
+	*
+	*	get the current angle of the shape
+	*
+	**************************************************************************/
 	float getRotation()
 	{
-		return body->GetAngle();
+		return body->GetAngle() * RADTODEG;
 	}
+
+	/**************************************************************************
+	*
+	*	get the current origin position of the shape
+	*
+	**************************************************************************/
 	b2Vec2 GetPosition()
 	{
 		return body->GetPosition();
 	}
 
 	/// FixtureDef Properties
+
+	/**************************************************************************
+	*
+	*	set the amount of energy retained after a collision
+	*	dubbed 'bounciness' by the wise-crew
+	*
+	**************************************************************************/
 	void setRestitution(float32 rest)
 	{
 		fixtureDef.restitution = rest;
 	}
+	/**************************************************************************
+	*
+	*	set the friction for the object
+	*
+	**************************************************************************/
 	void setFriction(float32 fric)
 	{
 		fixtureDef.friction = fric;
 	}
+	/**************************************************************************
+	*
+	*	set the density of the body, reset body to apply correct mass
+	*
+	**************************************************************************/
 	void setDensity(float32 dens)
 	{
 		fixtureDef.density = dens;
 		body->ResetMassData();
 	}
+	/**************************************************************************
+	*
+	*	set a gradual Force to act on the body with respect to the x, y axis
+	*	
+	*
+	**************************************************************************/
+	void setForce(GLfloat x, GLfloat y)
+	{
+		body->ApplyForce(b2Vec2(x, y), body->GetWorldCenter());
+	}
 
+	/**************************************************************************
+	*
+	*	set an immediate Force to act on the body with respect to the x, y axis
+	*
+	*
+	**************************************************************************/
+	void setImpulse(GLfloat x, GLfloat y)
+	{
+		body->ApplyLinearImpulse(b2Vec2(x, y), body->GetWorldCenter());
+	}
+
+	/// b2Shape properties
+	void resizeCollisionBox(GLfloat x, GLfloat y)
+	{
+		dynamicBox.SetAsBox(x, y);
+		fixtureDef.shape = &dynamicBox;
+		body->DestroyFixture(this->myFixture);
+
+		this->myFixture = body->CreateFixture(&fixtureDef);
+	}
 private:
-	float radToDeg;
-	float DegToRad;
+	const float RADTODEG = 57.29577951308;
+	const float DEGTORAD = 0.017453292519;
 	const float PI = 3.14159;
 	b2Body* body;
+	b2Fixture* myFixture;
+	b2FixtureDef fixtureDef;	
+	b2BodyDef bodyDef;
+	b2PolygonShape dynamicBox;
+	b2CircleShape dynamicCircle;
+
 };

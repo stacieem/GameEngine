@@ -19,7 +19,7 @@ class GameObject
 public:
     /** Constructs a GameObject and attatches it to the world's physics.
      */
-    GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.world)
+    GameObject(WorldPhysics & worldPhysics) : physicsProperties (*worldPhysics.getWorld())
     {
         // Default vertices
         vertices.add(new Vector3D<GLfloat>(0.5f,   0.5f,  0.0f));
@@ -71,15 +71,24 @@ public:
         return VBO;
     }
     
-    void translate (GLfloat x, GLfloat y)
+    void translateTo (GLfloat x, GLfloat y)
     {
         Vector3D<GLfloat> transformation (x, y, 0.0);
         
         position += transformation;
         
-		physicsProperties.translate(x, y);
+		physicsProperties.translateTo(x, y);
     }
     
+	void translateBy(GLfloat x, GLfloat y)
+	{
+		Vector3D<GLfloat> transformation(x, y, 0.0);
+
+		position += transformation;
+
+		physicsProperties.translateBy(x, y);
+	}
+
     PhysicsProperties getPhysicsProperties()
     {
         return physicsProperties;
