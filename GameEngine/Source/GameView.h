@@ -10,15 +10,14 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "GameHUD.h"
-#include "GameObject.h"
-#include "WorldPhysics.h"
+#include "GameModel.h"
 
 /** Represents the view of any game being rendered.
     It includes an OpenGL Renderer to render either 2D or 3D graphics and a
     GameHUD component to render elements over the top of the OpenGL Renderer.
  */
 class GameView :    public Component,
-                    private OpenGLRenderer, public ChangeBroadcaster
+                    private OpenGLRenderer
 {
     
 public:
@@ -33,32 +32,17 @@ public:
         openGLContext.attachTo(*this);
         
         addAndMakeVisible(gameHUD);
-        gameHUD.takeThisMagicalPointer(gameObjects, wrld);
         
         // Setup GUI Overlay Label: Status of Shaders, compiler errors, etc.
         addAndMakeVisible (statusLabel);
         statusLabel.setJustificationType (Justification::topLeft);
         statusLabel.setFont (Font (14.0f));
         statusLabel.toBack();
-        
-        // Create game objects
-        gameObjects.add(new GameObject(wrld));
-        gameObjects.add(new GameObject(wrld));
-        gameObjects.getLast()->translate(1.3f, 1.0f);
-        gameObjects.add(new GameObject(wrld));
-        gameObjects.getLast()->translate(0.0f, 1.0f);
-        gameObjects.add(new GameObject(wrld));
-        gameObjects.getLast()->translate(-0.3f, 1.0f);
                     
         // GameView Variables
         isEnabled = false;
         
         setOpaque(true);
-        
-        
-        // CRAP CODE:
-        addChangeListener(&gameHUD);
-        gameHUD.setMaxHeightPointer(&MAX_HEIGHT);
     }
     
     ~GameView()
@@ -98,7 +82,8 @@ public:
         //openGLContext.extensions.glGenBuffers (1, &EBO); // Element Buffer Object
         
         // Initialize Object Buffers
-        for (auto gameObject : gameObjects)
+                                // FIX THISSS
+        for (auto & gameObject : gameModel->getGameObjects())
         {
             openGLContext.extensions.glGenBuffers(1, &(gameObject->getVBO()));
         }
@@ -114,6 +99,9 @@ public:
     void renderOpenGL() override
     {
         jassert (OpenGLHelpers::isContextActive());
+        
+        // Wait for CoreEngine to signal() GameView
+        renderWaitable->wait();
         
         // Setup Viewport
         const float renderingScale = (float) openGLContext.getRenderingScale();
@@ -143,20 +131,11 @@ public:
             Matrix3D<float> finalMatrix = scale * getViewMatrix();
             uniforms->viewMatrix->setMatrix4 (finalMatrix.mat, 1, false);
         }
-
-        
-        
-//        // Define Which Vertex Indexes Make the Square
-//        GLuint indices[] = {  // Note that we start from 0!
-//            0, 1, 3,   // First Triangle
-//            1, 2, 3    // Second Triangle
-//        };
         
         
         // Draw all the game objects
-        for (auto gameObject : gameObjects)
+        for (auto & gameObject : gameModel->getGameObjects())
         {
-            
             openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, gameObject->getVBO());
             openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, gameObject->getSizeOfVertices(), gameObject->getVertices(), GL_DYNAMIC_DRAW);
             openGLContext.extensions.glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
@@ -164,48 +143,14 @@ public:
             glDrawArrays (GL_TRIANGLES, 0, gameObject->getNumVertices()); // For just VBO's (Vertex Buffer Objects)
         }
         
-        // CRAP HEIGHT:
-        // GET MAX HEIGHT THO
-        MAX_HEIGHT = gameObjects[1]->getHeight();
-
-        
-        
-
-        // VBO (Vertex Buffer Object) - Bind and Write to Buffer
-        //openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, VBO);
-        //openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STREAM_DRAW);
-                                                                                        // GL_DYNAMIC_DRAW or GL_STREAM_DRAW
-                                                                                        // We may want GL_DYNAMIC_DRAW since it is for
-                                                                                        // vertex data that will be changing alot.
-        
-        // EBO (Element Buffer Object) - Bind and Write to Buffer
-        //openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, EBO);
-        //openGLContext.extensions.glBufferData (GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STREAM_DRAW);
-                                                                                // GL_DYNAMIC_DRAW or GL_STREAM_DRAW
-                                                                                // We may want GL_DYNAMIC_DRAW since it is for
-                                                                                // vertex data that will be changing alot.
-       
-        // Setup Vertex Attributes
-        //openGLContext.extensions.glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
-        //openGLContext.extensions.glEnableVertexAttribArray (0);
-        
-        // Draw Vertices
-        //glDrawElements (GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0); // For EBO's (Element Buffer Objects) (Indices)
-        //glDrawArrays (GL_TRIANGLES, 0, 6); // For just VBO's (Vertex Buffer Objects)
-        
         
         // Reset the element buffers so child Components draw correctly
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
         //openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
         openGLContext.extensions.glBindVertexArray(0);
-
         
-        // Move Physics to next step
-        wrld.Step();
-        
-        // CRAP CODE:
-        sendChangeMessage();
-
+        // Signal CoreEngine that rendering is done
+        coreEngineWaitable->signal();
     }
     
     
@@ -218,6 +163,29 @@ public:
     
     void paint(Graphics & g) override
     {}
+    
+    
+    // Custom Functions ========================================================
+    void setGameModelSwapFrame(GameModel * gameModelSwapFrame)
+    {
+        this->gameModel = gameModelSwapFrame;
+    }
+    
+    GameModel * getGameModelSwapFrame()
+    {
+        return gameModel;
+    }
+    
+    void setCoreEngineWaitable(WaitableEvent * waitable)
+    {
+        coreEngineWaitable = waitable;
+    }
+    
+    void setRenderWaitable(WaitableEvent * waitable)
+    {
+        renderWaitable = waitable;
+        
+    }
     
     
 private:
@@ -319,6 +287,8 @@ private:
     };
     
     
+    // Private Variables =======================================================
+    
     bool isEnabled;
     
     // OpenGL Rendering
@@ -332,18 +302,16 @@ private:
     const char* vertexShader;
     const char* fragmentShader;
     
-    // Game Data Model
-    OwnedArray<GameObject> gameObjects;
-    WorldPhysics wrld;
-    
     // JUCE Components
     GameHUD gameHUD;
     
     // DEBUGGING
     Label statusLabel;
     
-    
-    // CRAP CODE:
-    GLfloat MAX_HEIGHT;
+
+    // GameModel
+    GameModel* gameModel;
+    WaitableEvent* renderWaitable;
+    WaitableEvent* coreEngineWaitable;
     
 };

@@ -22,17 +22,8 @@ public:
     {
         setOpaque(false);
         
-//        addAndMakeVisible(healthBar);
-//        healthBar.setRange(0, 10, 1.0);
-        
-        resetButton.addListener(this);
-        
-        resetButton.setButtonText("Reset");
-        addAndMakeVisible(resetButton);
-        
-        heightSlider.setRange (0, 1.0f);
-        heightSlider.setSliderStyle(Slider::SliderStyle::LinearBarVertical);
-        addAndMakeVisible(heightSlider);
+        addAndMakeVisible(healthBar);
+        healthBar.setRange(0, 10, 1.0);
     }
     
     ~GameHUD()
@@ -56,50 +47,28 @@ public:
         const int healthBarH = h * 0.9;
         const int margin = 20;
         
-        //healthBar.setBounds(margin, (h - healthBarH) / 2, healthBarW, healthBarH);
-        resetButton.setBounds (w - 120, margin, 100, 50);
-        heightSlider.setBounds(margin, (h - healthBarH) / 2, healthBarW, healthBarH);
+        healthBar.setBounds(margin, (h - healthBarH) / 2, healthBarW, healthBarH);
     }
     
-    // Crazy hacky thing that should not be done for the actual engine wow.
+    /** Consider getting rid of this ...
+        we must hash out a messageing system.
+        Maybe we register some MessageCenter that registers a bunch of listeners
+        like a button and maps out GameCommands to do based on those.
+     */
     void buttonClicked (Button* button) override
     {
-        if (button == &resetButton)
-        {
-            (*gameObjects)[0]->translate(0.0f, 0.0f);
-            (*gameObjects)[1]->translate(1.3f, 1.0f);
-            (*gameObjects)[2]->translate(0.0f, 1.0f);
-            (*gameObjects)[3]->translate(-0.3f, 1.0f);
-        }
+
     }
     
-    void takeThisMagicalPointer (OwnedArray<GameObject> & gameObjects, WorldPhysics & wrld)
-    {
-        this->gameObjects = &gameObjects;
-        this->wrld = &wrld;
-    }
-    
+    /** Consider getting rid of this ... 
+        we must hash out a messageing system.
+     */
     void changeListenerCallback (ChangeBroadcaster *source) override
     {
-        heightSlider.setValue(*MAX_HEIGHT);
-    }
     
-    void setMaxHeightPointer (GLfloat * ht)
-    {
-        MAX_HEIGHT = ht;
     }
     
     
 private:
-    //HealthBar healthBar;
-    TextButton resetButton;
-    Slider heightSlider;
-
-    // My magic evil pointers that need to be taken away
-    OwnedArray<GameObject> * gameObjects;
-    WorldPhysics * wrld;
-    
-    GLfloat * MAX_HEIGHT;
-    
-    
+    HealthBar healthBar;
 };

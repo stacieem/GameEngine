@@ -93,16 +93,46 @@ public:
     
 private:
     
-    // GLAttributes
-    GLuint VBO; // The ID of the OpenGL Vertex buffer that has been registered
+    // Physical Position =======================================================
     
     OwnedArray<Vector3D<GLfloat>> vertices; // The vertices from the origin
     ScopedPointer<GLfloat> glVertices;
-    
+
     Vector3D<GLfloat> position;
     //Matrix3D<GLfloat> transformations;
     
+    // GLAttributes
+    GLuint VBO; // The ID of the OpenGL Vertex buffer that has been registered
+    
+    
     PhysicsProperties physicsProperties;
+    
+    
+//    AudioFileList files;
+//    std::map<> actionToAudioMap;
+//    
+//    AnimationList animations;
+//    std::map<> actionToAnimationMap;
+    
+    // Someone setting up a peice of audio to be triggered by an action:
+    // actionToAudioMap.map(files[0], IN_RANGE_ACTION);
+    // actionToAudioMap.map(files[1], COLLISION_ACTION);
+    // actionToAudioMap.map(files[1], INTERACTION_ACTION);
+    //
+    // actionToAnimationMap.map (animations[0], IN_RANGE_ACTION);
+    //
+    // Then the corresponding audio is called in the actionTriggered calback in
+    //  this object:
+    //
+    //  void actionTriggered (actionId) {
+    //
+    //      playAudio (actionToAudioMap.get(actionId));
+    //      startAnimaction (actionToAnimationMap.get(actionId));
+    //      // etc for all other things to do when an action is triggered . . .
+    // }
+    
+    
+    
     
     //Vector3D<GLfloat> color;
     

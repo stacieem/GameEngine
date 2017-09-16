@@ -21,7 +21,7 @@
 		4B4270A247035B1DA39D26A5 /* include_juce_cryptography.mm in Sources */ = {isa = PBXBuildFile; fileRef = 3830C1496629F66A0C633D7B /* include_juce_cryptography.mm */; };
 		4F66DEA667F5E5A8C774E67A /* include_juce_core.mm in Sources */ = {isa = PBXBuildFile; fileRef = E0BF831B1159FAC3D28C9DF0 /* include_juce_core.mm */; };
 		578E7B511F6241EA0044B799 /* Main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 578E7B4C1F6241EA0044B799 /* Main.cpp */; };
-		578E7B521F6241EA0044B799 /* MainComponent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 578E7B4D1F6241EA0044B799 /* MainComponent.cpp */; };
+		578E7B521F6241EA0044B799 /* CoreEngine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 578E7B4D1F6241EA0044B799 /* CoreEngine.cpp */; };
 		629F7C4B69186145DA2B79A5 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 36FF978BDABB7DF5E6415EE2 /* OpenGL.framework */; };
 		8871A9DC0D6846046D9550CC /* include_juce_gui_extra.mm in Sources */ = {isa = PBXBuildFile; fileRef = 2AC4989BD02C83183C7D3828 /* include_juce_gui_extra.mm */; };
 		95779F8198F6CE6C912458C2 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 440305AD02F736201CF66AF5 /* CoreMIDI.framework */; };
@@ -61,10 +61,12 @@
 		578E7B4A1F6241EA0044B799 /* GameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameView.h; path = ../../Source/GameView.h; sourceTree = "<group>"; };
 		578E7B4B1F6241EA0044B799 /* HealthBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HealthBar.h; path = ../../Source/HealthBar.h; sourceTree = "<group>"; };
 		578E7B4C1F6241EA0044B799 /* Main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Main.cpp; path = ../../Source/Main.cpp; sourceTree = "<group>"; };
-		578E7B4D1F6241EA0044B799 /* MainComponent.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MainComponent.cpp; path = ../../Source/MainComponent.cpp; sourceTree = "<group>"; };
-		578E7B4E1F6241EA0044B799 /* MainComponent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainComponent.h; path = ../../Source/MainComponent.h; sourceTree = "<group>"; };
+		578E7B4D1F6241EA0044B799 /* CoreEngine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CoreEngine.cpp; path = ../../Source/CoreEngine.cpp; sourceTree = "<group>"; };
+		578E7B4E1F6241EA0044B799 /* CoreEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CoreEngine.h; path = ../../Source/CoreEngine.h; sourceTree = "<group>"; };
 		578E7B4F1F6241EA0044B799 /* PhysicsProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhysicsProperties.h; path = ../../Source/PhysicsProperties.h; sourceTree = "<group>"; };
 		578E7B501F6241EA0044B799 /* WorldPhysics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WorldPhysics.h; path = ../../Source/WorldPhysics.h; sourceTree = "<group>"; };
+		57CB498B1F6C62A000E03F1D /* GameLogic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameLogic.h; path = ../../Source/GameLogic.h; sourceTree = "<group>"; };
+		57CB49901F6C637600E03F1D /* GameModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameModel.h; path = ../../Source/GameModel.h; sourceTree = "<group>"; };
 		5BA064D2FF4E47F6DF098CA3 /* juce_graphics */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_graphics; path = ../../../JUCE/modules/juce_graphics; sourceTree = SOURCE_ROOT; };
 		5D1FC676694048DAC21CAA6A /* include_juce_audio_formats.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_formats.mm; path = ../../JuceLibraryCode/include_juce_audio_formats.mm; sourceTree = SOURCE_ROOT; };
 		611569D78603F94E278B2487 /* include_juce_audio_processors.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_processors.mm; path = ../../JuceLibraryCode/include_juce_audio_processors.mm; sourceTree = SOURCE_ROOT; };
@@ -134,15 +136,17 @@
 		1FC73B7FD3BD8137D94E09A8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				57CB49901F6C637600E03F1D /* GameModel.h */,
+				578E7B4A1F6241EA0044B799 /* GameView.h */,
+				57CB498B1F6C62A000E03F1D /* GameLogic.h */,
+				578E7B4E1F6241EA0044B799 /* CoreEngine.h */,
+				578E7B4D1F6241EA0044B799 /* CoreEngine.cpp */,
 				578E7B461F6241EA0044B799 /* GameHUD.h */,
 				578E7B471F6241EA0044B799 /* GameHUDDataModel.h */,
 				578E7B481F6241EA0044B799 /* GameHUDElement.h */,
 				578E7B491F6241EA0044B799 /* GameObject.h */,
-				578E7B4A1F6241EA0044B799 /* GameView.h */,
 				578E7B4B1F6241EA0044B799 /* HealthBar.h */,
 				578E7B4C1F6241EA0044B799 /* Main.cpp */,
-				578E7B4D1F6241EA0044B799 /* MainComponent.cpp */,
-				578E7B4E1F6241EA0044B799 /* MainComponent.h */,
 				578E7B4F1F6241EA0044B799 /* PhysicsProperties.h */,
 				578E7B501F6241EA0044B799 /* WorldPhysics.h */,
 			);
@@ -334,7 +338,7 @@
 				A581A3D6EEE6ACF1152A0E57 /* include_juce_data_structures.mm in Sources */,
 				279DDA55F777E8B887408E16 /* include_juce_events.mm in Sources */,
 				578E7B511F6241EA0044B799 /* Main.cpp in Sources */,
-				578E7B521F6241EA0044B799 /* MainComponent.cpp in Sources */,
+				578E7B521F6241EA0044B799 /* CoreEngine.cpp in Sources */,
 				1BC3FAC9F474E24FFCB33887 /* include_juce_graphics.mm in Sources */,
 				116DD69DF66DD859D6A8029B /* include_juce_gui_basics.mm in Sources */,
 				8871A9DC0D6846046D9550CC /* include_juce_gui_extra.mm in Sources */,
