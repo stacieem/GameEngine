@@ -66,10 +66,10 @@ public:
     
     /** Get the VBO for the object.
      */
-    GLuint & getVBO()
-    {
-        return VBO;
-    }
+//    GLuint & getVBO()
+//    {
+//        return VBO;
+//    }
     
     void translate (GLfloat x, GLfloat y)
     {
@@ -100,9 +100,6 @@ private:
 
     Vector3D<GLfloat> position;
     //Matrix3D<GLfloat> transformations;
-    
-    // GLAttributes
-    GLuint VBO; // The ID of the OpenGL Vertex buffer that has been registered
     
     
     PhysicsProperties physicsProperties;

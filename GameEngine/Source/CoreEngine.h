@@ -62,11 +62,7 @@ private:
     GameModel * gameModelCurrentFrame;
     GameModel * gameModelSwapFrameA;
     GameModel * gameModelSwapFrameB;
-    
-    GameModel ** logicSwapFrameContainer;
-    GameModel ** renderSwapFrameContainer;
 
-    
     // Thread Synchronization between CoreEngine, GameView, and GameLogic
     WaitableEvent logicWaitable;
     WaitableEvent renderWaitable;

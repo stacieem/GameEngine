@@ -41,6 +41,7 @@ public:
                     
         // GameView Variables
         isEnabled = false;
+        objectVBOsSize = 0;
         
         setOpaque(true);
     }
@@ -82,10 +83,12 @@ public:
         //openGLContext.extensions.glGenBuffers (1, &EBO); // Element Buffer Object
         
         // Initialize Object Buffers
-                                // FIX THISSS
-        for (auto & gameObject : (*gameModelContainer)->getGameObjects())
+        objectVBOsSize = gameModel->getGameObjects().size();
+        objectVBOs = new GLuint [objectVBOsSize];
+        
+        for (int i = 0; i < objectVBOsSize; ++i)
         {
-            openGLContext.extensions.glGenBuffers(1, &(gameObject->getVBO()));
+            openGLContext.extensions.glGenBuffers(1, &objectVBOs[i]);
         }
         
     }
@@ -134,13 +137,15 @@ public:
         
         
         // Draw all the game objects
-        for (auto & gameObject : (*gameModelContainer)->getGameObjects())
+        int i = 0;
+        for (auto & gameObject : gameModel->getGameObjects())
         {
-            openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, gameObject->getVBO());
+            openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, objectVBOs[i]);
             openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, gameObject->getSizeOfVertices(), gameObject->getVertices(), GL_DYNAMIC_DRAW);
             openGLContext.extensions.glVertexAttribPointer (0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (GLvoid*)0);
             openGLContext.extensions.glEnableVertexAttribArray (0);
             glDrawArrays (GL_TRIANGLES, 0, gameObject->getNumVertices()); // For just VBO's (Vertex Buffer Objects)
+            ++i;
         }
         
         
@@ -166,21 +171,32 @@ public:
     
     
     // Custom Functions ========================================================
-    void setGameModelSwapFrame(GameModel ** gameModelSwapFrameContainer)
+    
+    /** Sets the GameModel to currently render. This is one of the frames that
+        is swapped back and forth between the GameLocic and GameView
+     */
+    void setGameModelSwapFrame(GameModel * swapFrame)
     {
-        this->gameModelContainer = gameModelSwapFrameContainer;
+        this->gameModel = swapFrame;
     }
     
-//    GameModel * getGameModelSwapFrame()
-//    {
-//        return gameModel;
-//    }
+    /** Gets the GameView's current gameModel swap frame
+     */
+    GameModel * getGameModelSwapFrame()
+    {
+        return gameModel;
+    }
     
+    /** Sets the WaitableEvent that allows the GameView to signal the CoreEngine
+     */
     void setCoreEngineWaitable(WaitableEvent * waitable)
     {
         coreEngineWaitable = waitable;
     }
     
+    /** Sets the WaitableEvent that allows the GameView to be forced to wait
+        until it is signaled by the CoreEngine
+     */
     void setRenderWaitable(WaitableEvent * waitable)
     {
         renderWaitable = waitable;
@@ -295,7 +311,8 @@ private:
     OpenGLContext openGLContext;
     ScopedPointer<OpenGLShaderProgram> shader;
     ScopedPointer<Uniforms> uniforms;
-    //GLuint VBO;
+    GLuint * objectVBOs;
+    int objectVBOsSize;
     //GLuint VAO;
     //GLuint EBO;
     
@@ -308,9 +325,8 @@ private:
     // DEBUGGING
     Label statusLabel;
     
-
     // GameModel
-    GameModel** gameModelContainer;
+    GameModel* gameModel;
     WaitableEvent* renderWaitable;
     WaitableEvent* coreEngineWaitable;
     

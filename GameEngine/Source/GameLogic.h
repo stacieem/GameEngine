@@ -14,30 +14,45 @@ public:
 	~GameLogic()
     {
         gameModelCurrentFrame = nullptr;
-        gameModelSwapFrameContainer = nullptr;
+        gameModelSwapFrame = nullptr;
 	}
 
-	void setGameModels (GameModel * curentFrame, GameModel ** swapFrameContainer)
+    /** Sets the GameModel current frame being processed for logic, and the
+        GameModel swap frame that will be swapped with the GameView to be rendered.
+     */
+	void setGameModels (GameModel * curentFrame, GameModel * swapFrame)
     {
 		gameModelCurrentFrame = curentFrame;
-		gameModelSwapFrameContainer = swapFrameContainer;
+		gameModelSwapFrame = swapFrame;
 	}
     
-//    void setGameModelSwapFrame (GameModel * swapFrame)
-//    {
-//        gameModelSwapFrame = swapFrame;
-//    }
-//    
-//    GameModel * getGameModelSwapFrame()
-//    {
-//        return gameModelSwapFrame;
-//    }
+    /** Sets the GameModel swap frame that will be processed for logic before it
+        is sent to the GameView to be rendered.
+     */
+    void setGameModelSwapFrame (GameModel * swapFrame)
+    {
+        gameModelSwapFrame = swapFrame;
+    }
+    
+    /** Returns the GameModel swap frame that the GameLogic is currently
+        processing.
+     */
+    GameModel * getGameModelSwapFrame()
+    {
+        return gameModelSwapFrame;
+    }
 
+    /** Sets the WaitableEvent for the GameLogic to signal the CoreEngine when
+        it is done processing.
+     */
 	void setCoreEngineWaitable (WaitableEvent * waitable)
     {
 		coreEngineWaitable = waitable;
 	}
 
+    /** Sets the WaitableEvent for the GameLogic to wait until the CoreEngine
+        has signaled it to go after the swap frames have been swapped.
+     */
 	void setLogicWaitable (WaitableEvent * waitable)
     {
 		logicWaitable = waitable;
@@ -74,8 +89,8 @@ private:
 			}
             
             // Process Physics
-            gameModelCurrentFrame->processWorldPhysics();   // Eventually we want to step by a given time here
-            (*gameModelSwapFrameContainer)->processWorldPhysics();      // Eventually we want to step by a given time here
+            //gameModelCurrentFrame->processWorldPhysics();   // Eventually we want to step by a given time here
+            gameModelSwapFrame->processWorldPhysics();
             
             // Update the GameModel
             // Maybe actions are triggered here ???
@@ -87,7 +102,7 @@ private:
 	}
 
 	GameModel* gameModelCurrentFrame;
-	GameModel** gameModelSwapFrameContainer;
+	GameModel* gameModelSwapFrame;
 	WaitableEvent* logicWaitable;
 	WaitableEvent* coreEngineWaitable;
 	int64 newTime;
