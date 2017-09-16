@@ -83,7 +83,7 @@ public:
         
         // Initialize Object Buffers
                                 // FIX THISSS
-        for (auto & gameObject : gameModel->getGameObjects())
+        for (auto & gameObject : (*gameModelContainer)->getGameObjects())
         {
             openGLContext.extensions.glGenBuffers(1, &(gameObject->getVBO()));
         }
@@ -134,7 +134,7 @@ public:
         
         
         // Draw all the game objects
-        for (auto & gameObject : gameModel->getGameObjects())
+        for (auto & gameObject : (*gameModelContainer)->getGameObjects())
         {
             openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, gameObject->getVBO());
             openGLContext.extensions.glBufferData (GL_ARRAY_BUFFER, gameObject->getSizeOfVertices(), gameObject->getVertices(), GL_DYNAMIC_DRAW);
@@ -166,15 +166,15 @@ public:
     
     
     // Custom Functions ========================================================
-    void setGameModelSwapFrame(GameModel * gameModelSwapFrame)
+    void setGameModelSwapFrame(GameModel ** gameModelSwapFrameContainer)
     {
-        this->gameModel = gameModelSwapFrame;
+        this->gameModelContainer = gameModelSwapFrameContainer;
     }
     
-    GameModel * getGameModelSwapFrame()
-    {
-        return gameModel;
-    }
+//    GameModel * getGameModelSwapFrame()
+//    {
+//        return gameModel;
+//    }
     
     void setCoreEngineWaitable(WaitableEvent * waitable)
     {
@@ -310,7 +310,7 @@ private:
     
 
     // GameModel
-    GameModel* gameModel;
+    GameModel** gameModelContainer;
     WaitableEvent* renderWaitable;
     WaitableEvent* coreEngineWaitable;
     

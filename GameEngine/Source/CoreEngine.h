@@ -59,9 +59,13 @@ private:
     //      gameModelSwapFrame) while GameRenderer renders the last frame, and
     //      then they swap frames and repeat.
     //
-    ScopedPointer<GameModel> gameModelCurrentFrame;
-    ScopedPointer<GameModel> gameModelSwapFrameA;
-    ScopedPointer<GameModel> gameModelSwapFrameB;
+    GameModel * gameModelCurrentFrame;
+    GameModel * gameModelSwapFrameA;
+    GameModel * gameModelSwapFrameB;
+    
+    GameModel ** logicSwapFrameContainer;
+    GameModel ** renderSwapFrameContainer;
+
     
     // Thread Synchronization between CoreEngine, GameView, and GameLogic
     WaitableEvent logicWaitable;

@@ -52,7 +52,7 @@ public:
 	
 	~PhysicsProperties()
 	{
-
+    
 	}
 
 	b2Body* getBody()

@@ -14,24 +14,24 @@ public:
 	~GameLogic()
     {
         gameModelCurrentFrame = nullptr;
-        gameModelSwapFrame = nullptr;
+        gameModelSwapFrameContainer = nullptr;
 	}
 
-	void setGameModels (GameModel * curentFrame, GameModel * swapFrame)
+	void setGameModels (GameModel * curentFrame, GameModel ** swapFrameContainer)
     {
 		gameModelCurrentFrame = curentFrame;
-		gameModelSwapFrame = swapFrame;
+		gameModelSwapFrameContainer = swapFrameContainer;
 	}
     
-    void setGameModelSwapFrame (GameModel * swapFrame)
-    {
-        gameModelSwapFrame = swapFrame;
-    }
-    
-    GameModel * getGameModelSwapFrame()
-    {
-        return gameModelSwapFrame;
-    }
+//    void setGameModelSwapFrame (GameModel * swapFrame)
+//    {
+//        gameModelSwapFrame = swapFrame;
+//    }
+//    
+//    GameModel * getGameModelSwapFrame()
+//    {
+//        return gameModelSwapFrame;
+//    }
 
 	void setCoreEngineWaitable (WaitableEvent * waitable)
     {
@@ -75,7 +75,7 @@ private:
             
             // Process Physics
             gameModelCurrentFrame->processWorldPhysics();   // Eventually we want to step by a given time here
-            gameModelSwapFrame->processWorldPhysics();      // Eventually we want to step by a given time here
+            (*gameModelSwapFrameContainer)->processWorldPhysics();      // Eventually we want to step by a given time here
             
             // Update the GameModel
             // Maybe actions are triggered here ???
@@ -87,7 +87,7 @@ private:
 	}
 
 	GameModel* gameModelCurrentFrame;
-	GameModel* gameModelSwapFrame;
+	GameModel** gameModelSwapFrameContainer;
 	WaitableEvent* logicWaitable;
 	WaitableEvent* coreEngineWaitable;
 	int64 newTime;

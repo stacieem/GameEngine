@@ -29,8 +29,12 @@ CoreEngine::CoreEngine() : Thread("CoreEngine")
     gameView.setRenderWaitable (&renderWaitable);
     
     // Setup threads to hold pointers to GameModel frames
-    gameLogic.setGameModels (gameModelCurrentFrame, gameModelSwapFrameA);
-    gameView.setGameModelSwapFrame (gameModelSwapFrameB);
+   
+    logicSwapFrameContainer = &gameModelSwapFrameA;
+    renderSwapFrameContainer = &gameModelSwapFrameB;
+
+    gameLogic.setGameModels (gameModelCurrentFrame, logicSwapFrameContainer);
+    gameView.setGameModelSwapFrame (renderSwapFrameContainer);
     
     // Start the GameLogic thread and the GameView's renderer
     gameLogic.startThread();
@@ -49,6 +53,10 @@ CoreEngine::~CoreEngine()
     gameView.setOpenGLEnabled (false);
     gameLogic.stopThread(500);
     this->stopThread(500);
+    
+    delete gameModelCurrentFrame;
+    delete gameModelSwapFrameA;
+    delete gameModelSwapFrameB;
 }
 
 void CoreEngine::paint (Graphics& g)
@@ -70,9 +78,19 @@ void CoreEngine::resized()
  */
 void CoreEngine::swapFramesBetweenLogicAndRender()
 {
-    GameModel * tempLogicGameModel = gameLogic.getGameModelSwapFrame();
-    gameLogic.setGameModelSwapFrame (gameView.getGameModelSwapFrame());
-    gameView.setGameModelSwapFrame (tempLogicGameModel);
+//    GameModel * tempLogicGameModel = gameLogic.getGameModelSwapFrame();
+//    gameLogic.setGameModelSwapFrame (gameView.getGameModelSwapFrame());
+//    gameView.setGameModelSwapFrame (tempLogicGameModel);
+    
+    if (*logicSwapFrameContainer == gameModelSwapFrameA) {
+        *logicSwapFrameContainer = gameModelSwapFrameB;
+        *renderSwapFrameContainer = gameModelSwapFrameA;
+    } else {
+        *logicSwapFrameContainer = gameModelSwapFrameA;
+        *renderSwapFrameContainer = gameModelSwapFrameB;
+    }
+
+    
 }
 
 /** Signals both the GameLogic and GameView renderer to start, then swaps their
