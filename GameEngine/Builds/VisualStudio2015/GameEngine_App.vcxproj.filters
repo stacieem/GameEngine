@@ -4079,6 +4079,9 @@
     <ClInclude Include="..\..\Source\WorldPhysics.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\InputBindings.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt">

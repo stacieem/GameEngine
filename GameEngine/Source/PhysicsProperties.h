@@ -1,3 +1,9 @@
+//
+//  PhysicsProperties
+//
+//  Created by Trystan Jasperson.
+//
+//
 #pragma once
 
 

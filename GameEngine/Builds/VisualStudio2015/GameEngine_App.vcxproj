@@ -1842,6 +1842,7 @@
     <ClInclude Include="..\..\Source\GameObject.h" />
     <ClInclude Include="..\..\Source\GameView.h" />
     <ClInclude Include="..\..\Source\HealthBar.h" />
+    <ClInclude Include="..\..\Source\InputBindings.h" />
     <ClInclude Include="..\..\Source\MainComponent.h" />
     <ClInclude Include="..\..\..\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h" />
     <ClInclude Include="..\..\..\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.h" />

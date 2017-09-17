@@ -12,6 +12,7 @@
 #include "GameHUD.h"
 #include "GameObject.h"
 #include "WorldPhysics.h"
+#include "InputBindings.h"
 
 /** Represents the view of any game being rendered.
     It includes an OpenGL Renderer to render either 2D or 3D graphics and a
@@ -31,7 +32,7 @@ public:
         
         openGLContext.setRenderer(this);
         openGLContext.attachTo(*this);
-        
+
         addAndMakeVisible(gameHUD);
         gameHUD.takeThisMagicalPointer(gameObjects, wrld);
         
@@ -52,8 +53,13 @@ public:
 		gameObjects.getLast()->getPhysicsProperties().resizeCollisionBox(.3f,.3f);
         // GameView Variables
         isEnabled = false;
-        
         setOpaque(true);
+
+		//setUp listener for key presses
+		addKeyListener(&bindings);
+		addMouseListener(&bindings, true);
+		bindings.setWantsKeyboardFocus(true);
+		bindings.setInfluence(getGameObj(0));
         
         
         // CRAP CODE:
@@ -218,7 +224,9 @@ public:
     void paint(Graphics & g) override
     {}
     
-    
+	GameObject* getGameObj(int index) {
+		return gameObjects[index];
+	}
 private:
     
     //==========================================================================
@@ -335,6 +343,9 @@ private:
     OwnedArray<GameObject> gameObjects;
     WorldPhysics wrld;
     
+	//Bindings and Mapping
+	InputBindings bindings;
+
     // JUCE Components
     GameHUD gameHUD;
     

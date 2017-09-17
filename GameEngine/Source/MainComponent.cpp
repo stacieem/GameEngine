@@ -19,15 +19,42 @@ MainContentComponent::MainContentComponent()
     //button.addListener (this);
     
     addAndMakeVisible (gameView);
+
     gameView.setOpenGLEnabled (true);
-    
+	//bindings.setWantsKeyboardFocus(true);
+	//set bindings class to intercept keyPresses
     setSize (600, 400);
 }
 
 MainContentComponent::~MainContentComponent()
 {
 }
+// This is meant to be temporary until implemented and properly
+// attached with another class
+/*bool MainContentComponent::keyPressed(const KeyPress &key)
+{
+	int objIndex = 0;
+	DBG(key.getTextCharacter());
+	juce_wchar c = key.getTextCharacter();
+	if (gameView.getGameObj(objIndex) != NULL) {
+		GameObject* obj = gameView.getGameObj(objIndex);
 
+		switch (c) {
+		case 'w': obj->getPhysicsProperties().setImpulse(0.0f, 8.0f);
+			break;
+		case 's':obj->getPhysicsProperties().setImpulse(0.0f, -8.0f);
+			break;
+		case 'a':obj->getPhysicsProperties().setImpulse(-2.0f, 0.0f);
+			break;
+		case 'd':obj->getPhysicsProperties().setImpulse(2.0f, 0.0f);
+			break;
+		default:
+			break;
+		}
+	}
+	return 0;
+}
+*/
 void MainContentComponent::paint (Graphics& g)
 {
     
