@@ -55,7 +55,7 @@ public:
 	
 	~PhysicsProperties()
 	{
-
+    
 	}
 	/// body accessors and modifiers
 

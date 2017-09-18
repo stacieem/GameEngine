@@ -9,7 +9,7 @@
 */
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "MainComponent.h"
+#include "CoreEngine.h"
 
 
 //==============================================================================
@@ -56,7 +56,7 @@ public:
     //==============================================================================
     /*
         This class implements the desktop window that contains an instance of
-        our MainContentComponent class.
+        our CoreEngine class.
     */
     class MainWindow    : public DocumentWindow
     {
@@ -67,7 +67,7 @@ public:
                                                     DocumentWindow::allButtons)
         {
             setUsingNativeTitleBar (true);
-            setContentOwned (new MainContentComponent(), true);
+            setContentOwned (new CoreEngine(), true);
 
             setResizable (true, true);
             centreWithSize (getWidth(), getHeight());
