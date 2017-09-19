@@ -2112,6 +2112,9 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_video.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\CoreEngine.cpp">
+      <Filter>GameEngine\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h">
@@ -4073,7 +4076,19 @@
     <ClInclude Include="..\..\Source\WorldPhysics.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\InputBindings.h">
+    <ClInclude Include="..\..\Source\CoreEngine.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\InputManager.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\GameLogic.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\PlayerObject.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\GameModel.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
   </ItemGroup>

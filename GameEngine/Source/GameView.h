@@ -12,7 +12,6 @@
 #include "GameHUD.h"
 #include "GameObject.h"
 #include "WorldPhysics.h"
-#include "InputBindings.h"
 #include "GameModel.h"
 
 /** Represents the view of any game being rendered.
@@ -43,10 +42,6 @@ public:
         statusLabel.toBack();
 
 
-//setUp listener for key presses
-addKeyListener(&bindings);
-addMouseListener(&bindings, true);
-bindings.setWantsKeyboardFocus(true);
         // GameView Variables
         isEnabled = false;
         objectVBOsSize = 0;
@@ -328,11 +323,7 @@ private:
     
     // Game Data Model
     OwnedArray<GameObject> gameObjects;
-    WorldPhysics wrld;
     
-	//Bindings and Mapping
-	InputBindings bindings;
-
     // JUCE Components
     GameHUD gameHUD;
     

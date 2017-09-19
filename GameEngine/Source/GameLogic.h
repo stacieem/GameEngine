@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "InputManager.h"
 
 /** Processes the logic of the game. Started by the Core Engine and manipulates
     the GameDataModel to be rendered for the next frame.
@@ -9,7 +10,10 @@
 class GameLogic : public Thread
 {
 public:
-	GameLogic() : Thread("GameLogic") {}
+	GameLogic() : Thread("GameLogic"), world() { 
+		commands = new InputManager();
+		oldCommands = commands->getCommands();
+	}
 
 	~GameLogic()
     {
@@ -59,6 +63,13 @@ public:
 
 	}
 
+	/* Sets the InputManager to match the values of the CoreEngine 
+		InputManager
+	*/
+	void setCommands(InputManager* inputMan) {
+		commands = inputMan;
+	}
+
 private:
 
 
@@ -73,6 +84,25 @@ private:
         {
 			// Wait for CoreEngine to signal() this loop
 			logicWaitable->wait();
+
+			//locks in the commands for this iteration
+			newCommands = commands->getCommands();
+
+			if (newCommands[0] ) {
+				gameModelCurrentFrame->getPlayer()->moveUp();
+			}
+			if (newCommands[1] ) {
+				gameModelCurrentFrame->getPlayer()->moveDown();
+			}
+			if (newCommands[2]) {
+				gameModelCurrentFrame->getPlayer()->moveLeft();
+			}
+			if (newCommands[3] ) {
+				gameModelCurrentFrame->getPlayer()->moveRight();
+			}
+			if (newCommands[4]) {
+				gameModelCurrentFrame->getPlayer()->reset();
+			}
 
             // Calculate time
 			newTime = Time::currentTimeMillis();
@@ -90,12 +120,17 @@ private:
             
             // Process Physics
             //gameModelCurrentFrame->processWorldPhysics();   // Eventually we want to step by a given time here
-            gameModelSwapFrame->processWorldPhysics();
-            
+            gameModelCurrentFrame->processWorldPhysics();
+
+			//copy from currentFrame to swapFrame
+			gameModelSwapFrame = gameModelCurrentFrame;
+
             // Update the GameModel
             // Maybe actions are triggered here ???
             // IMPLEMENT . . .
-
+			oldCommands = newCommands;
+			commands->reset();
+			//commands->reset();
 			// Notify CoreEngine logic is done
 			coreEngineWaitable->signal();
 		}
@@ -105,8 +140,16 @@ private:
 	GameModel* gameModelSwapFrame;
 	WaitableEvent* logicWaitable;
 	WaitableEvent* coreEngineWaitable;
+	//input handling
+	InputManager* commands;
+	std::vector<bool> oldCommands;
+	std::vector<bool> newCommands;
+
 	int64 newTime;
 	int64 currentTime;
 	int64 deltaTime;
 	int64 gameLoopTime;
+
+	//Physics World
+	WorldPhysics world;
 };

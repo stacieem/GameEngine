@@ -99,7 +99,6 @@ public:
     {
         return position.y;
     }
-    
 private:
     
     // Physical Position =======================================================

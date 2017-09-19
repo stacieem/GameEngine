@@ -6,7 +6,7 @@
 #include "GameView.h"
 #include "GameModel.h"
 #include "GameLogic.h"
-
+#include "InputManager.h"
 
 /** Represents the core of the entire game engine, including the game's data
     models: GameModels, the game's rendered view: GameView, and the game's
@@ -39,7 +39,7 @@ private:
     //==========================================================================
     GameView gameView;
     GameLogic gameLogic;
-    
+	InputManager* inputManager;
     // Game Models - each model represents a frame of state of the game.
     //
     //      GameLogic is always in charge of processing the gameModelCurrentFrame

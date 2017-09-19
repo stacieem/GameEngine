@@ -219,7 +219,10 @@ public:
 	{
 		body->ApplyForce(b2Vec2(x, y), body->GetWorldCenter());
 	}
-
+	b2Vec2 getLinearVel() 
+	{
+		return body->GetLinearVelocity();
+	}
 	/**************************************************************************
 	*
 	*	set an immediate Force to act on the body with respect to the x, y axis

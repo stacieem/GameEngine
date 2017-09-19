@@ -15,7 +15,7 @@ CoreEngine::CoreEngine() : Thread("CoreEngine")
     // Setup JUCE Components & Windowing
     addAndMakeVisible (gameView);
     setSize (600, 400);
-    
+	inputManager = new InputManager();
     // Create GameModels in memory
     gameModelCurrentFrame = new GameModel();
     gameModelSwapFrameA = new GameModel();
@@ -40,6 +40,20 @@ CoreEngine::CoreEngine() : Thread("CoreEngine")
     gameLogic.startThread();
     gameView.setOpenGLEnabled (true);
     
+	// setup inputManager Listeners
+	getTopLevelComponent()->addKeyListener(inputManager);
+	getTopLevelComponent()->addMouseListener(inputManager, true);
+
+	//add the commands!!!!!
+	KeyPress akey('w');
+	inputManager->addCommand((juce_wchar)'w');
+	inputManager->addCommand((juce_wchar)'s');
+	inputManager->addCommand((juce_wchar)'a');
+	inputManager->addCommand((juce_wchar)'d');
+	inputManager->addCommand((juce_wchar)'r');
+
+	gameLogic.setCommands(inputManager);
+
     this->startThread();
 }
 

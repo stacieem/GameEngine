@@ -1,6 +1,7 @@
 #pragma once
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "GameObject.h"
+#include "PlayerObject.h"
 #include "WorldPhysics.h"
 
 /** Represents the data model for a game. This includes all Levels, Scenes, 
@@ -13,7 +14,8 @@ public:
 
 	GameModel()
     {
-		gameObjects.add (new GameObject(worldPhysics));
+		player = new PlayerObject(worldPhysics);
+		gameObjects.add(player);
 	}
     
 	~GameModel()
@@ -33,8 +35,9 @@ public:
     {
         worldPhysics.Step();
     }
-
-
+	PlayerObject* getPlayer() {
+		return player;
+	}
 private:
     
     // The commands that a user is allowed to use in the game
@@ -43,7 +46,7 @@ private:
     // Eventually this will be encapsulated in Scenes and further those scenes
     // will be encapsulated in Levels
     OwnedArray<GameObject> gameObjects;
-    
+	PlayerObject* player;
     //OwnedArray<GameObject> gameObjects;
     
     WorldPhysics worldPhysics;

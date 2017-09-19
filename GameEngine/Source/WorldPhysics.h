@@ -16,7 +16,7 @@ public:
 	{
 		velocityIterations = 2.0f;
 		positionIterations = 6.0f;
-		timeStep = 1.0f / 60.0f;
+		timeStep = 1.0f / 15.0f;
         
         /*
         create the body first, giving it a position
