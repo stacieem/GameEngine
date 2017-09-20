@@ -1837,6 +1837,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\CoreEngine.h" />
+    <ClInclude Include="..\..\Source\enumCMD.h" />
     <ClInclude Include="..\..\Source\GameHUD.h" />
     <ClInclude Include="..\..\Source\GameHUDDataModel.h" />
     <ClInclude Include="..\..\Source\GameHUDElement.h" />

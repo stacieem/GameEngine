@@ -14,15 +14,16 @@ public:
 
 	GameModel()
     {
-		player = new PlayerObject(worldPhysics);
-		gameObjects.add(player);
+		player1 = new PlayerObject(worldPhysics);
+		gameObjects.add(player1);
+		player2 = new PlayerObject(worldPhysics);
+		gameObjects.add(player2);
 	}
     
 	~GameModel()
     {
         
 	}
-    
     OwnedArray<GameObject> & getGameObjects()
     {
         return gameObjects;
@@ -31,12 +32,24 @@ public:
     /** Processes an physics in the world for a given frame in the physics
         timeline
      */
-    void processWorldPhysics()
+    void processWorldPhysics(int64 timeStep)
     {
-        worldPhysics.Step();
+
+		if ((float32)timeStep < worldPhysics.getTimeStep()) {
+			worldPhysics.Step((float32)timeStep);
+		}
+		else
+		{
+			worldPhysics.Step();
+		}
     }
-	PlayerObject* getPlayer() {
-		return player;
+	PlayerObject* getPlayer1() {
+		return player1;
+	}
+
+
+	PlayerObject* getPlayer2() {
+		return player2;
 	}
 private:
     
@@ -46,7 +59,9 @@ private:
     // Eventually this will be encapsulated in Scenes and further those scenes
     // will be encapsulated in Levels
     OwnedArray<GameObject> gameObjects;
-	PlayerObject* player;
+	PlayerObject* player1;
+	PlayerObject* player2;
+
     //OwnedArray<GameObject> gameObjects;
     
     WorldPhysics worldPhysics;

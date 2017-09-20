@@ -4091,6 +4091,9 @@
     <ClInclude Include="..\..\Source\GameModel.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\enumCMD.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt">

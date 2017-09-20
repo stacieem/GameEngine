@@ -11,8 +11,7 @@ class GameLogic : public Thread
 {
 public:
 	GameLogic() : Thread("GameLogic"), world() { 
-		commands = new InputManager();
-		oldCommands = commands->getCommands();
+		inputManager = new InputManager();
 	}
 
 	~GameLogic()
@@ -67,7 +66,7 @@ public:
 		InputManager
 	*/
 	void setCommands(InputManager* inputMan) {
-		commands = inputMan;
+		inputManager = inputMan;
 	}
 
 private:
@@ -86,22 +85,51 @@ private:
 			logicWaitable->wait();
 
 			//locks in the commands for this iteration
-			newCommands = commands->getCommands();
+			inputManager->getCommands1(newCommands1);
+			for (auto & command : newCommands1)
+			{
+				switch (command)
+				{
+				case GameCommand::moveUp:
+					gameModelCurrentFrame->getPlayer1()->moveUp();
+					break;
+				case GameCommand::moveDown:
+					gameModelCurrentFrame->getPlayer1()->moveDown();
+					break;
+				case GameCommand::moveLeft:
+					gameModelCurrentFrame->getPlayer1()->moveLeft();
+					break;
+				case GameCommand::moveRight:
+					gameModelCurrentFrame->getPlayer1()->moveRight();
+					break;
+				case GameCommand::reset:
+					gameModelCurrentFrame->getPlayer1()->reset();
+					break;
+				}
+			}
 
-			if (newCommands[0] ) {
-				gameModelCurrentFrame->getPlayer()->moveUp();
-			}
-			if (newCommands[1] ) {
-				gameModelCurrentFrame->getPlayer()->moveDown();
-			}
-			if (newCommands[2]) {
-				gameModelCurrentFrame->getPlayer()->moveLeft();
-			}
-			if (newCommands[3] ) {
-				gameModelCurrentFrame->getPlayer()->moveRight();
-			}
-			if (newCommands[4]) {
-				gameModelCurrentFrame->getPlayer()->reset();
+			//locks in the commands for this iteration
+			inputManager->getCommands2(newCommands2);
+			for (auto & command : newCommands2)
+			{
+				switch (command)
+				{
+				case GameCommand::moveUp:
+					gameModelCurrentFrame->getPlayer2()->moveUp();
+					break;
+				case GameCommand::moveDown:
+					gameModelCurrentFrame->getPlayer2()->moveDown();
+					break;
+				case GameCommand::moveLeft:
+					gameModelCurrentFrame->getPlayer2()->moveLeft();
+					break;
+				case GameCommand::moveRight:
+					gameModelCurrentFrame->getPlayer2()->moveRight();
+					break;
+				case GameCommand::reset:
+					gameModelCurrentFrame->getPlayer2()->reset();
+					break;
+				}
 			}
 
             // Calculate time
@@ -120,7 +148,7 @@ private:
             
             // Process Physics
             //gameModelCurrentFrame->processWorldPhysics();   // Eventually we want to step by a given time here
-            gameModelCurrentFrame->processWorldPhysics();
+            gameModelCurrentFrame->processWorldPhysics(deltaTime);
 
 			//copy from currentFrame to swapFrame
 			gameModelSwapFrame = gameModelCurrentFrame;
@@ -128,9 +156,7 @@ private:
             // Update the GameModel
             // Maybe actions are triggered here ???
             // IMPLEMENT . . .
-			oldCommands = newCommands;
-			commands->reset();
-			//commands->reset();
+
 			// Notify CoreEngine logic is done
 			coreEngineWaitable->signal();
 		}
@@ -141,9 +167,9 @@ private:
 	WaitableEvent* logicWaitable;
 	WaitableEvent* coreEngineWaitable;
 	//input handling
-	InputManager* commands;
-	std::vector<bool> oldCommands;
-	std::vector<bool> newCommands;
+	InputManager* inputManager;
+	Array<GameCommand> newCommands1;
+	Array<GameCommand> newCommands2;
 
 	int64 newTime;
 	int64 currentTime;

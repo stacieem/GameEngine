@@ -34,7 +34,7 @@ public:
         openGLContext.attachTo(*this);
 
         addAndMakeVisible(gameHUD);
-        
+		setWantsKeyboardFocus(true);
         // Setup GUI Overlay Label: Status of Shaders, compiler errors, etc.
         addAndMakeVisible (statusLabel);
         statusLabel.setJustificationType (Justification::topLeft);
@@ -104,6 +104,7 @@ public:
     
     void renderOpenGL() override
     {
+
         jassert (OpenGLHelpers::isContextActive());
         
         // Wait for CoreEngine to signal() GameView
@@ -131,9 +132,9 @@ public:
         {
             // Scale and view matrix
             Matrix3D<float> scale;
-            scale.mat[0] = 2.0;
-            scale.mat[5] = 2.0;
-            scale.mat[10] = 2.0;
+            scale.mat[0] = .5;
+            scale.mat[5] = .5;
+            scale.mat[10] = .5;
             Matrix3D<float> finalMatrix = scale * getViewMatrix();
             uniforms->viewMatrix->setMatrix4 (finalMatrix.mat, 1, false);
         }

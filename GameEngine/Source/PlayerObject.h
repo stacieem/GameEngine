@@ -9,7 +9,7 @@ public:
 	PlayerObject(WorldPhysics & worldPhysics) : GameObject(worldPhysics)
 	{
 		xVel = 2.0f;
-		yVel = 6.0f;
+		yVel = 8.0f;
 		
 		getPhysicsProperties().setFriction(0.6f);
 		linearDamp = 0.5f;

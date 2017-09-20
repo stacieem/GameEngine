@@ -10,6 +10,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include <vector>
 #include <map>
+#include "enumCMD.h"
 
 /*
 	Abstract button assignments to keep magical indeces out of this
@@ -17,40 +18,59 @@
 class InputManager : public Component, public KeyListener, public MouseListener {
 public:
 
-	InputManager(){}
+	InputManager(){	}
 
 	bool keyPressed(const KeyPress& key, Component* originatingComponent) {
-		if (keyboardBinding.find(key.getTextCharacter()) != keyboardBinding.end()) {
-			commands[keyboardBinding[key.getTextCharacter()]] = true;
+		if ((keyboardBinding.find(key.getTextCharacter()) != keyboardBinding.end())) {
+			if (commands.indexOf(keyboardBinding[key.getTextCharacter()]) == -1) {
+				commands.add(keyboardBinding[key.getTextCharacter()]);
+			}
 		}
-		
+
+		if ((keyboardBinding2.find(key.getTextCharacter()) != keyboardBinding2.end())) {
+			if (commands2.indexOf(keyboardBinding2[key.getTextCharacter()]) == -1) {
+				commands2.add(keyboardBinding2[key.getTextCharacter()]);
+			}
+		}
 		return 0;
 	}
 
 	// addCommands for a keyboard, might want to pass diff param for other inputs
-	void addCommand(juce_wchar key) {
-		commands.push_back(false);
-		keyboardBinding[key] = commands.size() - 1;
+	void addCommand(KeyPress key, GameCommand command) {
+		if (keyboardBinding.find(key.getKeyCode()) == keyboardBinding.end()) {
+			keyboardBinding[key.getKeyCode()] = command;
+		}
 	}
-	
-	//reset player inputs for next frame
-	void reset() {
-		for (auto cmd : commands){
-			cmd = false;
+	// addCommands for a keyboard, might want to pass diff param for other inputs
+	void addCommand2(KeyPress key, GameCommand command) {
+		if (keyboardBinding2.find(key.getKeyCode()) == keyboardBinding2.end()) {
+			keyboardBinding2[key.getKeyCode()] = command;
 		}
 	}
 	// give access to commands bool vector
-	std::vector<bool> getCommands() {
-		return commands;
+	void getCommands1(Array<GameCommand>& newCommands) {
+		newCommands = commands;
+		commands.clear();
 	}
-
+	// give access to commands bool vector
+	void getCommands2(Array<GameCommand>& newCommands) {
+		newCommands = commands2;
+		commands2.clear();
+	}
 	// mouse has limited controls, looking at possible hard code.
 	void mouseDown(const MouseEvent& event){
 		//forcibly reset bit position 5 in commands
-		commands[4] = true;
+		if (commands.indexOf(GameCommand::reset) == -1) {
+			commands.add(GameCommand::reset);
+		}
+		if (commands2.indexOf(GameCommand::reset) == -1) {
+			commands2.add(GameCommand::reset);
+		}
 	}
 
 private:
-	std::map<juce_wchar, int> keyboardBinding;
-	std::vector<bool> commands;
+	std::map<juce_wchar, GameCommand> keyboardBinding;
+	std::map<juce_wchar, GameCommand> keyboardBinding2;
+	Array<GameCommand> commands;
+	Array<GameCommand> commands2;
 };
