@@ -24,11 +24,11 @@ public:
         // Default vertices
         vertices.add(new Vector3D<GLfloat>(0.5f,   0.5f,  0.0f));
         vertices.add(new Vector3D<GLfloat>(0.5f,  -0.5f,  0.0f));
+
         vertices.add(new Vector3D<GLfloat>(-0.5f, -0.5f,  0.0f));
         vertices.add(new Vector3D<GLfloat>(-0.5f,   0.5f,  0.0f));
-        vertices.add(new Vector3D<GLfloat>(-0.5f, -0.5f,  0.0f));
-        vertices.add(new Vector3D<GLfloat>(0.5f,   0.5f,  0.0f));
-        
+
+
         // Vertices sent to OpenGL
         glVertices = new GLfloat[vertices.size() * 3];
     }
