@@ -39,7 +39,7 @@ public:
         openGLContext.attachTo(*this);
 
         addAndMakeVisible(gameHUD);
-        
+		setWantsKeyboardFocus(true);
         // Setup GUI Overlay Label: Status of Shaders, compiler errors, etc.
         addAndMakeVisible (statusLabel);
         statusLabel.setJustificationType (Justification::topLeft);
@@ -147,6 +147,7 @@ public:
     
     void renderOpenGL() override
     {
+
         jassert (OpenGLHelpers::isContextActive());
         
         // Wait for CoreEngine to signal() GameView

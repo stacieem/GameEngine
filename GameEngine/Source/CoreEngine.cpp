@@ -34,27 +34,43 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
     
     gameView.setCoreEngineWaitable (&coreEngineWaitable);
     gameView.setRenderWaitable (&renderWaitable);
-    
     // Setup threads to hold pointers to GameModel frames
     gameLogic.setGameModel(gameModelCurrentFrame);
 	gameLogic.setRenderSwapFrame(renderSwapFrameA);
 	gameView.setRenderSwapFrame(renderSwapFrameB);
     
+
+	// !FIX! MOVE LATER TO AN INPUT MAP AS THE DEFAULT INPUT MAP
+	KeyPress aKey('w');
+	inputManager->addCommand(aKey, GameCommand::moveUp);
+	aKey = KeyPress('s');
+	inputManager->addCommand(aKey, GameCommand::moveDown);
+	aKey = KeyPress('a');
+	inputManager->addCommand(aKey, GameCommand::moveLeft);
+	aKey = KeyPress('d');
+	inputManager->addCommand(aKey, GameCommand::moveRight);
+	aKey = KeyPress('r');
+	inputManager->addCommand(aKey, GameCommand::reset);
+
+
+	aKey = KeyPress('i');
+	inputManager->addCommand2(aKey, GameCommand::moveUp);
+	aKey = KeyPress('k');
+	inputManager->addCommand2(aKey, GameCommand::moveDown);
+	aKey = KeyPress('j');
+	inputManager->addCommand2(aKey, GameCommand::moveLeft);
+	aKey = KeyPress('l');
+	inputManager->addCommand2(aKey, GameCommand::moveRight);
+	aKey = KeyPress('r');
+	inputManager->addCommand2(aKey, GameCommand::reset);
     // Start the GameLogic thread and the GameView's renderer
     gameLogic.startThread();
     gameView.setOpenGLEnabled (true);
     
-	// Setup InputManager Listeners
+	gameView.setWantsKeyboardFocus(true);
+	// setup inputManager Listeners
 	getTopLevelComponent()->addKeyListener(inputManager);
 	getTopLevelComponent()->addMouseListener(inputManager, true);
-
-	
-    // !FIX! MOVE LATER TO AN INPUT MAP AS THE DEFAULT INPUT MAP
-	inputManager->addCommand((juce_wchar)'w');
-	inputManager->addCommand((juce_wchar)'s');
-	inputManager->addCommand((juce_wchar)'a');
-	inputManager->addCommand((juce_wchar)'d');
-	inputManager->addCommand((juce_wchar)'r');
 
     // !FIX! Do this in constructor of GameLogic to register InputManger
 	gameLogic.registerInputManager(inputManager);
@@ -86,6 +102,7 @@ CoreEngine::~CoreEngine()
 
 void CoreEngine::paint (Graphics& g)
 {
+	
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
 }
@@ -147,9 +164,12 @@ void CoreEngine::swapRenderFramesBetweenLogicAndRender()
     GameModel swap frames and repeats.
  */
 void CoreEngine::run() {
-    
     while (!threadShouldExit())
     {
+		//comment this out to debug properly
+		//if (!gameView.hasKeyboardFocus(false)) {
+		//	gameView.grabKeyboardFocus();
+		//}
         // Allow GameLogic and GameView's rendering to start
         logicWaitable.signal();
         renderWaitable.signal();

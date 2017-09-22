@@ -22,7 +22,7 @@ public:
     {
         setOpaque(false);
         
-        addAndMakeVisible(healthBar);
+        //addAndMakeVisible(healthBar);
         healthBar.setRange(0, 10, 1.0);
     }
     
@@ -47,7 +47,7 @@ public:
         const int healthBarH = h * 0.9;
         const int margin = 20;
         
-        healthBar.setBounds(margin, (h - healthBarH) / 2, healthBarW, healthBarH);
+        //healthBar.setBounds(margin, (h - healthBarH) / 2, healthBarW, healthBarH);
     }
 
     /** Consider getting rid of this ... 

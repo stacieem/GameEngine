@@ -21,26 +21,39 @@ public:
         /*
         create the body first, giving it a position
         */
-        b2BodyDef groundBodyDef;
-        groundBodyDef.position.Set(0.0f, -2.0f);
+		b2BodyDef bodyDef;
+		bodyDef.position.Set(0.0f, -6.1f);
         /*
          body is created in the world
          */
-        b2Body* groundBody = world.CreateBody(&groundBodyDef);
+        b2Body* groundBody = world.CreateBody(&bodyDef);
         
         /*
          create a shape(box for this instance)
          */
-        b2PolygonShape groundBox;
-        groundBox.SetAsBox(50.0f, 0.5f);
-        
+		b2PolygonShape groundBox;
+		b2PolygonShape wallBox;
+		groundBox.SetAsBox(100.0f, 0.5f);
+		wallBox.SetAsBox(0.3f, 100.0f);
+
+		
         /*
          assign the box shape and density to the body
-         When you attach a shape to a body using a fixture, the shapeís coordinates become local to the body. So
+         When you attach a shape to a body using a fixture, the shape's coordinates become local to the body. So
          when the body moves, so does the shape.
          */
         groundBody->CreateFixture(&groundBox, 0.0f);
+		bodyDef.position.Set(0.0f, 6.1f);
+		groundBody = world.CreateBody(&bodyDef);
+		groundBody->CreateFixture(&groundBox, 0.0f);
 
+		
+		bodyDef.position.Set(-8.7f, 0.0f);
+		groundBody = world.CreateBody(&bodyDef);
+		groundBody->CreateFixture(&wallBox, 0.0f);
+		bodyDef.position.Set(8.7f, 0.0f);
+		groundBody = world.CreateBody(&bodyDef);
+		groundBody->CreateFixture(&wallBox, 0.0f);
 	}
 
 	~WorldPhysics()
@@ -56,16 +69,13 @@ public:
 	**************************************************************************/
 	void clearWorld() 
 	{
-			int pos = 0;
-			for (auto bodyObject = world.GetBodyList(); bodyObject; )
-			{
-					b2Body* oldBody = bodyObject;
-					bodyObject = bodyObject->GetNext();
-					world.DestroyBody(oldBody);
-					oldBody = NULL;
-				
-			}
-		
+        for (auto bodyObject = world.GetBodyList(); bodyObject; )
+        {
+            b2Body* oldBody = bodyObject;
+            bodyObject = bodyObject->GetNext();
+            world.DestroyBody(oldBody);
+            oldBody = NULL;
+        }
 	}
 
 	/**************************************************************************
@@ -103,6 +113,16 @@ public:
 
 	/**************************************************************************
 	*
+	*	Progress through the world using a frameTimeStep, and
+	*	Iterate through calculations for velocity and position the set
+	*	number of iterations.
+	**************************************************************************/
+	void Step(float32 timeStep)
+	{
+		world.Step(timeStep, this->velocityIterations, this->positionIterations);
+	}
+	/**************************************************************************
+	*
 	*	return access to the private world
 	*
 	**************************************************************************/
@@ -119,6 +139,15 @@ public:
 	void setGravity(GLfloat gravx,GLfloat gravy)
 	{
 		world.SetGravity(b2Vec2(gravx,gravy));
+	}
+	/**************************************************************************
+	*
+	*	set the gravity
+	*
+	**************************************************************************/
+	float32 getTimeStep()
+	{
+		return timeStep;
 	}
 	/**************************************************************************
 	*

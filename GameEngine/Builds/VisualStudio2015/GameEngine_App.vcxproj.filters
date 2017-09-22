@@ -4158,6 +4158,51 @@
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h">
       <Filter>Juce Library Code</Filter>
     </ClInclude>
+<<<<<<< HEAD
+=======
+    <ClInclude Include="..\..\Source\GameHUD.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\GameHUDDataModel.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\GameHUDElement.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\GameObject.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\GameView.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\HealthBar.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\PhysicsProperties.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\WorldPhysics.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CoreEngine.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\InputManager.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\GameLogic.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\PlayerObject.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\GameModel.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\enumCMD.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+>>>>>>> origin/jasperson
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt">

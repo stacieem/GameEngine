@@ -71,6 +71,7 @@
 		573235C81F74BB9400369D5C /* Uniforms.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Uniforms.h; path = ../../Source/Uniforms.h; sourceTree = "<group>"; };
 		573235C91F74BB9400369D5C /* Vertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vertex.h; path = ../../Source/Vertex.h; sourceTree = "<group>"; };
 		573235CA1F74BB9400369D5C /* VertexBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VertexBuffer.h; path = ../../Source/VertexBuffer.h; sourceTree = "<group>"; };
+		573235CB1F74D19500369D5C /* GameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameCommand.h; path = ../../Source/GameCommand.h; sourceTree = "<group>"; };
 		579B2D0B1F746E2300051958 /* PhysicalAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhysicalAction.h; path = ../../Source/PhysicalAction.h; sourceTree = "<group>"; };
 		57F5598FD8F3E97531BC5EB5 /* include_juce_audio_utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_utils.mm; path = ../../JuceLibraryCode/include_juce_audio_utils.mm; sourceTree = SOURCE_ROOT; };
 		5BA064D2FF4E47F6DF098CA3 /* juce_graphics */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_graphics; path = ../../../JUCE/modules/juce_graphics; sourceTree = SOURCE_ROOT; };
@@ -152,6 +153,7 @@
 		1FC73B7FD3BD8137D94E09A8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				573235CB1F74D19500369D5C /* GameCommand.h */,
 				573235C31F74BB9400369D5C /* Attributes.h */,
 				573235C41F74BB9400369D5C /* DrawableObject.h */,
 				573235C51F74BB9400369D5C /* InputManager.h */,

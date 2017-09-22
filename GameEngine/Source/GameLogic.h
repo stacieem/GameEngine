@@ -17,11 +17,9 @@ class GameLogic : public Thread
 public:
 	GameLogic(GameAudio & gameAudio) : Thread("GameLogic"), gameAudio(gameAudio)
     {
-        commands = new InputManager();
-        oldCommands = commands->getCommands();
-
+        inputManager = new InputManager();
     }
-
+    
 	~GameLogic()
     {
         gameModelCurrentFrame = nullptr;
@@ -72,8 +70,8 @@ public:
 	/* Sets the InputManager to match the values of the CoreEngine 
 		InputManager
 	*/
-	void registerInputManager(InputManager* inputMan) {
-		commands = inputMan;
+	void registerInputManager(InputManager* inputManager) {
+		this->inputManager = inputManager;
 	}
 
 private:
@@ -92,22 +90,51 @@ private:
 			logicWaitable->wait();
 
 			//locks in the commands for this iteration
-			newCommands = commands->getCommands();
+			inputManager->getCommands1(newCommands1);
+			for (auto & command : newCommands1)
+			{
+				switch (command)
+				{
+				case GameCommand::moveUp:
+					gameModelCurrentFrame->getPlayer1()->moveUp();
+					break;
+				case GameCommand::moveDown:
+					gameModelCurrentFrame->getPlayer1()->moveDown();
+					break;
+				case GameCommand::moveLeft:
+					gameModelCurrentFrame->getPlayer1()->moveLeft();
+					break;
+				case GameCommand::moveRight:
+					gameModelCurrentFrame->getPlayer1()->moveRight();
+					break;
+				case GameCommand::reset:
+					gameModelCurrentFrame->getPlayer1()->reset();
+					break;
+				}
+			}
 
-			if (newCommands[0] ) {
-				gameModelCurrentFrame->getPlayer()->moveUp();
-			}
-			if (newCommands[1] ) {
-				gameModelCurrentFrame->getPlayer()->moveDown();
-			}
-			if (newCommands[2]) {
-				gameModelCurrentFrame->getPlayer()->moveLeft();
-			}
-			if (newCommands[3] ) {
-				gameModelCurrentFrame->getPlayer()->moveRight();
-			}
-			if (newCommands[4]) {
-				gameModelCurrentFrame->getPlayer()->reset();
+			//locks in the commands for this iteration
+			inputManager->getCommands2(newCommands2);
+			for (auto & command : newCommands2)
+			{
+				switch (command)
+				{
+				case GameCommand::moveUp:
+					gameModelCurrentFrame->getPlayer2()->moveUp();
+					break;
+				case GameCommand::moveDown:
+					gameModelCurrentFrame->getPlayer2()->moveDown();
+					break;
+				case GameCommand::moveLeft:
+					gameModelCurrentFrame->getPlayer2()->moveLeft();
+					break;
+				case GameCommand::moveRight:
+					gameModelCurrentFrame->getPlayer2()->moveRight();
+					break;
+				case GameCommand::reset:
+					gameModelCurrentFrame->getPlayer2()->reset();
+					break;
+				}
 			}
 
             // Calculate time
@@ -117,7 +144,7 @@ private:
 			checkTime += deltaTime;
             
             // Process Physics
-            gameModelCurrentFrame->processWorldPhysics();   // Eventually we want to step by a given time here
+            gameModelCurrentFrame->processWorldPhysics(deltaTime);
             
             // Play Audio
             // If any new collisions occur, play the specified collision audio
@@ -136,9 +163,8 @@ private:
                     
                 }
             }
-
+            
             // Update the GameModel
-
 			//Update the number of DrawableObjects in the RenderSwapFrame
 			renderSwapFrame->setDrawableObjectsLength(gameModelCurrentFrame->getNumGameObjects());
 
@@ -147,12 +173,10 @@ private:
 				renderSwapFrame->setDrawableObjectVertices(gameModelCurrentFrame->getGameObjects()[i]->getVertices(), i);
 				renderSwapFrame->setDrawableObjectTexture(gameModelCurrentFrame->getGameObjects()[i]->getTexture(), i);
 			}
+            
             // Maybe actions are triggered here ???
             // IMPLEMENT . . .
-			oldCommands = newCommands;
-			commands->reset();
 
-            
 			// Notify CoreEngine logic is done
 			coreEngineWaitable->signal();
 		}
@@ -163,12 +187,11 @@ private:
 	RenderSwapFrame* renderSwapFrame;
 	WaitableEvent* logicWaitable;
 	WaitableEvent* coreEngineWaitable;
-	
-    //input handling
-	InputManager* commands;
-	
-    std::vector<bool> oldCommands;
-	std::vector<bool> newCommands;
+
+	//input handling
+	InputManager* inputManager;
+	Array<GameCommand> newCommands1;
+	Array<GameCommand> newCommands2;
 
 	int64 newTime;
 	int64 currentTime;

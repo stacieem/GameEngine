@@ -15,23 +15,35 @@ public:
 	GameModel()
     {
 
-		player = new PlayerObject(worldPhysics);
-		gameObjects.add(player);
-		gameObjects[0]->setTexture("Kenny");
+        // Morgan's Texure Test
+//		player = new PlayerObject(worldPhysics);
+//		gameObjects.add(player);
+//		gameObjects[0]->setTexture("Kenny");
+//        
+//        gameObjects.add (new GameObject(worldPhysics));
+//        gameObjects[1]->setTexture("Flower");
+//
+//		gameObjects.add(new GameObject(worldPhysics));
+//		gameObjects[2]->setTexture("Kenny");
+//		gameObjects[2]->translateBy(2, 2);
+//
         
-        gameObjects.add (new GameObject(worldPhysics));
-        gameObjects[1]->setTexture("Flower");
-
-		gameObjects.add(new GameObject(worldPhysics));
-		gameObjects[2]->setTexture("Kenny");
-		gameObjects[2]->translateBy(2, 2);
-    
+        // Tim's Audio Test
         
         //        gameObjects.add (new GameObject(worldPhysics));
         //        gameObjects.getLast()->translate(0.0, 3.0);
         //
         //        gameObjects.add (new GameObject(worldPhysics));
         //        gameObjects.getLast()->translate(2.0, 0.0);
+        
+        // Trystan's Multiplayer Test
+		player1 = new PlayerObject(worldPhysics);
+        player1->setTexture("Kenny");
+		gameObjects.add(player1);
+        
+		player2 = new PlayerObject(worldPhysics);
+        player2->setTexture("Flower");
+		gameObjects.add(player2);
 	}
     
 	~GameModel()
@@ -51,9 +63,16 @@ public:
     /** Processes an physics in the world for a given frame in the physics
         timeline
      */
-    void processWorldPhysics()
+    void processWorldPhysics(int64 timeStep)
     {
-        worldPhysics.Step();
+
+		if ((float32)timeStep < worldPhysics.getTimeStep()) {
+			worldPhysics.Step((float32)timeStep);
+		}
+		else
+		{
+			worldPhysics.Step();
+		}
     }
     
     WorldPhysics & getWorldPhyscis()
@@ -61,8 +80,13 @@ public:
         return worldPhysics;
     }
 
-	PlayerObject* getPlayer() {
-		return player;
+	PlayerObject* getPlayer1() {
+		return player1;
+	}
+
+
+	PlayerObject* getPlayer2() {
+		return player2;
 	}
 
 private:
@@ -73,7 +97,9 @@ private:
     // Eventually this will be encapsulated in Scenes and further those scenes
     // will be encapsulated in Levels
     OwnedArray<GameObject> gameObjects;
-	PlayerObject* player;
+	PlayerObject* player1;
+	PlayerObject* player2;
+
     //OwnedArray<GameObject> gameObjects;
     
     WorldPhysics worldPhysics;
