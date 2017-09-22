@@ -28,12 +28,11 @@ public:
     
     // Thread running callback =================================================
     void run() override;
-    
-    
-    /** Swaps the GameModel swap frames between GameLogic and the GameView renderer,
-        so that the renderer can render the frame the GameLogic just wrote
-     */
-    void swapFramesBetweenLogicAndRender();
+
+	/** Swaps the Render swap frames between GameLogic and the GameView renderer,
+	so that the renderer can render the frame the GameLogic just wrote
+	*/
+	void swapRenderFramesBetweenLogicAndRender();
 
 private:
     //==========================================================================
@@ -60,8 +59,8 @@ private:
     //      then they swap frames and repeat.
     //
     GameModel * gameModelCurrentFrame;
-    GameModel * gameModelSwapFrameA;
-    GameModel * gameModelSwapFrameB;
+	RenderSwapFrame * renderSwapFrameA;
+	RenderSwapFrame * renderSwapFrameB;
 
     // Thread Synchronization between CoreEngine, GameView, and GameLogic
     WaitableEvent logicWaitable;

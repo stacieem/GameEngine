@@ -1836,7 +1836,9 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_video.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Attributes.h" />
     <ClInclude Include="..\..\Source\CoreEngine.h" />
+    <ClInclude Include="..\..\Source\DrawableObject.h" />
     <ClInclude Include="..\..\Source\GameHUD.h" />
     <ClInclude Include="..\..\Source\GameHUDDataModel.h" />
     <ClInclude Include="..\..\Source\GameHUDElement.h" />
@@ -2491,6 +2493,10 @@
     <ClInclude Include="..\..\JuceLibraryCode\AppConfig.h" />
     <ClInclude Include="..\..\JuceLibraryCode\JuceHeader.h" />
     <ClInclude Include="..\..\Source\PhysicsProperties.h" />
+    <ClInclude Include="..\..\Source\RenderSwapFrame.h" />
+    <ClInclude Include="..\..\Source\Uniforms.h" />
+    <ClInclude Include="..\..\Source\Vertex.h" />
+    <ClInclude Include="..\..\Source\VertexBuffer.h" />
     <ClInclude Include="..\..\Source\WorldPhysics.h" />
   </ItemGroup>
   <ItemGroup>

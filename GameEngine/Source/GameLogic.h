@@ -2,6 +2,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "RenderSwapFrame.h"
 
 /** Processes the logic of the game. Started by the Core Engine and manipulates
     the GameDataModel to be rendered for the next frame.
@@ -14,33 +15,32 @@ public:
 	~GameLogic()
     {
         gameModelCurrentFrame = nullptr;
-        gameModelSwapFrame = nullptr;
 	}
 
     /** Sets the GameModel current frame being processed for logic, and the
         GameModel swap frame that will be swapped with the GameView to be rendered.
      */
-	void setGameModels (GameModel * curentFrame, GameModel * swapFrame)
+	void setGameModel(GameModel * curentFrame)
     {
 		gameModelCurrentFrame = curentFrame;
-		gameModelSwapFrame = swapFrame;
 	}
     
-    /** Sets the GameModel swap frame that will be processed for logic before it
-        is sent to the GameView to be rendered.
-     */
-    void setGameModelSwapFrame (GameModel * swapFrame)
-    {
-        gameModelSwapFrame = swapFrame;
-    }
-    
-    /** Returns the GameModel swap frame that the GameLogic is currently
-        processing.
-     */
-    GameModel * getGameModelSwapFrame()
-    {
-        return gameModelSwapFrame;
-    }
+
+	/** Sets the Render swap frame that will be processed for logic before it
+	is sent to the GameView to be rendered.
+	*/
+	void setRenderSwapFrame(RenderSwapFrame * swapFrame)
+	{
+		renderSwapFrame = swapFrame;
+	}
+
+	/** Returns the GameModel swap frame that the GameLogic is currently
+	processing.
+	*/
+	RenderSwapFrame * getRenderSwapFrame()
+	{
+		return renderSwapFrame;
+	}
 
     /** Sets the WaitableEvent for the GameLogic to signal the CoreEngine when
         it is done processing.
@@ -79,22 +79,23 @@ private:
 			deltaTime = newTime - currentTime;
 			currentTime = newTime;
 			checkTime += deltaTime;
-
-            // TESTTTTT
-			// For every second, update the calculated frame rate
-			if (checkTime > 1000) {
-				checkTime = 0;
-				DBG(1000.0/deltaTime);
-                // FIX: Update the frame rate in the GameModel
-			}
             
             // Process Physics
-            //gameModelCurrentFrame->processWorldPhysics();   // Eventually we want to step by a given time here
-            gameModelSwapFrame->processWorldPhysics();
+            gameModelCurrentFrame->processWorldPhysics();   // Eventually we want to step by a given time here
             
             // Update the GameModel
+
+			//Update the number of DrawableObjects in the RenderSwapFrame
+			renderSwapFrame->setDrawableObjectsLength(gameModelCurrentFrame->getNumGameObjects());
+
+			for (int i = 0; i < gameModelCurrentFrame->getGameObjects().size(); i++)
+			{
+				renderSwapFrame->setDrawableObjectVertices(gameModelCurrentFrame->getGameObjects()[i]->getVertices(), i);
+			}
             // Maybe actions are triggered here ???
             // IMPLEMENT . . .
+
+
 
 			// Notify CoreEngine logic is done
 			coreEngineWaitable->signal();
@@ -102,7 +103,7 @@ private:
 	}
 
 	GameModel* gameModelCurrentFrame;
-	GameModel* gameModelSwapFrame;
+	RenderSwapFrame* renderSwapFrame;
 	WaitableEvent* logicWaitable;
 	WaitableEvent* coreEngineWaitable;
 	int64 newTime;

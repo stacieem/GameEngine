@@ -11,6 +11,11 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "GameHUD.h"
 #include "GameModel.h"
+#include "Attributes.h"
+#include "Vertex.h"
+#include "Uniforms.h"
+#include <map>
+#include "RenderSwapFrame.h"
 
 /** Represents the view of any game being rendered.
     It includes an OpenGL Renderer to render either 2D or 3D graphics and a
@@ -51,7 +56,13 @@ public:
         // Turn off OpenGL
         openGLContext.setContinuousRepainting (false);
         openGLContext.detach();
-		texture.release();
+		std::map<String, OpenGLTexture*>::iterator it;
+		for (it = textureMap.begin(); it != textureMap.end(); it++)
+		{
+			delete it->second;
+		}
+		openGLContext.extensions.glDeleteBuffers(1, &vertexBuffer);
+		openGLContext.extensions.glDeleteBuffers(1, &indexBuffer);
     }
     
     /** Enables or disables the OpenGL layer of GameView. Enabling continuously
@@ -91,14 +102,42 @@ public:
 				jmin(1024, nextPowerOfTwo(textureImage.getHeight())));
 
 		// Use that image as a 2-D texture for the object that will be painted
-		texture.loadImage(textureImage);
+		OpenGLTexture* tex = new OpenGLTexture();
+		
+		tex->loadImage(textureImage);
+
+		textureMap["Kenny"] = tex;
+
+
+
+		filePath = File::getCurrentWorkingDirectory().getFullPathName() + "\\textures\\flower.jpg";
+		f = filePath;
+
+		textureImage = ImageFileFormat::loadFrom(f); //ImageCache::getFromMemory (TEXTURE_DATA);
+														   // Image must have height and width equal to a power of 2 pixels to be more efficient
+														   // when used with older GPU architectures
+		if (!(isPowerOfTwo(textureImage.getWidth()) && isPowerOfTwo(textureImage.getHeight())))
+			textureImage = textureImage.rescaled(jmin(1024, nextPowerOfTwo(textureImage.getWidth())),
+				jmin(1024, nextPowerOfTwo(textureImage.getHeight())));
+
+		tex = new OpenGLTexture();
+
+		tex->loadImage(textureImage);
+
+		textureMap["Flower"] = tex;
+
+
+		/*END SAMPLE TEXTURE LOADING*/
 
 		openGLContext.extensions.glGenBuffers(1, &vertexBuffer);
 		openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 
 		openGLContext.extensions.glGenBuffers(1, &indexBuffer);
 		openGLContext.extensions.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-        
+
+		avgMilliseconds = 0.0;
+		currentTime = Time::currentTimeMillis();
+		checkTime = 0;
     }
     
     void openGLContextClosing() override
@@ -112,7 +151,22 @@ public:
         jassert (OpenGLHelpers::isContextActive());
         
         // Wait for CoreEngine to signal() GameView
-        renderWaitable->wait(500);
+        renderWaitable->wait();
+
+		//Calculate frame rate
+		newTime = Time::currentTimeMillis();
+		deltaTime = newTime - currentTime;
+		checkTime += deltaTime;
+		avgMilliseconds += ((deltaTime / 1000.0) - avgMilliseconds) * 0.03;
+		currentTime = Time::currentTimeMillis();
+
+		// TESTTTTT
+		// For every second, update the calculated frame rate
+		if (checkTime > 1000) {
+			checkTime = 0;
+			DBG((int)(1.0 / avgMilliseconds));
+			// FIX: Update the frame rate in the GameModel
+		}
         
         // Setup Viewport
         const float renderingScale = (float) openGLContext.getRenderingScale();
@@ -130,11 +184,7 @@ public:
 		openGLContext.extensions.glActiveTexture(GL_TEXTURE0); // Using texture #0
 		glEnable(GL_TEXTURE_2D);   // It's a 2-D image texture
 								   // Tell the GPU to use that texture
-		texture.bind();
-		// OpenGL method to specify how the image is horizontally tiled
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-		// OpenGL method to specify how the image is vertically tiled
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+		
 
 
 		/*END TEXTURE SAMPLE*/
@@ -167,58 +217,29 @@ public:
             uniforms->viewMatrix->setMatrix4 (finalMatrix.mat, 1, false);
         }
         
-		
-
 		attributes = new Attributes(openGLContext, *shader);
         
         // Draw all the game objects
         int i = 0;
-        for (auto & gameObject : gameModel->getGameObjects())
+        for (auto & gameObject : renderSwapFrame->getDrawableObjects())
         {
 
-			GLfloat * vPtr = gameObject->getVertices();
+			textureMap[gameObject->getTexture()]->bind();
 
-			Array<Vertex> verts;
-			Vertex vert;
-			vert.position[0] = vPtr[0];
-			vert.position[1] = vPtr[1];
-			vert.position[2] = vPtr[2];
+			
+			// OpenGL method to specify how the image is horizontally tiled
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+			// OpenGL method to specify how the image is vertically tiled
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-			vert.texCoord[0] = 1;
-			vert.texCoord[1] = 1;
-			verts.add(vert);
-
-			Vertex vert2;
-			vert2.position[0] = vPtr[3];
-			vert2.position[1] = vPtr[4];
-			vert2.position[2] = vPtr[5];
-			vert2.texCoord[0] = 1;
-			vert2.texCoord[1] = 0;
-			verts.add(vert2);
-
-			Vertex vert3;
-			vert3.position[0] = vPtr[6];
-			vert3.position[1] = vPtr[7];
-			vert3.position[2] = vPtr[8];
-			vert3.texCoord[0] = 0;
-			vert3.texCoord[1] = 0;
-			verts.add(vert3);
-
-			Vertex vert4;
-			vert4.position[0] = vPtr[9];
-			vert4.position[1] = vPtr[10];
-			vert4.position[2] = vPtr[11];
-			vert4.texCoord[0] = 0;
-			vert4.texCoord[1] = 1;
-			verts.add(vert4);
-
+			Array<Vertex> verts = gameObject->getVertices();
 
 			openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 			openGLContext.extensions.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
 
 			openGLContext.extensions.glBufferData(GL_ARRAY_BUFFER,
 				static_cast<GLsizeiptr> (static_cast<size_t> (verts.size()) * sizeof(Vertex)),
-				verts.getRawDataPointer(), GL_STATIC_DRAW);
+				verts.getRawDataPointer(), GL_STREAM_DRAW);
 
 			// Define Which Vertex Indexes Make the Square
 			GLuint indices[] = {  // Note that we start from 0!
@@ -228,7 +249,7 @@ public:
 
 			openGLContext.extensions.glBufferData(GL_ELEMENT_ARRAY_BUFFER,
 				static_cast<GLsizeiptr> (static_cast<size_t> (6) * sizeof(GLuint)),
-				indices, GL_STATIC_DRAW);
+				indices, GL_STREAM_DRAW);
 
 			
 
@@ -242,7 +263,7 @@ public:
         
         // Reset the element buffers so child Components draw correctly
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
-        //openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
+        openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
         //openGLContext.extensions.glBindVertexArray(0);
         
 		
@@ -264,21 +285,22 @@ public:
     
     
     // Custom Functions ========================================================
-    
-    /** Sets the GameModel to currently render. This is one of the frames that
-        is swapped back and forth between the GameLocic and GameView
-     */
-    void setGameModelSwapFrame(GameModel * swapFrame)
-    {
-        this->gameModel = swapFrame;
-    }
-    
-    /** Gets the GameView's current gameModel swap frame
-     */
-    GameModel * getGameModelSwapFrame()
-    {
-        return gameModel;
-    }
+
+	/** Sets the Render swap frame that will be processed for logic before it
+	is sent to the GameView to be rendered.
+	*/
+	void setRenderSwapFrame(RenderSwapFrame * swapFrame)
+	{
+		renderSwapFrame = swapFrame;
+	}
+
+	/** Returns the GameModel swap frame that the GameLogic is currently
+	processing.
+	*/
+	RenderSwapFrame * getRenderSwapFrame()
+	{
+		return renderSwapFrame;
+	}
     
     /** Sets the WaitableEvent that allows the GameView to signal the CoreEngine
      */
@@ -327,7 +349,7 @@ private:
     {
         vertexShader =
         "#version 330 core\n"
-        "layout (location = 0) in vec2 position;\n"
+        "attribute vec2 position;\n"
 		"attribute vec2 textureCoordIn;\n"
         "uniform mat4 projectionMatrix;\n"
         "uniform mat4 viewMatrix;\n"
@@ -375,152 +397,7 @@ private:
         
         statusLabel.setText (statusText, dontSendNotification);
     }
-    
-    //==============================================================================
-    // This class manages the uniform values that the shaders use.
-    struct Uniforms
-    {
-        Uniforms (OpenGLContext& openGLContext, OpenGLShaderProgram& shaderProgram)
-        {
-            projectionMatrix = createUniform (openGLContext, shaderProgram, "projectionMatrix");
-            viewMatrix       = createUniform (openGLContext, shaderProgram, "viewMatrix");
-			demoTexture = createUniform(openGLContext, shaderProgram, "demoTexture");
-        }
-        
-        ScopedPointer<OpenGLShaderProgram::Uniform> projectionMatrix, viewMatrix, demoTexture;
-        //ScopedPointer<OpenGLShaderProgram::Uniform> lightPosition;
-        
-        private:
-        static OpenGLShaderProgram::Uniform* createUniform (OpenGLContext& openGLContext,
-                                                            OpenGLShaderProgram& shaderProgram,
-                                                            const char* uniformName)
-        {
-            if (openGLContext.extensions.glGetUniformLocation (shaderProgram.getProgramID(), uniformName) < 0)
-            return nullptr;
-            
-            return new OpenGLShaderProgram::Uniform (shaderProgram, uniformName);
-        }
-    };
 
-	struct Vertex
-	{
-		float position[3];  // To define vertex x,y,z coordinates
-		//float normal[3];    // Orthogonal vector used to calculate light impact on the texture color
-		//float colour[4];    // Color used for the vertex. If no other color info is given for the fragment
-							// the pixel colors will be interpolated from the vertex colors
-		float texCoord[2];  // A graphic image (file) can be used to define the texture of the drawn object.
-							// This 2-D vector gives the coordinates in the 2-D image file corresponding to
-							// the pixel color to be drawn
-	};
-
-	//==============================================================================
-	// This class just manages the attributes that the shaders use.
-	// "attribute" is a special variable type modifier in the shaders which allows to pass information
-	// from the CPU code to the shaders. These attributes will be passed to the Vertex shader
-	// to define the coordinates, normal vector, color and texture coordinate of each vertex.
-	// Note that an attribute variable can be a scalar, a vector, a matrix, etc.
-	struct Attributes
-	{
-		Attributes(OpenGLContext& openGLContext, OpenGLShaderProgram& shaderProgram)
-		{
-			// Call openGL functions to get the ID (a number specific to each object or variable)
-			// corresponding to the attribute whose name is given as 3rd parameter.
-			// This id will be used below to tell the GPU how to use them
-			position = createAttribute(openGLContext, shaderProgram, "position");
-			//normal = createAttribute(openGLContext, shaderProgram, "normal");
-			//sourceColour = createAttribute(openGLContext, shaderProgram, "sourceColour");
-			textureCoordIn = createAttribute(openGLContext, shaderProgram, "textureCoordIn");
-		}
-
-		// This method calls openGL functions to tell the GPU that some attributes will be used
-		// for each vertex (see comments below) and will be passed as an array of data
-		void enable(OpenGLContext& openGLContext)
-		{
-			if (position != nullptr)
-			{
-				// Tell the GPU that the first attribute will be the position attribute
-				// 2nd parameter gives the number of data (3 coordinates) for this attribute
-				// 3rd parameter gives their type (floating-point)
-				// 4th parameter indicates they will be left as is (not normalized)
-				// 5th parameter indicates the size of the array defined for each stored element (vertex)
-				// 6th parameter is the offset in that array for the given attribute in current element
-				openGLContext.extensions.glVertexAttribPointer(position->attributeID, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-				openGLContext.extensions.glEnableVertexAttribArray(position->attributeID);
-			}
-
-			/*if (normal != nullptr)
-			{
-				// Tell the GPU that the next attribute will be the normal attribute
-				// 2nd parameter gives the number of data (3 coordinates) for this attribute
-				// 3rd parameter gives their type (floating-point)
-				// 4th parameter indicates they will be left as is (not normalized)
-				// 5th parameter indicates the size of the array defined for each stored element (vertex)
-				// 6th parameter is the byte offset in that array for the given attribute in current element (0+3 float)
-				openGLContext.extensions.glVertexAttribPointer(normal->attributeID, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(sizeof(float) * 3));
-				openGLContext.extensions.glEnableVertexAttribArray(normal->attributeID);
-			}
-
-			if (sourceColour != nullptr)
-			{
-				// Tell the GPU that the next attribute will be the color attribute
-				// 2nd parameter gives the number of data (R+G+B+Alpha) for this attribute
-				// 3rd parameter gives their type (floating-point)
-				// 4th parameter indicates they will be left as is (not normalized)
-				// 5th parameter indicates the size of the array defined for each stored element (vertex)
-				// 6th parameter is the byte offset in that array for the given attribute in current element (0+3+3 float)
-				openGLContext.extensions.glVertexAttribPointer(sourceColour->attributeID, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(sizeof(float) * 6));
-				openGLContext.extensions.glEnableVertexAttribArray(sourceColour->attributeID);
-			}*/
-
-			if (textureCoordIn != nullptr)
-			{
-				// Tell the GPU that the next attribute will be the texture coordinate attribute
-				// 2nd parameter gives the number of data (x and y) for this attribute
-				// 3rd parameter gives their type (floating-point)
-				// 4th parameter indicates they will be left as is (not normalized)
-				// 5th parameter indicates the size of the array defined for each stored element (vertex)
-				// 6th parameter is the byte offset in that array for the given attribute in current element (0+3+3+4 float)
-				/*
-				6th PARAM WAS CHANGED SEE COMMENTED OUT VERTEX ATTRIBUTES
-				*/
-			
-				openGLContext.extensions.glVertexAttribPointer(textureCoordIn->attributeID, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid*)(sizeof(float) * 3));
-				openGLContext.extensions.glEnableVertexAttribArray(textureCoordIn->attributeID);
-			}
-		}
-
-		// This method calls openGL functions to tell the GPU to release the resources previously used to store attributes
-		void disable(OpenGLContext& openGLContext)
-		{
-			if (position != nullptr)       openGLContext.extensions.glDisableVertexAttribArray(position->attributeID);
-			//if (normal != nullptr)         openGLContext.extensions.glDisableVertexAttribArray(normal->attributeID);
-			//if (sourceColour != nullptr)   openGLContext.extensions.glDisableVertexAttribArray(sourceColour->attributeID);
-			if (textureCoordIn != nullptr)  openGLContext.extensions.glDisableVertexAttribArray(textureCoordIn->attributeID);
-		}
-
-		//ScopedPointer<OpenGLShaderProgram::Attribute> position, normal, sourceColour, textureCoordIn;
-		ScopedPointer<OpenGLShaderProgram::Attribute> position, textureCoordIn;
-	private:
-		// This method calls openGL functions to get the ID (a number specific to each object or variable,
-		// which is assigned by the GPU itself) corresponding to a certain attribute name, and create the
-		// attribute for the OpenGL (CPU) world.
-		// Basically this will allow to link a variable in the CPU code to one in the GPU (GLSL) shader.
-		// Note that the variable can be a scalar, a vector, a matrix, etc.
-		static OpenGLShaderProgram::Attribute* createAttribute(OpenGLContext& openGLContext,
-			OpenGLShaderProgram& shaderProgram,
-			const char* attributeName)
-		{
-			// Get the ID
-			if (openGLContext.extensions.glGetAttribLocation(shaderProgram.getProgramID(), attributeName) < 0)
-				return nullptr; // Return if error
-								// Create the atttribute variable
-			return new OpenGLShaderProgram::Attribute(shaderProgram, attributeName);
-		}
-	};
-
-
-
-    
     // Private Variables =======================================================
     
     bool isEnabled;
@@ -543,15 +420,18 @@ private:
     // DEBUGGING
     Label statusLabel;
     
-    // GameModel
-    GameModel* gameModel;
+    
     WaitableEvent* renderWaitable;
     WaitableEvent* coreEngineWaitable;
 
-	//Crap code for inital textures dev
-	File f;
-	Image im;
-	OpenGLTexture texture;
 	ScopedPointer<Attributes> attributes;
 	GLuint vertexBuffer, indexBuffer;
+	std::map<String, OpenGLTexture*> textureMap;
+	RenderSwapFrame* renderSwapFrame;
+
+	int64 newTime;
+	int64 currentTime;
+	int64 deltaTime;
+	float avgMilliseconds;
+	int64 checkTime;
 };
