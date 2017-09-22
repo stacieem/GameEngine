@@ -18,8 +18,9 @@ CoreEngine::CoreEngine() : Thread("CoreEngine")
 	inputManager = new InputManager();
     // Create GameModels in memory
     gameModelCurrentFrame = new GameModel();
-    gameModelSwapFrameA = new GameModel();
-    gameModelSwapFrameB = new GameModel();
+
+	renderSwapFrameA = new RenderSwapFrame();
+	renderSwapFrameB = new RenderSwapFrame();
     
     // Synchronizatoin - register threads with their correct waitables
     gameLogic.setCoreEngineWaitable (&coreEngineWaitable);
@@ -33,8 +34,9 @@ CoreEngine::CoreEngine() : Thread("CoreEngine")
 //    logicSwapFrameContainer = &gameModelSwapFrameA;
 //    renderSwapFrameContainer = &gameModelSwapFrameB;
 
-    gameLogic.setGameModels (gameModelCurrentFrame, gameModelSwapFrameA);
-    gameView.setGameModelSwapFrame (gameModelSwapFrameB);
+    gameLogic.setGameModel(gameModelCurrentFrame);
+	gameLogic.setRenderSwapFrame(renderSwapFrameA);
+	gameView.setRenderSwapFrame(renderSwapFrameB);
     
     // Start the GameLogic thread and the GameView's renderer
     gameLogic.startThread();
@@ -69,8 +71,8 @@ CoreEngine::~CoreEngine()
     this->stopThread(500);
     
     delete gameModelCurrentFrame;
-    delete gameModelSwapFrameA;
-    delete gameModelSwapFrameB;
+	delete renderSwapFrameA;
+	delete renderSwapFrameB;
 }
 
 void CoreEngine::paint (Graphics& g)
@@ -87,14 +89,11 @@ void CoreEngine::resized()
     gameView.setBounds (getLocalBounds());
 }
 
-/** Swaps the GameModel swap frames between GameLogic and the GameView renderer,
-    so that the renderer can render the frame the GameLogic just wrote
- */
-void CoreEngine::swapFramesBetweenLogicAndRender()
+void CoreEngine::swapRenderFramesBetweenLogicAndRender()
 {
-    GameModel * tempLogicSwapFrame = gameLogic.getGameModelSwapFrame();
-    gameLogic.setGameModelSwapFrame(gameView.getGameModelSwapFrame());
-    gameView.setGameModelSwapFrame(tempLogicSwapFrame);
+	RenderSwapFrame * tempLogicSwapFrame = gameLogic.getRenderSwapFrame();
+	gameLogic.setRenderSwapFrame(gameView.getRenderSwapFrame());
+	gameView.setRenderSwapFrame(tempLogicSwapFrame);
 }
 
 /** Signals both the GameLogic and GameView renderer to start, then swaps their
@@ -113,6 +112,7 @@ void CoreEngine::run() {
         coreEngineWaitable.wait();
         
         // Swap Pointers
-        swapFramesBetweenLogicAndRender();
+        //swapFramesBetweenLogicAndRender();
+		swapRenderFramesBetweenLogicAndRender();
     }
 }

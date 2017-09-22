@@ -14,8 +14,18 @@ public:
 
 	GameModel()
     {
+
 		player = new PlayerObject(worldPhysics);
 		gameObjects.add(player);
+		gameObjects[0]->setTexture("Kenny");
+
+		gameObjects.add (new GameObject(worldPhysics));
+		gameObjects[1]->setTexture("Flower");
+
+		gameObjects.add(new GameObject(worldPhysics));
+		gameObjects[2]->setTexture("Kenny");
+		gameObjects[2]->translateBy(2, 2);
+
 	}
     
 	~GameModel()
@@ -27,6 +37,10 @@ public:
     {
         return gameObjects;
     }
+
+	int getNumGameObjects() {
+		return gameObjects.size();
+	}
     
     /** Processes an physics in the world for a given frame in the physics
         timeline
