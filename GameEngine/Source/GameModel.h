@@ -14,38 +14,83 @@ public:
 
 	GameModel()
     {
-
-        // Morgan's Texure Test
-//		player = new PlayerObject(worldPhysics);
-//		gameObjects.add(player);
-//		gameObjects[0]->setTexture("Kenny");
+        // Demo 1 Basic Game Objects (breaks cuz of hard coded texture map)
+        //gameObjects.add(new GameObject(worldPhysics));
+        
+        
+        /** Demo 1 (Player Object with one Texutre and audio on collisions) */
+//        player1 = new PlayerObject(worldPhysics);
+//        player1->setTexture("Kenny");
+//        gameObjects.add(player1);
 //        
-//        gameObjects.add (new GameObject(worldPhysics));
-//        gameObjects[1]->setTexture("Flower");
-//
-//		gameObjects.add(new GameObject(worldPhysics));
-//		gameObjects[2]->setTexture("Kenny");
-//		gameObjects[2]->translateBy(2, 2);
-//
+//        player2 = new PlayerObject(worldPhysics);
+//        player2->setTexture("Kenny");
+//        gameObjects.add(player2);
         
-        // Tim's Audio Test
         
-        //        gameObjects.add (new GameObject(worldPhysics));
-        //        gameObjects.getLast()->translate(0.0, 3.0);
-        //
-        //        gameObjects.add (new GameObject(worldPhysics));
-        //        gameObjects.getLast()->translate(2.0, 0.0);
+        /** Demo 2 (2 Players with Texture and different textures) */
+//        player1 = new PlayerObject(worldPhysics);
+//        player1->setTexture("Kenny");
+//        gameObjects.add(player1);
+//        
+//        player2 = new PlayerObject(worldPhysics);
+//        player2->setTexture("Flower");
+//        gameObjects.add(player2);
         
-        // Trystan's Multiplayer Test
-		player1 = new PlayerObject(worldPhysics);
+        
+        /** Demo 3 (2 Players with Texture and different audio) */
+//        player1 = new PlayerObject(worldPhysics);
+//        player1->setTexture("Kenny");
+//        player1->mapAudioFileToPhysicalAction(File(File::getCurrentWorkingDirectory().getFullPathName() + "/Hey.wav"), PhysicalAction::collsion);
+//        gameObjects.add(player1);
+//        
+//        player2 = new PlayerObject(worldPhysics);
+//        player2->setTexture("Flower");
+//        player2->mapAudioFileToPhysicalAction(File(File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav"), PhysicalAction::collsion);
+//        gameObjects.add(player2);
+        
+        
+        /** Demo 4 (lots and lots of objects) */
+        
+//        player1 = new PlayerObject(worldPhysics);
+//        player1->setTexture("Kenny");
+//        player1->mapAudioFileToPhysicalAction(File(File::getCurrentWorkingDirectory().getFullPathName() + "/Hey.wav"), PhysicalAction::collsion);
+//        gameObjects.add(player1);
+//        
+//        player2 = new PlayerObject(worldPhysics);
+//        player2->setTexture("Flower");
+//        player2->mapAudioFileToPhysicalAction(File(File::getCurrentWorkingDirectory().getFullPathName() + "/YooHoo.wav"), PhysicalAction::collsion);
+//        gameObjects.add(player2);
+//        
+//        for (int i = 0; i < 200; i++) {
+//            GameObject* obj = new GameObject(worldPhysics);
+//            obj->setTexture("Flower");
+//            obj->getPhysicsProperties().setRestitution(1.5);
+//            gameObjects.add(obj);
+//        }
+        
+        /** Demo 5 (lots and lots of objects & physics changes) */
+        player1 = new PlayerObject(worldPhysics);
         player1->setTexture("Kenny");
         player1->mapAudioFileToPhysicalAction(File(File::getCurrentWorkingDirectory().getFullPathName() + "/Hey.wav"), PhysicalAction::collsion);
-		gameObjects.add(player1);
-        
-		player2 = new PlayerObject(worldPhysics);
+        gameObjects.add(player1);
+
+        player2 = new PlayerObject(worldPhysics);
         player2->setTexture("Flower");
-        player2->mapAudioFileToPhysicalAction(File(File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav"), PhysicalAction::collsion);
-		gameObjects.add(player2);
+        player2->mapAudioFileToPhysicalAction(File(File::getCurrentWorkingDirectory().getFullPathName() + "/YooHoo.wav"), PhysicalAction::collsion);
+        gameObjects.add(player2);
+
+        for (int i = 0; i < 2; i++) {
+            GameObject* obj = new GameObject(worldPhysics);
+            obj->setTexture("Flower");
+//            obj->getPhysicsProperties().setRestitution(1.5);
+//            obj->getPhysicsProperties().setDensity(.5);
+//            obj->getPhysicsProperties().setFriction(.3);
+            gameObjects.add(obj);
+        }
+        
+        
+        
 	}
     
 	~GameModel()

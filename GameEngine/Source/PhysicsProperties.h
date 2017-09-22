@@ -188,7 +188,8 @@ public:
 	**************************************************************************/
 	void setRestitution(float32 rest)
 	{
-		fixtureDef.restitution = rest;
+        b2Fixture* fixture = body->GetFixtureList();
+        fixture->SetRestitution(rest);
 	}
 	/**************************************************************************
 	*
@@ -196,8 +197,9 @@ public:
 	*
 	**************************************************************************/
 	void setFriction(float32 fric)
-	{
-		fixtureDef.friction = fric;
+    {
+        b2Fixture* fixture = body->GetFixtureList();
+        fixture->SetFriction(fric);
 	}
 	/**************************************************************************
 	*
@@ -205,8 +207,9 @@ public:
 	*
 	**************************************************************************/
 	void setDensity(float32 dens)
-	{
-		fixtureDef.density = dens;
+    {
+        b2Fixture* fixture = body->GetFixtureList();
+        fixture->SetDensity(dens);
 		body->ResetMassData();
 	}
 	/**************************************************************************
@@ -243,6 +246,7 @@ public:
 
 		this->myFixture = body->CreateFixture(&fixtureDef);
 	}
+    
     
     /** Determines whether or not new Collisions are present in an object.
         Returns true if new collisions have been added, returns false if not.
