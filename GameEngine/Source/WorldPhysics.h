@@ -52,4 +52,9 @@ public:
 	{
 		world.Step(timeStep, velocityIterations, positionIterations);
 	}
+    
+    b2World & getWorld()
+    {
+        return world;
+    }
 };

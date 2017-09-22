@@ -128,9 +128,9 @@ public:
         {
             // Scale and view matrix
             Matrix3D<float> scale;
-            scale.mat[0] = 2.0;
-            scale.mat[5] = 2.0;
-            scale.mat[10] = 2.0;
+            scale.mat[0] = 1.0;
+            scale.mat[5] = 1.0;
+            scale.mat[10] = 1.0;
             Matrix3D<float> finalMatrix = scale * getViewMatrix();
             uniforms->viewMatrix->setMatrix4 (finalMatrix.mat, 1, false);
         }

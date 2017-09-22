@@ -14,6 +14,12 @@ public:
 	GameModel()
     {
 		gameObjects.add (new GameObject(worldPhysics));
+        
+//        gameObjects.add (new GameObject(worldPhysics));
+//        gameObjects.getLast()->translate(0.0, 3.0);
+//        
+//        gameObjects.add (new GameObject(worldPhysics));
+//        gameObjects.getLast()->translate(2.0, 0.0);
 	}
     
 	~GameModel()
@@ -21,7 +27,7 @@ public:
         
 	}
     
-    OwnedArray<GameObject> & getGameObjects()
+    const OwnedArray<GameObject> & getGameObjects()
     {
         return gameObjects;
     }
@@ -32,6 +38,11 @@ public:
     void processWorldPhysics()
     {
         worldPhysics.Step();
+    }
+    
+    WorldPhysics & getWorldPhyscis()
+    {
+        return worldPhysics;
     }
 
 

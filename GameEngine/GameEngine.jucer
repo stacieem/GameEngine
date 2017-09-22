@@ -6,10 +6,22 @@
               cppLanguageStandard="11" jucerVersion="5.1.0">
   <MAINGROUP id="FQiawi" name="GameEngine">
     <GROUP id="{A90B6C66-5187-763C-2B86-1EE26DFD5E8F}" name="Source">
-      <FILE id="LaMs7Y" name="MainComponent.cpp" compile="1" resource="0"
-            file="Source/MainComponent.cpp"/>
-      <FILE id="KMuIBU" name="MainComponent.h" compile="0" resource="0" file="Source/MainComponent.h"/>
+      <FILE id="P8suE4" name="CoreEngine.cpp" compile="1" resource="0" file="Source/CoreEngine.cpp"/>
+      <FILE id="rVDtir" name="CoreEngine.h" compile="0" resource="0" file="Source/CoreEngine.h"/>
+      <FILE id="JTnvFn" name="GameHUD.h" compile="0" resource="0" file="Source/GameHUD.h"/>
+      <FILE id="evUoPr" name="GameHUDDataModel.h" compile="0" resource="0"
+            file="Source/GameHUDDataModel.h"/>
+      <FILE id="RuvnfE" name="GameHUDElement.h" compile="0" resource="0"
+            file="Source/GameHUDElement.h"/>
+      <FILE id="Y0ZEIZ" name="GameLogic.h" compile="0" resource="0" file="Source/GameLogic.h"/>
+      <FILE id="NKj2YU" name="GameModel.h" compile="0" resource="0" file="Source/GameModel.h"/>
+      <FILE id="DFt9PM" name="GameObject.h" compile="0" resource="0" file="Source/GameObject.h"/>
+      <FILE id="S6x84W" name="GameView.h" compile="0" resource="0" file="Source/GameView.h"/>
+      <FILE id="a0tuYT" name="HealthBar.h" compile="0" resource="0" file="Source/HealthBar.h"/>
       <FILE id="OKZJUt" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="BL6xoX" name="PhysicsProperties.h" compile="0" resource="0"
+            file="Source/PhysicsProperties.h"/>
+      <FILE id="t4k7fr" name="WorldPhysics.h" compile="0" resource="0" file="Source/WorldPhysics.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
@@ -33,6 +45,7 @@
         <MODULEPATH id="juce_audio_formats" path="../JUCE/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../JUCE/modules"/>
         <MODULEPATH id="juce_box2d" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
     <VS2017 targetFolder="Builds/VisualStudio2017">
@@ -57,6 +70,7 @@
         <MODULEPATH id="juce_audio_formats" path="../JUCE/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../JUCE/modules"/>
         <MODULEPATH id="juce_box2d" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE/modules"/>
       </MODULEPATHS>
     </VS2017>
     <VS2015 targetFolder="Builds/VisualStudio2015" externalLibraries="">
@@ -81,6 +95,7 @@
         <MODULEPATH id="juce_audio_formats" path="../JUCE/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../JUCE/modules"/>
         <MODULEPATH id="juce_box2d" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE/modules"/>
       </MODULEPATHS>
     </VS2015>
     <VS2013 targetFolder="Builds/VisualStudio2013">
@@ -105,6 +120,7 @@
         <MODULEPATH id="juce_audio_formats" path="../JUCE/modules"/>
         <MODULEPATH id="juce_audio_processors" path="../JUCE/modules"/>
         <MODULEPATH id="juce_box2d" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="../JUCE/modules"/>
       </MODULEPATHS>
     </VS2013>
   </EXPORTFORMATS>
@@ -113,6 +129,7 @@
     <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_box2d" showAllCode="1" useLocalCopy="1" useGlobalPath="0"/>
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
     <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>

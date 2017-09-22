@@ -11,6 +11,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PhysicsProperties.h"
 #include "WorldPhysics.h"
+#include "PhysicalAction.h"
+#include <map>
 
 /** Represents an Object that holds vertices that can be rendered by OpenGL.
  */
@@ -19,7 +21,7 @@ class GameObject
 public:
     /** Constructs a GameObject and attatches it to the world's physics.
      */
-    GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.world)
+    GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.world), audioFile ("../../Air Horn.wav")
     {
         // Default vertices
         vertices.add(new Vector3D<GLfloat>(0.5f,   0.5f,  0.0f));
@@ -31,6 +33,9 @@ public:
         
         // Vertices sent to OpenGL
         glVertices = new GLfloat[vertices.size() * 3];
+        
+        // Default mapping to an objects audio
+        mapAudioFileToPhysicalAction(File("../../Air Horn.wav"), PhysicalAction::collsion);
     }
     
     /** Get the
@@ -64,12 +69,6 @@ public:
         return vertices.size();
     }
     
-    /** Get the VBO for the object.
-     */
-//    GLuint & getVBO()
-//    {
-//        return VBO;
-//    }
     
     void translate (GLfloat x, GLfloat y)
     {
@@ -80,15 +79,34 @@ public:
         physicsProperties.getBody()->SetTransform(b2Vec2(x, y), 0.0);
     }
     
-    PhysicsProperties getPhysicsProperties()
+    PhysicsProperties & getPhysicsProperties()
     {
         return physicsProperties;
     }
     
-    // CRAP CODE:
-    GLfloat getHeight()
+    /** Maps an audio file to play when a specific action happens to this object
+        in the physical game world.
+     */
+    void mapAudioFileToPhysicalAction (File audioFile, PhysicalAction action)
     {
-        return position.y;
+        actionToAudio.insert(std::pair<PhysicalAction, File>(action, audioFile));
+    }
+    
+    
+    /** Gets the audio to play when a specific PhysicalAction occurs in the game.
+     */
+    File * getAudioFileForAction(PhysicalAction action)
+    {
+        auto mapIterator = actionToAudio.find(action);
+        if (mapIterator != actionToAudio.end())
+            return &(actionToAudio.find(action)->second);
+        else
+            return nullptr;
+    }
+    
+    File getAudioFile()
+    {
+        return audioFile;
     }
     
 private:
@@ -101,8 +119,13 @@ private:
     Vector3D<GLfloat> position;
     //Matrix3D<GLfloat> transformations;
     
-    
+    /** Physical properties associated with the object */
     PhysicsProperties physicsProperties;
+    
+    /** Map of in-game physics-based actions to specific audio files */
+    std::map<PhysicalAction, File> actionToAudio;
+    
+    File audioFile;
     
     
 //    AudioFileList files;

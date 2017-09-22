@@ -6,6 +6,7 @@
 #include "GameView.h"
 #include "GameModel.h"
 #include "GameLogic.h"
+#include "GameAudio.h"
 
 
 /** Represents the core of the entire game engine, including the game's data
@@ -16,17 +17,24 @@
     This component lives inside our window, and contains controls and content of
     the GameView.
 */
-class CoreEngine    : public Component, public Thread
+class CoreEngine    : public AudioAppComponent, public Thread
 {
 public:
     //==========================================================================
     CoreEngine();
     ~CoreEngine();
 
+    // JUCE GUI Callbacks ======================================================
     void paint (Graphics&) override;
     void resized() override;
     
-    // Thread running callback =================================================
+    // JUCE Audio Callbacks ====================================================
+    void prepareToPlay (int samplesPerBlockExpected, double sampleRate) override;
+    void releaseResources() override;
+    void getNextAudioBlock (const AudioSourceChannelInfo &bufferToFill) override;
+    
+    
+    // Engine Thread Callback & Functions ======================================
     void run() override;
     
     
@@ -62,6 +70,9 @@ private:
     GameModel * gameModelCurrentFrame;
     GameModel * gameModelSwapFrameA;
     GameModel * gameModelSwapFrameB;
+    
+    /** Audio produced by the game */
+    GameAudio gameAudio;
 
     // Thread Synchronization between CoreEngine, GameView, and GameLogic
     WaitableEvent logicWaitable;

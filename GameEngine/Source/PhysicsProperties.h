@@ -59,6 +59,34 @@ public:
 	{
 		return body;
 	}
+    
+    /** Determines whether or not new Collisions are present in an object.
+        Returns true if new collisions have been added, returns false if not.
+     */
+    bool hasNewCollisions()
+    {
+        bool hasNewCollisions = false;
+        int curNumCollisions = 0;
+        for (b2ContactEdge* edge = body->GetContactList(); edge; edge = edge->next)
+        {
+            curNumCollisions += edge->contact->GetManifold()->pointCount;
+        }
+        
+        if (curNumCollisions > lastNumCollsions)
+            hasNewCollisions = true;
+        
+        lastNumCollsions = curNumCollisions;
+        
+        return hasNewCollisions;
+    }
+    
+    
 private:
 	b2Body* body;
+    
+    /** The number of collisions that were last checked. */
+    int lastNumCollsions = 0;
+    
+    /** Any new collisions have been reported. */
+    bool reportedNewCollsions = false;
 };

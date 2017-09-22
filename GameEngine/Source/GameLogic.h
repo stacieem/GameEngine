@@ -2,6 +2,8 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "GameAudio.h"
+#include "PhysicalAction.h"
 
 /** Processes the logic of the game. Started by the Core Engine and manipulates
     the GameDataModel to be rendered for the next frame.
@@ -9,7 +11,9 @@
 class GameLogic : public Thread
 {
 public:
-	GameLogic() : Thread("GameLogic") {}
+	GameLogic(GameAudio & gameAudio) : Thread("GameLogic"), gameAudio(gameAudio)
+    {
+    }
 
 	~GameLogic()
     {
@@ -89,8 +93,28 @@ private:
 			}
             
             // Process Physics
-            //gameModelCurrentFrame->processWorldPhysics();   // Eventually we want to step by a given time here
-            gameModelSwapFrame->processWorldPhysics();
+            gameModelCurrentFrame->processWorldPhysics();   // Eventually we want to step by a given time here
+            //gameModelSwapFrame->processWorldPhysics();
+            
+            // SUPER BAD HACK RIGHT NOW DONT EVER DO THIS
+            gameModelSwapFrame = gameModelCurrentFrame;
+            
+            // If any new collisions occur, play the specified collision audio
+            for (auto & object : gameModelCurrentFrame->getGameObjects())
+            {
+                if (object->getPhysicsProperties().hasNewCollisions())
+                {
+                    //File * audioFile = object->getAudioFileForAction(PhysicalAction::collsion);
+                 
+                    // If audio file was not in the map, do nothing
+//                    if (audioFile != nullptr)
+//                    {
+//                        gameAudio.playAudioFile(*audioFile, false);
+//                    }
+                    gameAudio.playAudioFile(object->getAudioFile(), false);
+                    
+                }
+            }
             
             // Update the GameModel
             // Maybe actions are triggered here ???
@@ -101,6 +125,7 @@ private:
 		}
 	}
 
+    GameAudio & gameAudio;
 	GameModel* gameModelCurrentFrame;
 	GameModel* gameModelSwapFrame;
 	WaitableEvent* logicWaitable;

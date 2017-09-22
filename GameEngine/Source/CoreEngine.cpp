@@ -10,11 +10,14 @@
 
 
 //==============================================================================
-CoreEngine::CoreEngine() : Thread("CoreEngine")
+CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
 {
     // Setup JUCE Components & Windowing
     addAndMakeVisible (gameView);
     setSize (600, 400);
+    
+    // Initialize Audio Engine
+    setAudioChannels(0, 2); // 0 audio inputs, 2 audio outputs
     
     // Create GameModels in memory
     gameModelCurrentFrame = new GameModel();
@@ -29,10 +32,6 @@ CoreEngine::CoreEngine() : Thread("CoreEngine")
     gameView.setRenderWaitable (&renderWaitable);
     
     // Setup threads to hold pointers to GameModel frames
-   
-//    logicSwapFrameContainer = &gameModelSwapFrameA;
-//    renderSwapFrameContainer = &gameModelSwapFrameB;
-
     gameLogic.setGameModels (gameModelCurrentFrame, gameModelSwapFrameA);
     gameView.setGameModelSwapFrame (gameModelSwapFrameB);
     
@@ -45,6 +44,9 @@ CoreEngine::CoreEngine() : Thread("CoreEngine")
 
 CoreEngine::~CoreEngine()
 {
+    // Close Audio Engine
+    shutdownAudio();
+    
     coreEngineWaitable.signal();
     coreEngineWaitable.signal();
     logicWaitable.signal();
@@ -59,6 +61,8 @@ CoreEngine::~CoreEngine()
     delete gameModelSwapFrameB;
 }
 
+// JUCE GUI Callbacks ==========================================================
+
 void CoreEngine::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
@@ -72,6 +76,46 @@ void CoreEngine::resized()
     // update their positions.
     gameView.setBounds (getLocalBounds());
 }
+
+// JUCE Audio Callbacks ========================================================
+
+/** Initializes audio engine. Called automatically before the engine begins
+    running its audio engine.
+ 
+    Put any code here that creates objects that are dependent on the audio
+    engine.
+ */
+void CoreEngine::prepareToPlay (int samplesPerBlockExpected, double sampleRate)
+{
+    gameAudio.prepareToPlay (samplesPerBlockExpected, sampleRate);
+}
+
+/** Cleans up any leftover data from the audio engine. Called automaticall as
+    audio engine is closing.
+    
+    Put any code here that needs to clean things up once audio is closing down.
+ */
+void CoreEngine::releaseResources()
+{
+    gameAudio.releaseResources();
+}
+
+/** The main audio callback that is called everytime the audio thread needs
+    another block of audio to send to the speakers.
+ */
+void CoreEngine::getNextAudioBlock (const AudioSourceChannelInfo &bufferToFill)
+{
+//    if (!gameAudio.hasNewAudio())
+//    {
+//        bufferToFill.clearActiveBufferRegion();
+//        return;
+//    }
+    
+    gameAudio.getNextAudioBlock (bufferToFill);
+    
+}
+
+// Engine Thread Callback & Functions ==========================================
 
 /** Swaps the GameModel swap frames between GameLogic and the GameView renderer,
     so that the renderer can render the frame the GameLogic just wrote
