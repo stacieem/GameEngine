@@ -24,7 +24,7 @@ public:
         @param looping      specifies whether or not to continuously loop the
                             audio file and play it over and over
      */
-    void playAudioFile (File audioFile, bool looping);
+    void playAudioFile (File & audioFile, bool looping);
     
     
     /** AudioSource Garbage Collection
@@ -37,13 +37,13 @@ public:
 private:
     
     /** Interval at which the garbage collection timerCallback is called */
-    const int GARBAGE_COLLECTION_INTERVAL_MILISECONDS = 1000;
+    //const int GARBAGE_COLLECTION_INTERVAL_MILISECONDS = 1000;
     
     /** Manages the audio formats that can be read */
     AudioFormatManager formatManager;
     
     /** Audio sources created and triggered by various logic and actions in the game */
-    //OwnedArray<AudioFormatReaderSource, CriticalSection> audioSources;
+    OwnedArray<AudioFormatReaderSource> audioSources;
     
     /** Lock for when MixerAudioSource and audioSources so they are attomically
         updated together

@@ -152,14 +152,14 @@ private:
             {
                 if (object->getPhysicsProperties().hasNewCollisions())
                 {
-//                    File * audioFile = object->getAudioFileForAction(PhysicalAction::collsion);
-//                 
-//                     If audio file was not in the map, do nothing
-//                    if (audioFile != nullptr)
-//                    {
-//                        gameAudio.playAudioFile(*audioFile, false);
-//                    }
-                    //sgameAudio.playAudioFile(object->getAudioFile(), false);
+                    File * audioFile = object->getAudioFileForAction(PhysicalAction::collsion);
+                 
+                    // If audio file was not in the map, do nothing
+                    if (audioFile != nullptr)
+                    {
+                        gameAudio.playAudioFile(*audioFile, false);
+                    }
+                    //gameAudio.playAudioFile(object->getAudioFile(), false);
                     
                 }
             }

@@ -22,16 +22,12 @@ class GameObject
 public:
     /** Constructs a GameObject and attatches it to the world's physics.
      */
-    GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld()), audioFile (File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav")
-    {
+    GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld())    {
         // Default vertices and texture coordinates
         vertices.add(new Vertex(Vector3D<GLfloat>(0.5f,   0.5f,  0.0f),1,1));
 		vertices.add(new Vertex(Vector3D<GLfloat>(0.5f, -0.5f, 0.0f), 1, 0));
 		vertices.add(new Vertex(Vector3D<GLfloat>(-0.5f, -0.5f, 0.0f), 0, 0));
 		vertices.add(new Vertex(Vector3D<GLfloat>(-0.5f, 0.5f, 0.0f), 0, 1));
-
-        // Default mapping to an objects audio
-        mapAudioFileToPhysicalAction(File(File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav"), PhysicalAction::collsion);
     }
     
     /** Get the
@@ -104,13 +100,6 @@ public:
             return nullptr;
     }
     
-    // !FIX! Dont need this if the map stuff works
-    File getAudioFile()
-    {
-        return audioFile;
-    }
-    
-    
 	void translateBy (GLfloat x, GLfloat y)
 	{
 		Vector3D<GLfloat> transformation(x, y, 0.0);
@@ -146,8 +135,6 @@ private:
     
     /** Map of in-game physics-based actions to specific audio files */
     std::map<PhysicalAction, File> actionToAudio;
-    
-    File audioFile;
     
 	String textureName;
 

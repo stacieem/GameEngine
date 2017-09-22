@@ -25,28 +25,28 @@ GameAudio::~GameAudio()
 }
 
 
-void GameAudio::playAudioFile (File audioFile, bool looping)
+void GameAudio::playAudioFile (File & audioFile, bool looping)
 {
     AudioFormatReader* reader = formatManager.createReaderFor (audioFile);
     
     if (reader != nullptr)
     {
-        ScopedPointer<AudioFormatReaderSource> newSource = new AudioFormatReaderSource (reader, true);
+        AudioFormatReaderSource * newSource = new AudioFormatReaderSource (reader, true);
                                                             // 2nd parameter, "true", in this constructor
                                                             // specifies to delete the AudioFormatReader
                                                             // when the AudioFormatReaderSouce is deleted
         newSource->setLooping(looping);
-        
-        
-        //const ScopedLock sl (lock);
-        //this->addInputSource (newSource, true);
+    
+            
+        this->addInputSource (newSource, true);
                                         // 2nd parameter, "false", specifies to not
                                         // delete the AudioFormatReaderSource when
                                         // removed from the MixerAudioSource, since
                                         // we are storing them in an OwnedArray that
                                         // will later deallocate them.
 
-       // audioSources.add(newSource.release());
+       //audioSources.add(newSource.release());
+        //audioSources.add(newSource); // If not using a ScopedPointer for newSource
     }
 }
 
@@ -54,42 +54,44 @@ void GameAudio::playAudioFile (File audioFile, bool looping)
 
 //void GameAudio::timerCallback()
 //{
-    /**
-        DEV-NOTE: This could be cleaned up in the future by maybe using an array
-        of AudioTransportSources and checking for isPlaying() or
-        hasStreamFinished(), but for now, this essentially does the same thing.
-     */
-    
+//    /**
+//        DEV-NOTE: This could be cleaned up in the future by maybe using an array
+//        of AudioTransportSources and checking for isPlaying() or
+//        hasStreamFinished(), but for now, this essentially does the same thing.
+//     */
+//    
 //    Array<int> audioSourceIndeciesToDelete;
 //    
-//    const ScopedLock sl (lock);
+//    lock.enter();
 //    
-//    // Look through audio sources and deallocate resources if the audio is done
-//    // being used
-//    for (int i = 0; i < audioSources.size(); ++i)
-//    {
-//        // Get pointer to audio source
-//        const auto audioSource = audioSources[i];
-//        
-//        if (!audioSource->isLooping())
+//        // Look through audio sources and deallocate resources if the audio is done
+//        // being used
+//        for (int i = 0; i < audioSources.size(); ++i)
 //        {
-//            if (audioSource->getNextReadPosition() > audioSource->getTotalLength())
+//            // Get pointer to audio source
+//            AudioFormatReaderSource* audioSource = audioSources[i];
+//            
+//            if (!audioSource->isLooping())
 //            {
-//                // Remove from MixerAudioSource & releases its resources
-//                this->removeInputSource(audioSource);
-//                
-//                // Prepare to delete the audioSource pointer
-//                audioSourceIndeciesToDelete.add(i);
+//                if (audioSource->getNextReadPosition() > audioSource->getTotalLength())
+//                {
+//                    // Remove from MixerAudioSource & releases its resources
+//                    this->removeInputSource(audioSource);
+//                    
+//                    // Prepare to delete the audioSource pointer
+//                    audioSourceIndeciesToDelete.add(i);
+//                }
 //            }
 //        }
-//    }
-//    
-//    // Remove unused audio sources
-//    for (int i : audioSourceIndeciesToDelete)
-//    {
-//        audioSources.remove(i, false);
 //        
-//        // REMOVE LATER
-//        DBG("Audio was deleted.");
-//    }
+//        // Remove unused audio source pointers
+//        for (int i : audioSourceIndeciesToDelete)
+//        {
+//            audioSources.remove(i, true);
+//            
+//            // REMOVE LATER
+//            DBG("Audio was deleted.");
+//        }
+//    
+//    lock.exit();
 //}

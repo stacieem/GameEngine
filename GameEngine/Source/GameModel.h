@@ -39,10 +39,12 @@ public:
         // Trystan's Multiplayer Test
 		player1 = new PlayerObject(worldPhysics);
         player1->setTexture("Kenny");
+        player1->mapAudioFileToPhysicalAction(File(File::getCurrentWorkingDirectory().getFullPathName() + "/Hey.wav"), PhysicalAction::collsion);
 		gameObjects.add(player1);
         
 		player2 = new PlayerObject(worldPhysics);
         player2->setTexture("Flower");
+        player2->mapAudioFileToPhysicalAction(File(File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav"), PhysicalAction::collsion);
 		gameObjects.add(player2);
 	}
     

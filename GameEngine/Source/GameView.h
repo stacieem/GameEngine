@@ -55,19 +55,18 @@ public:
     
     ~GameView()
     {
-        std::map<String, OpenGLTexture*>::iterator it;
-        for (it = textureMap.begin(); it != textureMap.end(); it++)
+        // Turn off OpenGL
+        openGLContext.setContinuousRepainting (false);
+        
+        for (auto it = textureMap.begin(); it != textureMap.end(); it++)
         {
             delete it->second;
         }
-        
-        // Turn off OpenGL
-        openGLContext.setContinuousRepainting (false);
-        openGLContext.detach();
-		
 		
 		openGLContext.extensions.glDeleteBuffers(1, &vertexBuffer);
 		openGLContext.extensions.glDeleteBuffers(1, &indexBuffer);
+        
+        openGLContext.detach();
     }
     
     /** Enables or disables the OpenGL layer of GameView. Enabling continuously
