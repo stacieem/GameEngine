@@ -1,6 +1,7 @@
 #pragma once
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "GameObject.h"
+#include "PlayerObject.h"
 #include "WorldPhysics.h"
 
 /** Represents the data model for a game. This includes all Levels, Scenes, 
@@ -13,13 +14,24 @@ public:
 
 	GameModel()
     {
-		gameObjects.add (new GameObject(worldPhysics));
+
+		player = new PlayerObject(worldPhysics);
+		gameObjects.add(player);
+		gameObjects[0]->setTexture("Kenny");
         
-//        gameObjects.add (new GameObject(worldPhysics));
-//        gameObjects.getLast()->translate(0.0, 3.0);
-//        
-//        gameObjects.add (new GameObject(worldPhysics));
-//        gameObjects.getLast()->translate(2.0, 0.0);
+        gameObjects.add (new GameObject(worldPhysics));
+        gameObjects[1]->setTexture("Flower");
+
+		gameObjects.add(new GameObject(worldPhysics));
+		gameObjects[2]->setTexture("Kenny");
+		gameObjects[2]->translateBy(2, 2);
+    
+        
+        //        gameObjects.add (new GameObject(worldPhysics));
+        //        gameObjects.getLast()->translate(0.0, 3.0);
+        //
+        //        gameObjects.add (new GameObject(worldPhysics));
+        //        gameObjects.getLast()->translate(2.0, 0.0);
 	}
     
 	~GameModel()
@@ -31,6 +43,10 @@ public:
     {
         return gameObjects;
     }
+
+	int getNumGameObjects() {
+		return gameObjects.size();
+	}
     
     /** Processes an physics in the world for a given frame in the physics
         timeline
@@ -45,6 +61,9 @@ public:
         return worldPhysics;
     }
 
+	PlayerObject* getPlayer() {
+		return player;
+	}
 
 private:
     
@@ -54,7 +73,7 @@ private:
     // Eventually this will be encapsulated in Scenes and further those scenes
     // will be encapsulated in Levels
     OwnedArray<GameObject> gameObjects;
-    
+	PlayerObject* player;
     //OwnedArray<GameObject> gameObjects;
     
     WorldPhysics worldPhysics;

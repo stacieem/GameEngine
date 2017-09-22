@@ -19,10 +19,14 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
     // Initialize Audio Engine
     setAudioChannels(0, 2); // 0 audio inputs, 2 audio outputs
     
+    // Setup InputManager
+	inputManager = new InputManager();
+
     // Create GameModels in memory
     gameModelCurrentFrame = new GameModel();
-    gameModelSwapFrameA = new GameModel();
-    gameModelSwapFrameB = new GameModel();
+
+	renderSwapFrameA = new RenderSwapFrame();
+	renderSwapFrameB = new RenderSwapFrame();
     
     // Synchronizatoin - register threads with their correct waitables
     gameLogic.setCoreEngineWaitable (&coreEngineWaitable);
@@ -32,13 +36,30 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
     gameView.setRenderWaitable (&renderWaitable);
     
     // Setup threads to hold pointers to GameModel frames
-    gameLogic.setGameModels (gameModelCurrentFrame, gameModelSwapFrameA);
-    gameView.setGameModelSwapFrame (gameModelSwapFrameB);
+    gameLogic.setGameModel(gameModelCurrentFrame);
+	gameLogic.setRenderSwapFrame(renderSwapFrameA);
+	gameView.setRenderSwapFrame(renderSwapFrameB);
     
     // Start the GameLogic thread and the GameView's renderer
     gameLogic.startThread();
     gameView.setOpenGLEnabled (true);
     
+	// Setup InputManager Listeners
+	getTopLevelComponent()->addKeyListener(inputManager);
+	getTopLevelComponent()->addMouseListener(inputManager, true);
+
+	
+    // !FIX! MOVE LATER TO AN INPUT MAP AS THE DEFAULT INPUT MAP
+	inputManager->addCommand((juce_wchar)'w');
+	inputManager->addCommand((juce_wchar)'s');
+	inputManager->addCommand((juce_wchar)'a');
+	inputManager->addCommand((juce_wchar)'d');
+	inputManager->addCommand((juce_wchar)'r');
+
+    // !FIX! Do this in constructor of GameLogic to register InputManger
+	gameLogic.registerInputManager(inputManager);
+
+    // Start CoreEngine
     this->startThread();
 }
 
@@ -57,8 +78,8 @@ CoreEngine::~CoreEngine()
     this->stopThread(500);
     
     delete gameModelCurrentFrame;
-    delete gameModelSwapFrameA;
-    delete gameModelSwapFrameB;
+	delete renderSwapFrameA;
+	delete renderSwapFrameB;
 }
 
 // JUCE GUI Callbacks ==========================================================
@@ -105,26 +126,21 @@ void CoreEngine::releaseResources()
  */
 void CoreEngine::getNextAudioBlock (const AudioSourceChannelInfo &bufferToFill)
 {
-//    if (!gameAudio.hasNewAudio())
-//    {
-//        bufferToFill.clearActiveBufferRegion();
-//        return;
-//    }
-    
     gameAudio.getNextAudioBlock (bufferToFill);
-    
 }
 
 // Engine Thread Callback & Functions ==========================================
 
 /** Swaps the GameModel swap frames between GameLogic and the GameView renderer,
     so that the renderer can render the frame the GameLogic just wrote
+ 
+    !FIX COMMENT!
  */
-void CoreEngine::swapFramesBetweenLogicAndRender()
+void CoreEngine::swapRenderFramesBetweenLogicAndRender()
 {
-    GameModel * tempLogicSwapFrame = gameLogic.getGameModelSwapFrame();
-    gameLogic.setGameModelSwapFrame(gameView.getGameModelSwapFrame());
-    gameView.setGameModelSwapFrame(tempLogicSwapFrame);
+	RenderSwapFrame * tempLogicSwapFrame = gameLogic.getRenderSwapFrame();
+	gameLogic.setRenderSwapFrame(gameView.getRenderSwapFrame());
+	gameView.setRenderSwapFrame(tempLogicSwapFrame);
 }
 
 /** Signals both the GameLogic and GameView renderer to start, then swaps their
@@ -142,7 +158,7 @@ void CoreEngine::run() {
         coreEngineWaitable.wait();
         coreEngineWaitable.wait();
         
-        // Swap Pointers
-        swapFramesBetweenLogicAndRender();
+        // Swap render frames
+		swapRenderFramesBetweenLogicAndRender();
     }
 }

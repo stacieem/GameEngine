@@ -14,7 +14,7 @@
 
 /** Renders a Heads Up Display with a transparent background.
  */
-class GameHUD : public Component, public Button::Listener, public ChangeListener
+class GameHUD : public Component,  public ChangeListener
 {
 public:
 
@@ -49,17 +49,7 @@ public:
         
         healthBar.setBounds(margin, (h - healthBarH) / 2, healthBarW, healthBarH);
     }
-    
-    /** Consider getting rid of this ...
-        we must hash out a messageing system.
-        Maybe we register some MessageCenter that registers a bunch of listeners
-        like a button and maps out GameCommands to do based on those.
-     */
-    void buttonClicked (Button* button) override
-    {
 
-    }
-    
     /** Consider getting rid of this ... 
         we must hash out a messageing system.
      */

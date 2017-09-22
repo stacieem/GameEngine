@@ -39,7 +39,7 @@ void GameAudio::playAudioFile (File audioFile, bool looping)
         
         
         //const ScopedLock sl (lock);
-        this->addInputSource (newSource, true);
+        //this->addInputSource (newSource, true);
                                         // 2nd parameter, "false", specifies to not
                                         // delete the AudioFormatReaderSource when
                                         // removed from the MixerAudioSource, since

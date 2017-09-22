@@ -9,6 +9,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "Vertex.h"
 #include "PhysicsProperties.h"
 #include "WorldPhysics.h"
 #include "PhysicalAction.h"
@@ -21,42 +22,40 @@ class GameObject
 public:
     /** Constructs a GameObject and attatches it to the world's physics.
      */
-    GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.world), audioFile ("../../Air Horn.wav")
+    GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld()), audioFile ("../../Air Horn.wav")
     {
-        // Default vertices
-        vertices.add(new Vector3D<GLfloat>(0.5f,   0.5f,  0.0f));
-        vertices.add(new Vector3D<GLfloat>(0.5f,  -0.5f,  0.0f));
-        vertices.add(new Vector3D<GLfloat>(-0.5f, -0.5f,  0.0f));
-        vertices.add(new Vector3D<GLfloat>(-0.5f,   0.5f,  0.0f));
-        vertices.add(new Vector3D<GLfloat>(-0.5f, -0.5f,  0.0f));
-        vertices.add(new Vector3D<GLfloat>(0.5f,   0.5f,  0.0f));
-        
-        // Vertices sent to OpenGL
-        glVertices = new GLfloat[vertices.size() * 3];
-        
+        // Default vertices and texture coordinates
+        vertices.add(new Vertex(Vector3D<GLfloat>(0.5f,   0.5f,  0.0f),1,1));
+		vertices.add(new Vertex(Vector3D<GLfloat>(0.5f, -0.5f, 0.0f), 1, 0));
+		vertices.add(new Vertex(Vector3D<GLfloat>(-0.5f, -0.5f, 0.0f), 0, 0));
+		vertices.add(new Vertex(Vector3D<GLfloat>(-0.5f, 0.5f, 0.0f), 0, 1));
+
         // Default mapping to an objects audio
         mapAudioFileToPhysicalAction(File("../../Air Horn.wav"), PhysicalAction::collsion);
     }
     
     /** Get the
      */
-    GLfloat * getVertices()
+    Array<Vertex> getVertices()
     {
         // Calculate vertices based on Box2D's transformations
         
-        b2Vec2 box2DPos = physicsProperties.getBody()->GetPosition();
+        b2Vec2 box2DPos = physicsProperties.GetPosition();
         position.x = box2DPos.x;
         position.y = box2DPos.y;
         
+		Array<Vertex> glVerticesArray;
         // Calculate GLVertices
-        for (int i = 0; i < vertices.size() * 3; i += 3)
+        for (int i = 0; i < vertices.size(); i++)
         {
-            glVertices[i] = vertices[i / 3]->x + position.x;
-            glVertices[i + 1] = vertices[(i+1) / 3]->y + position.y;
-            glVertices[i + 2] = vertices[(i+2) / 3]->z + position.z;
+			Vertex v = *vertices[i];
+			
+            v.position += position;
+			glVerticesArray.add(v);
+           
         }
         
-        return glVertices.get();
+        return glVerticesArray;
     }
     
     std::size_t getSizeOfVertices()
@@ -70,15 +69,16 @@ public:
     }
     
     
-    void translate (GLfloat x, GLfloat y)
+    void translateTo (GLfloat x, GLfloat y)
     {
         Vector3D<GLfloat> transformation (x, y, 0.0);
         
         position += transformation;
         
-        physicsProperties.getBody()->SetTransform(b2Vec2(x, y), 0.0);
+		physicsProperties.translateTo(x, y);
     }
     
+
     PhysicsProperties & getPhysicsProperties()
     {
         return physicsProperties;
@@ -104,19 +104,41 @@ public:
             return nullptr;
     }
     
+    // !FIX! Dont need this if the map stuff works
     File getAudioFile()
     {
         return audioFile;
     }
     
+    
+	void translateBy (GLfloat x, GLfloat y)
+	{
+		Vector3D<GLfloat> transformation(x, y, 0.0);
+
+		position += transformation;
+
+		physicsProperties.translateBy(x, y);
+	}
+
+	/**
+	* Set the name of the texture to use for this object. Currently, 
+	* all textures are loaded at runtime in GameView
+	*/
+	void setTexture(String tex) {
+		textureName = tex;
+	}
+
+	String getTexture() {
+		return textureName;
+	}
+    
 private:
     
     // Physical Position =======================================================
-    
-    OwnedArray<Vector3D<GLfloat>> vertices; // The vertices from the origin
-    ScopedPointer<GLfloat> glVertices;
+	Vector3D<GLfloat> position;
 
-    Vector3D<GLfloat> position;
+	OwnedArray<Vertex> vertices;
+
     //Matrix3D<GLfloat> transformations;
     
     /** Physical properties associated with the object */
@@ -127,7 +149,8 @@ private:
     
     File audioFile;
     
-    
+	String textureName;
+
 //    AudioFileList files;
 //    std::map<> actionToAudioMap;
 //    
@@ -155,10 +178,5 @@ private:
     
     
     //Vector3D<GLfloat> color;
-    
-    // Texture
-    
-    //PhysicsProperties
-        //bool isSolid;
     
 };

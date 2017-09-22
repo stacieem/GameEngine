@@ -7,7 +7,7 @@
 #include "GameModel.h"
 #include "GameLogic.h"
 #include "GameAudio.h"
-
+#include "InputManager.h"
 
 /** Represents the core of the entire game engine, including the game's data
     models: GameModels, the game's rendered view: GameView, and the game's
@@ -36,18 +36,19 @@ public:
     
     // Engine Thread Callback & Functions ======================================
     void run() override;
-    
-    
-    /** Swaps the GameModel swap frames between GameLogic and the GameView renderer,
-        so that the renderer can render the frame the GameLogic just wrote
-     */
-    void swapFramesBetweenLogicAndRender();
+
+	/** Swaps the Render swap frames between GameLogic and the GameView renderer,
+	so that the renderer can render the frame the GameLogic just wrote
+	*/
+	void swapRenderFramesBetweenLogicAndRender();
 
 private:
     //==========================================================================
     GameView gameView;
     GameLogic gameLogic;
+	InputManager* inputManager;
     
+    // !FIX COMMENT!
     // Game Models - each model represents a frame of state of the game.
     //
     //      GameLogic is always in charge of processing the gameModelCurrentFrame
@@ -67,9 +68,10 @@ private:
     //      gameModelSwapFrame) while GameRenderer renders the last frame, and
     //      then they swap frames and repeat.
     //
+    
     GameModel * gameModelCurrentFrame;
-    GameModel * gameModelSwapFrameA;
-    GameModel * gameModelSwapFrameB;
+    RenderSwapFrame * renderSwapFrameA;
+    RenderSwapFrame * renderSwapFrameB;
     
     /** Audio produced by the game */
     GameAudio gameAudio;
