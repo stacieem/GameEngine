@@ -159,7 +159,7 @@ private:
 //                    {
 //                        gameAudio.playAudioFile(*audioFile, false);
 //                    }
-                    gameAudio.playAudioFile(object->getAudioFile(), false);
+                    //sgameAudio.playAudioFile(object->getAudioFile(), false);
                     
                 }
             }

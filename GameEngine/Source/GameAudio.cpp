@@ -52,8 +52,8 @@ void GameAudio::playAudioFile (File audioFile, bool looping)
 
 
 
-void GameAudio::timerCallback()
-{
+//void GameAudio::timerCallback()
+//{
     /**
         DEV-NOTE: This could be cleaned up in the future by maybe using an array
         of AudioTransportSources and checking for isPlaying() or
@@ -92,4 +92,4 @@ void GameAudio::timerCallback()
 //        // REMOVE LATER
 //        DBG("Audio was deleted.");
 //    }
-}
+//}

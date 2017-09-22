@@ -99,7 +99,7 @@ public:
         attributes = new Attributes(openGLContext, *shader);
 
 		/*SAMPLE TEXTURE LOADING**/
-		Image textureImage = ImageFileFormat::loadFrom(File ("./textures/p2_stand.png")); //ImageCache::getFromMemory (TEXTURE_DATA);
+        Image textureImage = ImageFileFormat::loadFrom(File (File::getCurrentWorkingDirectory().getFullPathName() + "/textures/p2_stand.png")); //ImageCache::getFromMemory (TEXTURE_DATA);
 														   // Image must have height and width equal to a power of 2 pixels to be more efficient
 														   // when used with older GPU architectures
 		if (!(isPowerOfTwo(textureImage.getWidth()) && isPowerOfTwo(textureImage.getHeight())))
@@ -113,7 +113,7 @@ public:
 
 		textureMap["Kenny"] = tex;
 
-		textureImage = ImageFileFormat::loadFrom(File ("./textures/flower.jpg")); //ImageCache::getFromMemory (TEXTURE_DATA);
+		textureImage = ImageFileFormat::loadFrom(File (File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg")); //ImageCache::getFromMemory (TEXTURE_DATA);
 														   // Image must have height and width equal to a power of 2 pixels to be more efficient
 														   // when used with older GPU architectures
 		if (!(isPowerOfTwo(textureImage.getWidth()) && isPowerOfTwo(textureImage.getHeight())))

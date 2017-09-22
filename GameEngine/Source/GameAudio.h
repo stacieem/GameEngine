@@ -10,7 +10,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
-class GameAudio : public MixerAudioSource, public Timer
+class GameAudio : public MixerAudioSource//, public Timer
 {
 public:
     GameAudio();
@@ -32,7 +32,7 @@ public:
         Repeatedly checks if any of the current audioSources are done playing,
         if so, it deletes them.
      */
-    void timerCallback();
+    //void timerCallback();
     
 private:
     
