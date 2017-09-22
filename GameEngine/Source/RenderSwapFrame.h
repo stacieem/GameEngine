@@ -15,7 +15,6 @@ public:
 	}
 
 	~RenderSwapFrame() {
-
 	}
 
 	void setDrawableObjectsLength(int length) {

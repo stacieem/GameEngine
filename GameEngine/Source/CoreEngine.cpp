@@ -166,10 +166,6 @@ void CoreEngine::swapRenderFramesBetweenLogicAndRender()
 void CoreEngine::run() {
     while (!threadShouldExit())
     {
-		//comment this out to debug properly
-		//if (!gameView.hasKeyboardFocus(false)) {
-		//	gameView.grabKeyboardFocus();
-		//}
         // Allow GameLogic and GameView's rendering to start
         logicWaitable.signal();
         renderWaitable.signal();

@@ -22,6 +22,12 @@ public:
     {
         setOpaque(false);
         
+        // Setup frame rate label
+        addAndMakeVisible (frameRateLabel);
+        frameRateLabel.setJustificationType (Justification::topLeft);
+        frameRateLabel.setFont (Font (14.0f));
+        frameRateLabel.setText("0 fps", dontSendNotification);
+        
         //addAndMakeVisible(healthBar);
         healthBar.setRange(0, 10, 1.0);
     }
@@ -47,6 +53,7 @@ public:
         const int healthBarH = h * 0.9;
         const int margin = 20;
         
+        frameRateLabel.setBounds (getLocalBounds().reduced (4).removeFromTop (75).translated(0.0, 20.0));
         //healthBar.setBounds(margin, (h - healthBarH) / 2, healthBarW, healthBarH);
     }
 
@@ -58,7 +65,14 @@ public:
     
     }
     
+    void setFrameRate (int frameRate)
+    {
+        frameRateLabel.setText(String(frameRate) + " fps", dontSendNotification);
+        repaint();
+    }
+    
     
 private:
+    Label frameRateLabel;
     HealthBar healthBar;
 };

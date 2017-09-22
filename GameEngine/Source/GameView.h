@@ -41,11 +41,10 @@ public:
         addAndMakeVisible(gameHUD);
 		setWantsKeyboardFocus(true);
         // Setup GUI Overlay Label: Status of Shaders, compiler errors, etc.
-        addAndMakeVisible (statusLabel);
-        statusLabel.setJustificationType (Justification::topLeft);
-        statusLabel.setFont (Font (14.0f));
-        statusLabel.toBack();
-
+        addAndMakeVisible (openGLStatusLabel);
+        openGLStatusLabel.setJustificationType (Justification::topLeft);
+        openGLStatusLabel.setFont (Font (14.0f));
+        openGLStatusLabel.toBack();
 
         // GameView Variables
         isEnabled = false;
@@ -59,7 +58,6 @@ public:
         std::map<String, OpenGLTexture*>::iterator it;
         for (it = textureMap.begin(); it != textureMap.end(); it++)
         {
-            //it->second->release();
             delete it->second;
         }
         
@@ -96,6 +94,9 @@ public:
     {
         // Setup Shaders
         createShaders();
+        
+        // Setup Attributes
+        attributes = new Attributes(openGLContext, *shader);
 
 		/*SAMPLE TEXTURE LOADING**/
 		Image textureImage = ImageFileFormat::loadFrom(File ("./textures/p2_stand.png")); //ImageCache::getFromMemory (TEXTURE_DATA);
@@ -124,9 +125,6 @@ public:
 		tex->loadImage(textureImage);
 
 		textureMap["Flower"] = tex;
-
-
-		/*END SAMPLE TEXTURE LOADING*/
 
 		openGLContext.extensions.glGenBuffers(1, &vertexBuffer);
 		openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
@@ -160,11 +158,10 @@ public:
 		avgMilliseconds += ((deltaTime / 1000.0) - avgMilliseconds) * 0.03;
 		currentTime = Time::currentTimeMillis();
 
-		// TESTTTTT
 		// For every second, update the calculated frame rate
 		if (checkTime > 1000) {
 			checkTime = 0;
-			DBG((int)(1.0 / avgMilliseconds));
+            gameHUD.setFrameRate((int)(1.0 / avgMilliseconds));
 		}
         
         // Setup Viewport
@@ -174,7 +171,6 @@ public:
         // Set background Color
 		OpenGLHelpers::clear(getLookAndFeel().findColour(ResizableWindow::backgroundColourId));
 
-		/*TEXTURE SAMPLE*/
 
 		// OpenGL methods to avoid displaying pixels behind front pixels
 		glEnable(GL_DEPTH_TEST);   // Enable the test
@@ -184,9 +180,6 @@ public:
 		glEnable(GL_TEXTURE_2D);   // It's a 2-D image texture
 								   // Tell the GPU to use that texture
 		
-
-
-		/*END TEXTURE SAMPLE*/
         
         // Enable Alpha Blending
         glEnable (GL_BLEND);
@@ -194,11 +187,6 @@ public:
         
         // Use Shader Program that's been defined
         shader->use();
-
-		if (uniforms->demoTexture != nullptr)
-		{
-			uniforms->demoTexture->set((GLint)0);
-		}
         
         // Setup the Uniforms for use in the Shader
 		if (uniforms->projectionMatrix != nullptr) {
@@ -216,14 +204,12 @@ public:
             uniforms->viewMatrix->setMatrix4 (finalMatrix.mat, 1, false);
         }
         
-		attributes = new Attributes(openGLContext, *shader);
-        
         // Draw all the game objects
 
-        for (auto & gameObject : renderSwapFrame->getDrawableObjects())
+        for (auto & drawableObjects : renderSwapFrame->getDrawableObjects())
         {
 
-			textureMap[gameObject->getTexture()]->bind();
+			textureMap[drawableObjects->getTexture()]->bind();
 
 			
 			// OpenGL method to specify how the image is horizontally tiled
@@ -231,7 +217,7 @@ public:
 			// OpenGL method to specify how the image is vertically tiled
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-			Array<Vertex> verts = gameObject->getVertices();
+			Array<Vertex> verts = drawableObjects->getVertices();
 
 			openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 			openGLContext.extensions.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -257,7 +243,7 @@ public:
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			attributes->disable(openGLContext);
             
-            textureMap[gameObject->getTexture()]->unbind();
+            textureMap[drawableObjects->getTexture()]->unbind();
             
         }
         
@@ -279,7 +265,7 @@ public:
     void resized() override
     {
         gameHUD.setBounds(getLocalBounds());
-        statusLabel.setBounds (getLocalBounds().reduced (4).removeFromTop (75));
+        openGLStatusLabel.setBounds (getLocalBounds().reduced (4).removeFromTop (75));
     }
     
     void paint(Graphics & g) override
@@ -393,7 +379,7 @@ private:
             statusText = newShader->getLastError();
         }
         
-        statusLabel.setText (statusText, dontSendNotification);
+        openGLStatusLabel.setText (statusText, dontSendNotification);
     }
 
     // Private Variables =======================================================
@@ -419,7 +405,7 @@ private:
     GameHUD gameHUD;
     
     // DEBUGGING
-    Label statusLabel;
+    Label openGLStatusLabel;
     
     
     WaitableEvent* renderWaitable;

@@ -168,7 +168,7 @@ private:
 			//Update the number of DrawableObjects in the RenderSwapFrame
 			renderSwapFrame->setDrawableObjectsLength(gameModelCurrentFrame->getNumGameObjects());
 
-			for (int i = 0; i < gameModelCurrentFrame->getGameObjects().size(); i++)
+			for (int i = 0; i < gameModelCurrentFrame->getNumGameObjects(); i++)
 			{
 				renderSwapFrame->setDrawableObjectVertices(gameModelCurrentFrame->getGameObjects()[i]->getVertices(), i);
 				renderSwapFrame->setDrawableObjectTexture(gameModelCurrentFrame->getGameObjects()[i]->getTexture(), i);

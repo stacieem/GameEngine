@@ -9,11 +9,10 @@ struct Uniforms
 	Uniforms(OpenGLContext& openGLContext, OpenGLShaderProgram& shaderProgram)
 	{
 		projectionMatrix = createUniform(openGLContext, shaderProgram, "projectionMatrix");
-		viewMatrix = createUniform(openGLContext, shaderProgram, "viewMatrix");
-		demoTexture = createUniform(openGLContext, shaderProgram, "demoTexture");
+        viewMatrix = createUniform(openGLContext, shaderProgram, "viewMatrix");
 	}
 
-	ScopedPointer<OpenGLShaderProgram::Uniform> projectionMatrix, viewMatrix, demoTexture;
+	ScopedPointer<OpenGLShaderProgram::Uniform> projectionMatrix, viewMatrix;
 	//ScopedPointer<OpenGLShaderProgram::Uniform> lightPosition;
 
 private:
