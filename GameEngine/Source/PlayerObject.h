@@ -19,7 +19,9 @@ public:
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
 		store.y += yVel;
-
+		if (store.y > 10) {
+			store.y = 10;
+		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}

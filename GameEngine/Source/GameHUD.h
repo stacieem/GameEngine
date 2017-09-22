@@ -22,7 +22,7 @@ public:
     {
         setOpaque(false);
         
-        addAndMakeVisible(healthBar);
+        //addAndMakeVisible(healthBar);
         healthBar.setRange(0, 10, 1.0);
     }
     

@@ -2,8 +2,7 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "InputManager.h"
-
+#include "InputManager.h" 
 /** Processes the logic of the game. Started by the Core Engine and manipulates
     the GameDataModel to be rendered for the next frame.
  */

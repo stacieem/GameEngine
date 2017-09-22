@@ -59,6 +59,9 @@ CoreEngine::CoreEngine() : Thread("CoreEngine")
 	inputManager->addCommand2(aKey, GameCommand::moveRight);
 	aKey = KeyPress('r');
 	inputManager->addCommand2(aKey, GameCommand::reset);
+
+	//XBOX Commands and testing
+
     // Start the GameLogic thread and the GameView's renderer
     gameLogic.startThread();
     gameView.setOpenGLEnabled (true);
@@ -68,7 +71,7 @@ CoreEngine::CoreEngine() : Thread("CoreEngine")
 	getTopLevelComponent()->addMouseListener(inputManager, true);
 
 	gameLogic.setCommands(inputManager);
-
+	
 
     this->startThread();
 }
