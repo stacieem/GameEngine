@@ -34,7 +34,6 @@ public:
 		}
 		return 0;
 	}
-
 	// addCommands for a keyboard, might want to pass diff param for other inputs
 	void addCommand(KeyPress key, GameCommand command) {
 		if (keyboardBinding.find(key.getKeyCode()) == keyboardBinding.end()) {

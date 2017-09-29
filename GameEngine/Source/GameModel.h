@@ -38,12 +38,22 @@ public:
         
         // Trystan's Multiplayer Test
 		player1 = new PlayerObject(worldPhysics);
-        player1->setTexture("Kenny");
+        player1->setTexture("Flower");
 		gameObjects.add(player1);
         
 		player2 = new PlayerObject(worldPhysics);
         player2->setTexture("Flower");
 		gameObjects.add(player2);
+		
+		for (int i = 0; i < 200; i++) {
+			GameObject* obj = new GameObject(worldPhysics);
+			obj->setTexture("Flower");
+			obj->getPhysicsProperties().setRestitution(1.5f);
+			obj->getPhysicsProperties().setFriction(.3f);
+			obj->getPhysicsProperties().setDensity(.5f);
+			gameObjects.add(obj);
+		}
+
 	}
     
 	~GameModel()

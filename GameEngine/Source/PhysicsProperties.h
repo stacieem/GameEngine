@@ -28,7 +28,7 @@ public:
 		fixtureDef.shape = &dynamicBox;
 
 		//default properties
-		fixtureDef.friction = 0.2f;
+		fixtureDef.friction = 0.7f;
 		fixtureDef.restitution = 0.0f;
 		fixtureDef.density = 1.0f;
 
@@ -187,8 +187,8 @@ public:
 	*
 	**************************************************************************/
 	void setRestitution(float32 rest)
-	{
-		fixtureDef.restitution = rest;
+	{b2Fixture* f = body->GetFixtureList();
+		f->SetRestitution(rest);
 	}
 	/**************************************************************************
 	*
@@ -197,7 +197,8 @@ public:
 	**************************************************************************/
 	void setFriction(float32 fric)
 	{
-		fixtureDef.friction = fric;
+		b2Fixture* f = body->GetFixtureList();
+		f->SetFriction(fric);
 	}
 	/**************************************************************************
 	*
@@ -206,7 +207,8 @@ public:
 	**************************************************************************/
 	void setDensity(float32 dens)
 	{
-		fixtureDef.density = dens;
+		b2Fixture* f = body->GetFixtureList();
+		f->SetDensity(dens);
 		body->ResetMassData();
 	}
 	/**************************************************************************

@@ -406,6 +406,9 @@
     <ClCompile Include="..\..\Source\CoreEngine.cpp">
       <Filter>GameEngine\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\GameAudio.cpp">
+      <Filter>GameEngine\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Main.cpp">
       <Filter>GameEngine\Source</Filter>
     </ClCompile>
@@ -2301,16 +2304,22 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\Attributes.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\CoreEngine.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\DrawableObject.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\GameAudio.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\GameCommand.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\GameHUD.h">
-      <Filter>GameEngine\Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\GameHUDDataModel.h">
-      <Filter>GameEngine\Source</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\Source\GameHUDElement.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\GameLogic.h">
@@ -2328,7 +2337,28 @@
     <ClInclude Include="..\..\Source\HealthBar.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\InputManager.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\PhysicalAction.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\PhysicsProperties.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\PlayerObject.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\RenderSwapFrame.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Uniforms.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Vertex.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\VertexBuffer.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\WorldPhysics.h">
