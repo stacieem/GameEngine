@@ -42,9 +42,9 @@ public:
 		gameObjects.add(player1);
         
 		player2 = new PlayerObject(worldPhysics);
-        player2->setTexture("Flower");
+        player2->setTexture("Kenny");
 		gameObjects.add(player2);
-		
+		/*
 		for (int i = 0; i < 200; i++) {
 			GameObject* obj = new GameObject(worldPhysics);
 			obj->setTexture("Flower");
@@ -53,7 +53,7 @@ public:
 			obj->getPhysicsProperties().setDensity(.5f);
 			gameObjects.add(obj);
 		}
-
+		*/
 	}
     
 	~GameModel()
@@ -99,6 +99,7 @@ public:
 		return player2;
 	}
 
+	// add new game Object
 private:
     
     // The commands that a user is allowed to use in the game

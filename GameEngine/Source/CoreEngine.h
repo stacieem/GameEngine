@@ -48,7 +48,6 @@ private:
     GameView gameView;
     GameLogic gameLogic;
 	InputManager* inputManager;
-    
     // !FIX COMMENT!
     // Game Models - each model represents a frame of state of the game.
     //

@@ -51,6 +51,7 @@ public:
         isEnabled = false;
         objectVBOsSize = 0;
         
+
         setOpaque(true);
     }
     

@@ -9,7 +9,7 @@
 */
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "CoreEngine.h"
+#include "GameEditor.h"
 
 
 //==============================================================================
@@ -28,7 +28,7 @@ public:
     {
         // This method is where you should put your application's initialisation code..
 
-        mainWindow = new MainWindow (getApplicationName());
+		mainWindow = new MainWindow(getApplicationName());
     }
 
     void shutdown() override
@@ -67,8 +67,7 @@ public:
                                                     DocumentWindow::allButtons)
         {
             setUsingNativeTitleBar (true);
-            setContentOwned (new CoreEngine(), true);
-
+            setContentOwned (new GameEditor(), true);
             setResizable (true, true);
             centreWithSize (getWidth(), getHeight());
             setVisible (true);
@@ -93,8 +92,9 @@ public:
         JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainWindow)
     };
 
+
 private:
-    ScopedPointer<MainWindow> mainWindow;
+	ScopedPointer<MainWindow> mainWindow;
 };
 
 //==============================================================================

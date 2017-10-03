@@ -14,8 +14,6 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
 {
     // Setup JUCE Components & Windowing
     addAndMakeVisible (gameView);
-    setSize (600, 400);
-    
     // Initialize Audio Engine
     setAudioChannels(0, 2); // 0 audio inputs, 2 audio outputs
     
@@ -38,7 +36,6 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
     gameLogic.setGameModel(gameModelCurrentFrame);
 	gameLogic.setRenderSwapFrame(renderSwapFrameA);
 	gameView.setRenderSwapFrame(renderSwapFrameB);
-    
 
 	// !FIX! MOVE LATER TO AN INPUT MAP AS THE DEFAULT INPUT MAP
 	KeyPress aKey('w');
@@ -102,7 +99,6 @@ CoreEngine::~CoreEngine()
 
 void CoreEngine::paint (Graphics& g)
 {
-	
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
 }
