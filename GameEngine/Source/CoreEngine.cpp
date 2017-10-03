@@ -60,6 +60,9 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
 	inputManager->addCommand2(aKey, GameCommand::moveRight);
 	aKey = KeyPress('r');
 	inputManager->addCommand2(aKey, GameCommand::reset);
+
+	//XBOX Commands and testing
+
     // Start the GameLogic thread and the GameView's renderer
     gameLogic.startThread();
     gameView.setOpenGLEnabled (true);

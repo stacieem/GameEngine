@@ -7,8 +7,6 @@
 
 #include "InputManager.h"
 #include "RenderSwapFrame.h"
-
-
 /** Processes the logic of the game. Started by the Core Engine and manipulates
     the GameDataModel to be rendered for the next frame.
  */

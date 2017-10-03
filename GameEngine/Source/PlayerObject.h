@@ -19,7 +19,9 @@ public:
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
 		store.y += yVel;
-
+		if (store.y > 10) {
+			store.y = 10;
+		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
@@ -59,7 +61,7 @@ private:
 	b2Vec2 origin;
 
 	Vector3D<GLfloat> position;
-	OwnedArray<Vector3D<GLfloat>> vertices; // The vertices from the origin
+	OwnedArray<Vector3D<GLfloat>> vertices;	 // The vertices from the origin
 	ScopedPointer<GLfloat> glVertices;
 
 };

@@ -11,6 +11,8 @@
 #include <vector>
 #include <map>
 #include "GameCommand.h"
+#include <Windows.h>
+#include <Xinput.h>
 
 /*
 	Abstract button assignments to keep magical indeces out of this
@@ -18,7 +20,9 @@
 class InputManager : public KeyListener, public MouseListener {
 public:
 
-	InputManager(){	}
+	InputManager(){	
+
+	}
 
 	bool keyPressed(const KeyPress& key, Component* originatingComponent) {
 		if ((keyboardBinding.find(key.getTextCharacter()) != keyboardBinding.end())) {
@@ -40,18 +44,21 @@ public:
 			keyboardBinding[key.getKeyCode()] = command;
 		}
 	}
+
 	// addCommands for a keyboard, might want to pass diff param for other inputs
 	void addCommand2(KeyPress key, GameCommand command) {
 		if (keyboardBinding2.find(key.getKeyCode()) == keyboardBinding2.end()) {
 			keyboardBinding2[key.getKeyCode()] = command;
 		}
 	}
-	// give access to commands bool vector
+
+	// give access to commands 
 	void getCommands1(Array<GameCommand>& newCommands) {
 		newCommands = commands;
 		commands.clear();
 	}
-	// give access to commands bool vector
+
+	// give access to commands 
 	void getCommands2(Array<GameCommand>& newCommands) {
 		newCommands = commands2;
 		commands2.clear();
@@ -67,9 +74,28 @@ public:
 		}
 	}
 
+	/**************************************************************************
+		XBOX COMMANDS
+	***************************************************************************/
+
+	// addCommands for a xbox controller, might want to pass diff param for other inputs
+	void addXboxCommands(XINPUT_KEYSTROKE key, GameCommand command) {
+
+			//xboxBindings[key] = command;
+	}
+	// give access to xboxCommands 
+	void getXboxCommands(Array<GameCommand>& newCommands) {
+		//newCommands = xboxCommands;
+		//xboxCommands.clear();
+	}
 private:
 	std::map<juce_wchar, GameCommand> keyboardBinding;
 	std::map<juce_wchar, GameCommand> keyboardBinding2;
+	//std::map<XINPUT_KEYSTROKE, GameCommand> xboxBindings;
 	Array<GameCommand> commands;
 	Array<GameCommand> commands2;
+
+
+	Array<GameCommand> xboxCommands;
+	XINPUT_STATE* state;
 };
