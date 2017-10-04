@@ -12,12 +12,11 @@
 class WorldPhysics {
 	
 public:
-	WorldPhysics() : gravity(0.0f, -10.0f), world(gravity)
+	WorldPhysics() : world(b2Vec2(0.0f,-10.0f))
 	{
 		velocityIterations = 2.0f;
 		positionIterations = 6.0f;
 		timeStep = 1.0f / 15.0f;
-        
         /*
         create the body first, giving it a position
         */
@@ -159,8 +158,10 @@ public:
 		world.ClearForces();
 	}
 
+	float getGravity() {
+		return world.GetGravity().y;
+	}
 private:
-	b2Vec2 gravity;
 	b2World world;
 	juce::int32 velocityIterations;
 	juce::int32 positionIterations;

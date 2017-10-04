@@ -1901,8 +1901,9 @@
     <ClInclude Include="..\..\Source\GameView.h" />
     <ClInclude Include="..\..\Source\HealthBar.h" />
     <ClInclude Include="..\..\Source\InputManager.h" />
+    <ClInclude Include="..\..\Source\Level.h" />
     <ClInclude Include="..\..\Source\ObjectBrowser.h" />
-    <ClInclude Include="..\..\Source\ObjectGraph.h" />
+    <ClInclude Include="..\..\Source\LevelInspector.h" />
     <ClInclude Include="..\..\Source\ObjectInspector.h" />
     <ClInclude Include="..\..\Source\PhysicalAction.h" />
     <ClInclude Include="..\..\Source\PhysicsProperties.h" />

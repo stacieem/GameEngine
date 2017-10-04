@@ -268,9 +268,9 @@ public:
     
     
 private:
-	const float RADTODEG = 57.29577951308;
-	const float DEGTORAD = 0.017453292519;
-	const float PI = 3.14159;
+	const float RADTODEG = 57.29577951308f;
+	const float DEGTORAD = 0.017453292519f;
+	const float PI = 3.14159f;
 	b2Body* body;
     
     /** The number of collisions that were last checked. */

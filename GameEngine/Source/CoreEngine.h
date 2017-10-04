@@ -34,7 +34,10 @@ public:
     void releaseResources() override;
     void getNextAudioBlock (const AudioSourceChannelInfo &bufferToFill) override;
     
-    
+    //accessors for the GameModel
+	GameModel& getGameModel();
+	Level& getCurrentLevel();
+
     // Engine Thread Callback & Functions ======================================
     void run() override;
 

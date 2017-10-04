@@ -3,7 +3,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "ObjectInspector.h"
 #include "ObjectBrowser.h"
-#include "ObjectGraph.h"
+#include "LevelInspector.h"
 #include "CoreEngine.h"
 #include "EditorControl.h"
 
@@ -24,6 +24,6 @@ private:
 
 	ObjectInspector ObjInspector;
 	ObjectBrowser ObjBrowser;
-	ObjectGraph ObjGraph;
+	LevelInspector levelInspector;
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GameEditor)
 };

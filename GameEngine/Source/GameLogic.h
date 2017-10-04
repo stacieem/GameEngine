@@ -81,56 +81,54 @@ private:
 		currentTime = Time::currentTimeMillis();
 		int64 checkTime = 0;
 
+		Level& currLevel = gameModelCurrentFrame->getCurrentLevel();
 		// Main Logic loop
 		while (!threadShouldExit())
         {
+
+
+			// ADD: If level changed, update the current level
+				// currentLevel = gameModelCurrentFrame->getCurrentLevel();
+
+
+
 			// Wait for CoreEngine to signal() this loop
 			logicWaitable->wait();
 
 			//locks in the commands for this iteration
-			inputManager->getCommands1(newCommands1);
-			for (auto & command : newCommands1)
+			inputManager->getCommands(newCommands);
+			for (auto & command : newCommands)
 			{
 				switch (command)
 				{
-				case GameCommand::moveUp:
-					gameModelCurrentFrame->getPlayer1()->moveUp();
+				case GameCommand::Player1MoveUp:
+					currLevel.getPlayer(0)->moveUp();
 					break;
-				case GameCommand::moveDown:
-					gameModelCurrentFrame->getPlayer1()->moveDown();
+				case GameCommand::Player1MoveDown:
+					currLevel.getPlayer(0)->moveDown();
 					break;
-				case GameCommand::moveLeft:
-					gameModelCurrentFrame->getPlayer1()->moveLeft();
+				case GameCommand::Player1MoveLeft:
+					currLevel.getPlayer(0)->moveLeft();
 					break;
-				case GameCommand::moveRight:
-					gameModelCurrentFrame->getPlayer1()->moveRight();
+				case GameCommand::Player1MoveRight:
+					currLevel.getPlayer(0)->moveRight();
 					break;
-				case GameCommand::reset:
-					gameModelCurrentFrame->getPlayer1()->reset();
+				//Player 2 commands
+				case GameCommand::Player2MoveUp:
+					currLevel.getPlayer(1)->moveUp();
 					break;
-				}
-			}
-
-			//locks in the commands for this iteration
-			inputManager->getCommands2(newCommands2);
-			for (auto & command : newCommands2)
-			{
-				switch (command)
-				{
-				case GameCommand::moveUp:
-					gameModelCurrentFrame->getPlayer2()->moveUp();
+				case GameCommand::Player2MoveDown:
+					currLevel.getPlayer(1)->moveDown();
 					break;
-				case GameCommand::moveDown:
-					gameModelCurrentFrame->getPlayer2()->moveDown();
+				case GameCommand::Player2MoveLeft:
+					currLevel.getPlayer(1)->moveLeft();
 					break;
-				case GameCommand::moveLeft:
-					gameModelCurrentFrame->getPlayer2()->moveLeft();
-					break;
-				case GameCommand::moveRight:
-					gameModelCurrentFrame->getPlayer2()->moveRight();
+				case GameCommand::Player2MoveRight:
+					currLevel.getPlayer(1)->moveRight();
 					break;
 				case GameCommand::reset:
-					gameModelCurrentFrame->getPlayer2()->reset();
+					currLevel.getPlayer(0)->reset();
+					currLevel.getPlayer(1)->reset();
 					break;
 				}
 			}
@@ -142,11 +140,11 @@ private:
 			checkTime += deltaTime;
             
             // Process Physics
-            gameModelCurrentFrame->processWorldPhysics(deltaTime);
+			currLevel.processWorldPhysics(deltaTime);
             
             // Play Audio
             // If any new collisions occur, play the specified collision audio
-            for (auto & object : gameModelCurrentFrame->getGameObjects())
+            for (auto & object : currLevel.getGameObjects())
             {
                 if (object->getPhysicsProperties().hasNewCollisions())
                 {
@@ -164,12 +162,12 @@ private:
             
             // Update the GameModel
 			//Update the number of DrawableObjects in the RenderSwapFrame
-			renderSwapFrame->setDrawableObjectsLength(gameModelCurrentFrame->getNumGameObjects());
+			renderSwapFrame->setDrawableObjectsLength(currLevel.getNumGameObjects());
 
-			for (int i = 0; i < gameModelCurrentFrame->getGameObjects().size(); i++)
+			for (int i = 0; i < currLevel.getGameObjects().size(); i++)
 			{
-				renderSwapFrame->setDrawableObjectVertices(gameModelCurrentFrame->getGameObjects()[i]->getVertices(), i);
-				renderSwapFrame->setDrawableObjectTexture(gameModelCurrentFrame->getGameObjects()[i]->getTexture(), i);
+				renderSwapFrame->setDrawableObjectVertices(currLevel.getGameObjects()[i]->getVertices(), i);
+				renderSwapFrame->setDrawableObjectTexture(currLevel.getGameObjects()[i]->getTexture(), i);
 			}
             
             // Maybe actions are triggered here ???
@@ -188,8 +186,7 @@ private:
 
 	//input handling
 	InputManager* inputManager;
-	Array<GameCommand> newCommands1;
-	Array<GameCommand> newCommands2;
+	Array<GameCommand> newCommands;
 
 	int64 newTime;
 	int64 currentTime;

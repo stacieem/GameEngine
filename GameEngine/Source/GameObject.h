@@ -32,6 +32,7 @@ public:
 
         // Default mapping to an objects audio
         mapAudioFileToPhysicalAction((File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav"), PhysicalAction::collsion);
+		objName = "Object Anonymous";
     }
     
     /** Get the
@@ -132,6 +133,12 @@ public:
 		return textureName;
 	}
     
+	String getName() {
+		return objName;
+	}
+	void setName(String name) {
+		objName = name;
+	}
 private:
     
     // Physical Position =======================================================
@@ -150,6 +157,8 @@ private:
     File audioFile;
     
 	String textureName;
+	
+	String objName;
 
 //    AudioFileList files;
 //    std::map<> actionToAudioMap;

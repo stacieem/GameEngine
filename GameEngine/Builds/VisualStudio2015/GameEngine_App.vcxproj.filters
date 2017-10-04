@@ -4247,9 +4247,6 @@
     <ClInclude Include="..\..\Source\ObjectInspector.h">
       <Filter>GameEngine\Source\Interface</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\ObjectGraph.h">
-      <Filter>GameEngine\Source\Interface</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\ObjectBrowser.h">
       <Filter>GameEngine\Source\Interface</Filter>
     </ClInclude>
@@ -4261,6 +4258,12 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\EditorControl.h">
       <Filter>GameEngine\Source\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\LevelInspector.h">
+      <Filter>GameEngine\Source\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Level.h">
+      <Filter>GameEngine\Source\Objects</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

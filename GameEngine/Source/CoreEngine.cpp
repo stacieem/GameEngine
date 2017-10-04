@@ -39,27 +39,28 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
 
 	// !FIX! MOVE LATER TO AN INPUT MAP AS THE DEFAULT INPUT MAP
 	KeyPress aKey('w');
-	inputManager->addCommand(aKey, GameCommand::moveUp);
+	inputManager->addCommand(aKey, GameCommand::Player1MoveUp);
 	aKey = KeyPress('s');
-	inputManager->addCommand(aKey, GameCommand::moveDown);
+	inputManager->addCommand(aKey, GameCommand::Player1MoveDown);
 	aKey = KeyPress('a');
-	inputManager->addCommand(aKey, GameCommand::moveLeft);
+	inputManager->addCommand(aKey, GameCommand::Player1MoveLeft);
 	aKey = KeyPress('d');
-	inputManager->addCommand(aKey, GameCommand::moveRight);
+	inputManager->addCommand(aKey, GameCommand::Player1MoveRight);
 	aKey = KeyPress('r');
 	inputManager->addCommand(aKey, GameCommand::reset);
 
 
+	//Player 2 commands
 	aKey = KeyPress('i');
-	inputManager->addCommand2(aKey, GameCommand::moveUp);
+	inputManager->addCommand(aKey, GameCommand::Player2MoveUp);
 	aKey = KeyPress('k');
-	inputManager->addCommand2(aKey, GameCommand::moveDown);
+	inputManager->addCommand(aKey, GameCommand::Player2MoveDown);
 	aKey = KeyPress('j');
-	inputManager->addCommand2(aKey, GameCommand::moveLeft);
+	inputManager->addCommand(aKey, GameCommand::Player2MoveLeft);
 	aKey = KeyPress('l');
-	inputManager->addCommand2(aKey, GameCommand::moveRight);
+	inputManager->addCommand(aKey, GameCommand::Player2MoveRight);
 	aKey = KeyPress('r');
-	inputManager->addCommand2(aKey, GameCommand::reset);
+	inputManager->addCommand(aKey, GameCommand::reset);
 
 	//XBOX Commands and testing
 
@@ -114,6 +115,13 @@ void CoreEngine::resized()
     gameView.setBounds (getLocalBounds());
 }
 
+GameModel& CoreEngine::getGameModel() {
+	return *gameModelCurrentFrame;
+};
+
+Level& CoreEngine::getCurrentLevel() {
+	return getGameModel().getCurrentLevel();
+};
 // JUCE Audio Callbacks ========================================================
 
 /** Initializes audio engine. Called automatically before the engine begins

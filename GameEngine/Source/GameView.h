@@ -294,10 +294,7 @@ public:
         gameHUD.setBounds(getLocalBounds());
         statusLabel.setBounds (getLocalBounds().reduced (4).removeFromTop (75));
     }
-    
-    void paint(Graphics & g) override
-    {}
-    
+
     // Custom Functions ========================================================
 
 	/** Sets the Render swap frame that will be processed for logic before it
