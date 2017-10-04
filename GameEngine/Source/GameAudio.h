@@ -9,8 +9,9 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "SelfDeletingPositionalAudioSource.h"
 
-class GameAudio : public MixerAudioSource//, public Timer
+class GameAudio : public MixerAudioSource
 {
 public:
     GameAudio();
@@ -32,21 +33,9 @@ public:
         Repeatedly checks if any of the current audioSources are done playing,
         if so, it deletes them.
      */
-    //void timerCallback();
+    void timerCallback();
     
 private:
-    
-    /** Interval at which the garbage collection timerCallback is called */
-    //const int GARBAGE_COLLECTION_INTERVAL_MILISECONDS = 1000;
-    
     /** Manages the audio formats that can be read */
     AudioFormatManager formatManager;
-    
-    /** Audio sources created and triggered by various logic and actions in the game */
-    OwnedArray<AudioFormatReaderSource> audioSources;
-    
-    /** Lock for when MixerAudioSource and audioSources so they are attomically
-        updated together
-     */
-    //CriticalSection lock;
 };

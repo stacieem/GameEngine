@@ -72,6 +72,7 @@
 		573235C91F74BB9400369D5C /* Vertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vertex.h; path = ../../Source/Vertex.h; sourceTree = "<group>"; };
 		573235CA1F74BB9400369D5C /* VertexBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VertexBuffer.h; path = ../../Source/VertexBuffer.h; sourceTree = "<group>"; };
 		573235CB1F74D19500369D5C /* GameCommand.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GameCommand.h; path = ../../Source/GameCommand.h; sourceTree = "<group>"; };
+		579373A41F848823009EADBA /* SelfDeletingPositionalAudioSource.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = SelfDeletingPositionalAudioSource.h; path = ../../Source/SelfDeletingPositionalAudioSource.h; sourceTree = "<group>"; };
 		579B2D0B1F746E2300051958 /* PhysicalAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PhysicalAction.h; path = ../../Source/PhysicalAction.h; sourceTree = "<group>"; };
 		57F5598FD8F3E97531BC5EB5 /* include_juce_audio_utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_utils.mm; path = ../../JuceLibraryCode/include_juce_audio_utils.mm; sourceTree = SOURCE_ROOT; };
 		5BA064D2FF4E47F6DF098CA3 /* juce_graphics */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_graphics; path = ../../../JUCE/modules/juce_graphics; sourceTree = SOURCE_ROOT; };
@@ -165,6 +166,7 @@
 				A09528ADC481BBA9A7FB220F /* CoreEngine.h */,
 				570135441F71F048004E0844 /* GameAudio.cpp */,
 				570135451F71F048004E0844 /* GameAudio.h */,
+				579373A41F848823009EADBA /* SelfDeletingPositionalAudioSource.h */,
 				62B06CFBC267B2BAE27E352C /* GameHUD.h */,
 				573235C71F74BB9400369D5C /* RenderSwapFrame.h */,
 				8891774E0B0F4FE8CEDD1D3D /* GameLogic.h */,
