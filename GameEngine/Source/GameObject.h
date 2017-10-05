@@ -22,7 +22,7 @@ class GameObject
 public:
     /** Constructs a GameObject and attatches it to the world's physics.
      */
-    GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld()), audioFile ("../../Air Horn.wav")
+    GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld()), audioFile (File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav")
     {
         // Default vertices and texture coordinates
         vertices.add(new Vertex(Vector3D<GLfloat>(0.5f,   0.5f,  0.0f),1,1));
@@ -31,8 +31,13 @@ public:
 		vertices.add(new Vertex(Vector3D<GLfloat>(-0.5f, 0.5f, 0.0f), 0, 1));
 
         // Default mapping to an objects audio
-        mapAudioFileToPhysicalAction(File("../../Air Horn.wav"), PhysicalAction::collsion);
+        mapAudioFileToPhysicalAction(File(File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav"), PhysicalAction::collsion);
     }
+
+	virtual ~GameObject() {
+
+	}
+
     
     /** Get the
      */
@@ -124,12 +129,12 @@ public:
 	* Set the name of the texture to use for this object. Currently, 
 	* all textures are loaded at runtime in GameView
 	*/
-	void setTexture(String tex) {
-		textureName = tex;
+	void setTexture(File tex) {
+		textureFile = tex;
 	}
 
-	String getTexture() {
-		return textureName;
+	File getTexture() {
+		return textureFile;
 	}
     
 private:
@@ -149,7 +154,7 @@ private:
     
     File audioFile;
     
-	String textureName;
+	File textureFile;
 
 //    AudioFileList files;
 //    std::map<> actionToAudioMap;
@@ -179,4 +184,7 @@ private:
     
     //Vector3D<GLfloat> color;
     
+	JUCE_LEAK_DETECTOR(GameObject)
+
+
 };

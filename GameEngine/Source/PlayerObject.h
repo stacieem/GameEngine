@@ -62,4 +62,6 @@ private:
 	OwnedArray<Vector3D<GLfloat>> vertices; // The vertices from the origin
 	ScopedPointer<GLfloat> glVertices;
 
+	JUCE_LEAK_DETECTOR(PlayerObject)
+
 };

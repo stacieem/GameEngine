@@ -18,6 +18,7 @@
 #include "Uniforms.h"
 #include <map>
 #include "RenderSwapFrame.h"
+#include "TextureResourceManager.h"
 
 /** Represents the view of any game being rendered.
     It includes an OpenGL Renderer to render either 2D or 3D graphics and a
@@ -56,12 +57,7 @@ public:
     
     ~GameView()
     {
-        std::map<String, OpenGLTexture*>::iterator it;
-        for (it = textureMap.begin(); it != textureMap.end(); it++)
-        {
-            //it->second->release();
-            delete it->second;
-        }
+        
         
         // Turn off OpenGL
         openGLContext.setContinuousRepainting (false);
@@ -97,37 +93,6 @@ public:
         // Setup Shaders
         createShaders();
 
-		/*SAMPLE TEXTURE LOADING**/
-		Image textureImage = ImageFileFormat::loadFrom(File ("./textures/p2_stand.png")); //ImageCache::getFromMemory (TEXTURE_DATA);
-														   // Image must have height and width equal to a power of 2 pixels to be more efficient
-														   // when used with older GPU architectures
-		if (!(isPowerOfTwo(textureImage.getWidth()) && isPowerOfTwo(textureImage.getHeight())))
-			textureImage = textureImage.rescaled(jmin(1024, nextPowerOfTwo(textureImage.getWidth())),
-				jmin(1024, nextPowerOfTwo(textureImage.getHeight())));
-
-		// Use that image as a 2-D texture for the object that will be painted
-		OpenGLTexture* tex = new OpenGLTexture();
-		
-		tex->loadImage(textureImage);
-
-		textureMap["Kenny"] = tex;
-
-		textureImage = ImageFileFormat::loadFrom(File ("./textures/flower.jpg")); //ImageCache::getFromMemory (TEXTURE_DATA);
-														   // Image must have height and width equal to a power of 2 pixels to be more efficient
-														   // when used with older GPU architectures
-		if (!(isPowerOfTwo(textureImage.getWidth()) && isPowerOfTwo(textureImage.getHeight())))
-			textureImage = textureImage.rescaled(jmin(1024, nextPowerOfTwo(textureImage.getWidth())),
-				jmin(1024, nextPowerOfTwo(textureImage.getHeight())));
-
-		tex = new OpenGLTexture();
-
-		tex->loadImage(textureImage);
-
-		textureMap["Flower"] = tex;
-
-
-		/*END SAMPLE TEXTURE LOADING*/
-
 		openGLContext.extensions.glGenBuffers(1, &vertexBuffer);
 		openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 
@@ -143,6 +108,8 @@ public:
     {
         shader = nullptr;
         uniforms = nullptr;
+
+		texResourceManager.releaseTextures();
     }
     
     void renderOpenGL() override
@@ -160,7 +127,6 @@ public:
 		avgMilliseconds += ((deltaTime / 1000.0) - avgMilliseconds) * 0.03;
 		currentTime = Time::currentTimeMillis();
 
-		// TESTTTTT
 		// For every second, update the calculated frame rate
 		if (checkTime > 1000) {
 			checkTime = 0;
@@ -184,8 +150,6 @@ public:
 		glEnable(GL_TEXTURE_2D);   // It's a 2-D image texture
 								   // Tell the GPU to use that texture
 		
-
-
 		/*END TEXTURE SAMPLE*/
         
         // Enable Alpha Blending
@@ -220,18 +184,21 @@ public:
         
         // Draw all the game objects
 
-        for (auto & gameObject : renderSwapFrame->getDrawableObjects())
+        for (auto & drawableObject : renderSwapFrame->getDrawableObjects())
         {
 
-			textureMap[gameObject->getTexture()]->bind();
+			OpenGLTexture* tex = texResourceManager.loadTexture(drawableObject->getTexture());
 
+			if (tex != nullptr) {
+				tex->bind();
+			}
 			
 			// OpenGL method to specify how the image is horizontally tiled
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
 			// OpenGL method to specify how the image is vertically tiled
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-			Array<Vertex> verts = gameObject->getVertices();
+			Array<Vertex> verts = drawableObject->getVertices();
 
 			openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 			openGLContext.extensions.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
@@ -257,7 +224,10 @@ public:
 			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 			attributes->disable(openGLContext);
             
-            textureMap[gameObject->getTexture()]->unbind();
+
+			if (tex != nullptr) {
+				tex->unbind();
+			}
             
         }
         
@@ -421,18 +391,20 @@ private:
     // DEBUGGING
     Label statusLabel;
     
-    
     WaitableEvent* renderWaitable;
     WaitableEvent* coreEngineWaitable;
 
 	ScopedPointer<Attributes> attributes;
 	GLuint vertexBuffer, indexBuffer;
-	std::map<String, OpenGLTexture*> textureMap;
 	RenderSwapFrame* renderSwapFrame;
+	TextureResourceManager texResourceManager;
 
 	int64 newTime;
 	int64 currentTime;
 	int64 deltaTime;
 	float avgMilliseconds;
 	int64 checkTime;
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GameView)
+
 };

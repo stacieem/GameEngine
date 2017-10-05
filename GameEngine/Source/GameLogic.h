@@ -17,7 +17,7 @@ class GameLogic : public Thread
 public:
 	GameLogic(GameAudio & gameAudio) : Thread("GameLogic"), gameAudio(gameAudio)
     {
-        inputManager = new InputManager();
+        //inputManager = new InputManager();
     }
     
 	~GameLogic()
@@ -172,6 +172,11 @@ private:
 			{
 				renderSwapFrame->setDrawableObjectVertices(gameModelCurrentFrame->getGameObjects()[i]->getVertices(), i);
 				renderSwapFrame->setDrawableObjectTexture(gameModelCurrentFrame->getGameObjects()[i]->getTexture(), i);
+
+			}
+
+			if (threadShouldExit()) {
+				break;
 			}
             
             // Maybe actions are triggered here ???
@@ -200,4 +205,6 @@ private:
 
 	//Physics World
 	WorldPhysics world;
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GameLogic)
 };

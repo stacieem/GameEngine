@@ -38,17 +38,17 @@ public:
         
         // Trystan's Multiplayer Test
 		player1 = new PlayerObject(worldPhysics);
-        player1->setTexture("Kenny");
+        player1->setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/p2_stand.png"));
 		gameObjects.add(player1);
         
 		player2 = new PlayerObject(worldPhysics);
-        player2->setTexture("Flower");
+        player2->setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg"));
 		gameObjects.add(player2);
 	}
     
 	~GameModel()
     {
-        
+		
 	}
     
     const OwnedArray<GameObject> & getGameObjects()
@@ -99,8 +99,6 @@ private:
     OwnedArray<GameObject> gameObjects;
 	PlayerObject* player1;
 	PlayerObject* player2;
-
-    //OwnedArray<GameObject> gameObjects;
     
     WorldPhysics worldPhysics;
 

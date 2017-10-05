@@ -3,7 +3,7 @@
 <JUCERPROJECT id="uxmnJz" name="GameEngine" displaySplashScreen="1" reportAppUsage="1"
               splashScreenColour="Dark" projectType="guiapp" version="1.0.0"
               bundleIdentifier="com.yourcompany.GameEngine" includeBinaryInAppConfig="1"
-              cppLanguageStandard="11" jucerVersion="5.1.0">
+              cppLanguageStandard="11" jucerVersion="5.1.1">
   <MAINGROUP id="FQiawi" name="GameEngine">
     <GROUP id="{A90B6C66-5187-763C-2B86-1EE26DFD5E8F}" name="Source">
       <FILE id="P8suE4" name="CoreEngine.cpp" compile="1" resource="0" file="Source/CoreEngine.cpp"/>

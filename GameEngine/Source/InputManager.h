@@ -20,6 +20,10 @@ public:
 
 	InputManager(){	}
 
+	~InputManager() {
+
+	}
+
 	bool keyPressed(const KeyPress& key, Component* originatingComponent) {
 		if ((keyboardBinding.find(key.getTextCharacter()) != keyboardBinding.end())) {
 			if (commands.indexOf(keyboardBinding[key.getTextCharacter()]) == -1) {
@@ -73,4 +77,6 @@ private:
 	std::map<juce_wchar, GameCommand> keyboardBinding2;
 	Array<GameCommand> commands;
 	Array<GameCommand> commands2;
+
+	JUCE_LEAK_DETECTOR(InputManager)
 };
