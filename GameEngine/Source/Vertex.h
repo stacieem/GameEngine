@@ -13,7 +13,9 @@ struct Vertex
 						// This 2-D vector gives the coordinates in the 2-D image file corresponding to
 						// the pixel color to be drawn
 
-	Vertex();
+	Vertex() {
+
+	}
 
 	Vertex(const Vertex& vert) {
 		position = vert.position;
@@ -26,4 +28,5 @@ struct Vertex
 		texCoord[0] = coordX;
 		texCoord[1] = coordY;
 	}
+
 };

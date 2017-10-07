@@ -166,4 +166,6 @@ private:
 	juce::int32 velocityIterations;
 	juce::int32 positionIterations;
 	float32 timeStep;
+
+	JUCE_LEAK_DETECTOR(WorldPhysics)
 };

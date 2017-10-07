@@ -14,7 +14,7 @@ public:
 		getPhysicsProperties().setFriction(0.6f);
 		linearDamp = 0.5f;
 		origin = getPhysicsProperties().GetPosition();
-		this->setTexture("Kenny");
+		this->setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/p2_stand.png"));
 	}
 	void moveUp()
 	{
@@ -64,5 +64,7 @@ private:
 	Vector3D<GLfloat> position;
 	OwnedArray<Vector3D<GLfloat>> vertices;	 // The vertices from the origin
 	ScopedPointer<GLfloat> glVertices;
+
+	JUCE_LEAK_DETECTOR(PlayerObject)
 
 };

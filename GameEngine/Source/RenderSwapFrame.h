@@ -8,10 +8,10 @@ public:
 
 	RenderSwapFrame() {
 		drawableObjects.add(new DrawableObject());
-		drawableObjects[0]->setTexture("Flower");
+		drawableObjects[0]->setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/p2_stand.png"));
 
 		drawableObjects.add(new DrawableObject());
-		drawableObjects[1]->setTexture("Kenny");
+		drawableObjects[1]->setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg"));
 	}
 
 	~RenderSwapFrame() {
@@ -34,7 +34,7 @@ public:
 		drawableObjects[pos]->setVertices(verts);
 	}
 
-	void setDrawableObjectTexture(String tex, int pos) {
+	void setDrawableObjectTexture(File tex, int pos) {
 
 		drawableObjects[pos]->setTexture(tex);
 	}
@@ -50,6 +50,8 @@ private:
 	OwnedArray<DrawableObject> drawableObjects;
 
 	//Any other data that needs to be passed to the GameView (such as HUD data) will be stored here
+
+	JUCE_LEAK_DETECTOR(RenderSwapFrame)
 
 };
 

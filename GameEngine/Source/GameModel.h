@@ -41,5 +41,4 @@ public:
 private:
 	OwnedArray<Level> levels;
 	int currentLevel;
-
-};
+  };

@@ -15,7 +15,7 @@ class GameLogic : public Thread
 public:
 	GameLogic(GameAudio & gameAudio) : Thread("GameLogic"), gameAudio(gameAudio)
     {
-        inputManager = new InputManager();
+        //inputManager = new InputManager();
     }
     
 	~GameLogic()
@@ -169,7 +169,6 @@ private:
 				renderSwapFrame->setDrawableObjectVertices(currLevel.getGameObjects()[i]->getVertices(), i);
 				renderSwapFrame->setDrawableObjectTexture(currLevel.getGameObjects()[i]->getTexture(), i);
 			}
-            
             // Maybe actions are triggered here ???
             // IMPLEMENT . . .
 
@@ -195,4 +194,6 @@ private:
 
 	//Physics World
 	WorldPhysics world;
+
+	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GameLogic)
 };

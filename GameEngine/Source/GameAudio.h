@@ -49,4 +49,6 @@ private:
         updated together
      */
     //CriticalSection lock;
+
+	JUCE_LEAK_DETECTOR(GameAudio)
 };

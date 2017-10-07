@@ -12,6 +12,7 @@
 //==============================================================================
 CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
 {
+
     // Setup JUCE Components & Windowing
     addAndMakeVisible (gameView);
     // Initialize Audio Engine
@@ -95,8 +96,13 @@ CoreEngine::~CoreEngine()
     this->stopThread(500);
     
     delete gameModelCurrentFrame;
+	gameModelCurrentFrame = nullptr;
 	delete renderSwapFrameA;
+	renderSwapFrameA = nullptr;
 	delete renderSwapFrameB;
+	renderSwapFrameB = nullptr;
+	delete inputManager;
+	inputManager = nullptr;
 }
 
 // JUCE GUI Callbacks ==========================================================
@@ -180,6 +186,8 @@ void CoreEngine::run() {
         // Allow GameLogic and GameView's rendering to start
         logicWaitable.signal();
         renderWaitable.signal();
+
+
         
         // Stop CoreEngine until both GameLogic and GameView's render have finished processing
         coreEngineWaitable.wait();

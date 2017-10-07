@@ -105,4 +105,7 @@ private:
 							// Create the atttribute variable
 		return new OpenGLShaderProgram::Attribute(shaderProgram, attributeName);
 	}
+
+	JUCE_LEAK_DETECTOR(Attributes)
+
 };

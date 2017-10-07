@@ -15,7 +15,7 @@ public:
 	}
 
 	DrawableObject(const DrawableObject& obj) {
-		textureName = obj.textureName;
+		textureFile = obj.textureFile;
 
 		for (auto & v : obj.vertices)
 		{
@@ -66,12 +66,12 @@ public:
 	* Set the name of the texture to use for this object. Currently,
 	* all textures are loaded at runtime in GameView
 	*/
-	void setTexture(String tex) {
-		textureName = tex;
+	void setTexture(File tex) {
+		textureFile = tex;
 	}
 
-	String getTexture() {
-		return textureName;
+	File getTexture() {
+		return textureFile;
 	}
 
 
@@ -79,6 +79,8 @@ private:
 
 	OwnedArray<Vertex> vertices;
 
-	String textureName;
+	File textureFile;
+
+	JUCE_LEAK_DETECTOR(DrawableObject);
 
 };

@@ -424,6 +424,9 @@
     <Filter Include="GameEngine\Source\Interface\Tools\Input">
       <UniqueIdentifier>{6e1d2812-bd2e-4e97-bd3f-70beae87d37f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\Source\Interface\Tools\ResourceManager">
+      <UniqueIdentifier>{e088ef2e-05b7-4b51-b149-64d211c781d3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
@@ -4259,11 +4262,20 @@
     <ClInclude Include="..\..\Source\EditorControl.h">
       <Filter>GameEngine\Source\Interface</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\LevelInspector.h">
-      <Filter>GameEngine\Source\Interface</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\Level.h">
       <Filter>GameEngine\Source\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\LevelInspector.h">
+      <Filter>GameEngine\Source\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TextureResource.h">
+      <Filter>GameEngine\Source\Interface\Tools\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TextureResourceManager.h">
+      <Filter>GameEngine\Source\Interface\Tools\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Resource.h">
+      <Filter>GameEngine\Source\Interface\Tools\ResourceManager</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

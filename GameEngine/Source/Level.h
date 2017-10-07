@@ -9,12 +9,12 @@ public:
 		this->levelName = levelName;
 		// Trystan's Multiplayer Test
 		PlayerObject* player = new PlayerObject(worldPhysics);
-		player->setTexture("Flower");
+		player->setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg"));
 		gameObjects.add(player);
 		players.add(player);
 
 		player = new PlayerObject(worldPhysics);
-		player->setTexture("Kenny");
+		player->setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/p2_stand.png"));
 		gameObjects.add(player);
 		players.add(player);
 	}

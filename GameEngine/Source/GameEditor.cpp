@@ -5,6 +5,7 @@
 GameEditor::GameEditor() {
 	setSize(1200, 800);
 
+	setOpaque(true);
 	addAndMakeVisible(gameEngine);
 	addAndMakeVisible(ObjBrowser);
 	addAndMakeVisible(ObjInspector);
@@ -30,7 +31,6 @@ void GameEditor::resized()
 	// This is called when the MainContentComponent is resized.
 	// If you add any child components, this is where you should
 	// update their positions.
-	//gameEngine.setBoundsToFit(getWidth() *.2, 0, getWidth() * .5, getHeight()*.6, Justification::centredTop, true);
 	gameEngine.setBounds(getWidth()*.3, 0, getWidth()*.5, getHeight());						//GameView panel
 	ObjBrowser.setBounds(getWidth()*.8, 0, getWidth()*.2, getHeight()*.5);						//TopRight panel displaying drag/drop objects
 	ObjInspector.setBounds(getWidth()*.8, getHeight()*.5, getWidth()*.2, getHeight()*.5);		//botRight panel displaying properties of selected object
