@@ -8,8 +8,8 @@ class PlayerObject : public GameObject{
 public:
 	PlayerObject(WorldPhysics & worldPhysics) : GameObject(worldPhysics)
 	{
-		xVel = 2.0f;
-		yVel = 8.0f;
+		setXVel(2.0f);
+		setYVel(8.0f);
 		
 		getPhysicsProperties().setFriction(0.6f);
 		linearDamp = 0.5f;
@@ -19,7 +19,7 @@ public:
 	void moveUp()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y += yVel;
+		store.y += getYVel();
 		if (store.y > 10) {
 			store.y = 10;
 		}
@@ -29,7 +29,7 @@ public:
 	void moveDown()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y -= yVel;
+		store.y -= getYVel();
 
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
@@ -38,7 +38,7 @@ public:
 	{
 
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x -= xVel;
+		store.x -= getXVel();
 
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
@@ -46,7 +46,7 @@ public:
 	void moveRight()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x += xVel;
+		store.x += getXVel();
 
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
@@ -57,7 +57,6 @@ public:
 		getPhysicsProperties().setLinearVelocity(0.0f,0.0f);
 	}
 private:
-	GLfloat xVel, yVel;
 	GLfloat linearDamp;
 	b2Vec2 origin;
 

@@ -13,7 +13,7 @@ public:
 	//==========================================================================
 	GameEditor();
 	~GameEditor();
-
+	CoreEngine& getCoreEngine();
 	// JUCE GUI Callbacks ======================================================
 	void paint(Graphics&) override;
 	void resized() override;

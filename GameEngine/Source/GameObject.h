@@ -144,11 +144,28 @@ public:
 	void setName(String name) {
 		objName = name;
 	}
+
+
+	float getXVel() {
+		return xVel;
+	}
+	float getYVel() {
+		return yVel;
+	}
+
+
+	void setXVel(float newXVel) {
+		xVel = newXVel;
+	}
+	void setYVel(float newYVel) {
+		yVel = newYVel;
+	}
 private:
     
     // Physical Position =======================================================
 	Vector3D<GLfloat> position;
 
+	GLfloat xVel, yVel;
 	OwnedArray<Vertex> vertices;
 
     //Matrix3D<GLfloat> transformations;

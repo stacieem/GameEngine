@@ -4,15 +4,21 @@
 */
 #pragma once
 #include "Level.h";
+#include "CoreEngine.h"
 class LevelInspector : public Component {
 public:
-	LevelInspector() {
+	LevelInspector(){
 		addAndMakeVisible(propertyPanel);
+		addAndMakeVisible(playButton);
+		playButton.setButtonText("Start/Stop Game");
 	}
 	~LevelInspector() {
 
 	}
 
+	void setCoreEngine(CoreEngine* engine) {
+		coreEngine = engine;
+	}
 	// JUCE GUI Callbacks ======================================================
 	void paint(Graphics& g) override {
 		//g.fillAll(Colours::indigo);
@@ -43,13 +49,16 @@ public:
 	}
 	void resized() override
 	{
-		//juce::Rectangle<int> r = getLocalBounds();
-		propertyPanel.setBounds(getLocalBounds());
+		juce::Rectangle<int> r = getLocalBounds();
+		int buttonHeight = r.getHeight() / 20;
+		playButton.setBounds(r.getX(),r.getY(),r.getWidth(), buttonHeight);
+		propertyPanel.setBounds(r.getX(), buttonHeight, r.getWidth(), buttonHeight * 19);
 		//scrollBar.setBounds(0, 0, getWidth()*.2, getHeight());
 
 	}
 private:
-	TextButton txt;
+	CoreEngine* coreEngine;
+	ToggleButton playButton;
 	OwnedArray<TextButton> buttons;
 	PropertyPanel propertyPanel;
 
@@ -57,6 +66,4 @@ private:
 	Array<PropertyComponent *> levelPhysicsProperties;
 	Array<PropertyComponent *> levelAudioProperties;
 	Array<PropertyComponent *> levelBackgroundProperties;
-	// Game Data Model
-	//OwnedArray<GameObject> gameObjects;
 };

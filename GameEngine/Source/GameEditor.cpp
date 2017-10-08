@@ -6,20 +6,30 @@ GameEditor::GameEditor() {
 	setSize(1200, 800);
 
 	setOpaque(true);
+	
 	addAndMakeVisible(gameEngine);
-	addAndMakeVisible(ObjBrowser);
 	addAndMakeVisible(ObjInspector);
 	addAndMakeVisible(levelInspector);
+	addAndMakeVisible(ObjBrowser);
+
+	ObjInspector.setCoreEngine(&gameEngine);
+	levelInspector.setCoreEngine(&gameEngine);
+	ObjBrowser.setCoreEngine(&gameEngine);
+	while (gameEngine.getGameModel().getCurrentLevel().getNumGameObjects() < 1) {}
+	
 	//addAndMakeVisible(EditorController);
 	//gameEngine.setBoundsToFit(getWidth() *.2, 0, getWidth() * .5, getHeight()*.6, Justification::centredTop, true);
 
 	levelInspector.updateInspector(gameEngine.getCurrentLevel());
+	ObjInspector.updateObj(gameEngine.getGameModel().getCurrentLevel().getGameObjects().getFirst());
 }
 
 GameEditor::~GameEditor() {
 
 }
-
+CoreEngine& GameEditor::getCoreEngine() {
+	return gameEngine;
+}
 void GameEditor::paint(Graphics& g)
 {
 	// (Our component is opaque, so we must completely fill the background with a solid colour)
