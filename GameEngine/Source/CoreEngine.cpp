@@ -168,9 +168,13 @@ void CoreEngine::getNextAudioBlock (const AudioSourceChannelInfo &bufferToFill)
  */
 void CoreEngine::swapRenderFramesBetweenLogicAndRender()
 {
-	RenderSwapFrame * tempLogicSwapFrame = gameLogic.getRenderSwapFrame();
-	gameLogic.setRenderSwapFrame(gameView.getRenderSwapFrame());
-	gameView.setRenderSwapFrame(tempLogicSwapFrame);
+	if (!gameLogic.isPaused()) {
+		RenderSwapFrame * tempLogicSwapFrame = gameLogic.getRenderSwapFrame();
+		gameLogic.setRenderSwapFrame(gameView.getRenderSwapFrame());
+		gameView.setRenderSwapFrame(tempLogicSwapFrame);
+	}
+
+	
 }
 
 /** Signals both the GameLogic and GameView renderer to start, then swaps their
@@ -196,4 +200,24 @@ void CoreEngine::run() {
         // Swap render frames
 		swapRenderFramesBetweenLogicAndRender();
     }
+
+}
+
+//Game modifier functions
+
+void CoreEngine::addBlock()
+{
+	gameModelCurrentFrame->getCurrentLevel().addNewBlock();
+
+}
+
+void CoreEngine::toggleGamePause()
+{
+	
+	if (gameLogic.isPaused()) {
+		gameLogic.setPaused(false);
+	} else {
+		gameLogic.setPaused(true);
+	}
+	
 }

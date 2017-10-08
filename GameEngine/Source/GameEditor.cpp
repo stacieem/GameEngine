@@ -15,6 +15,8 @@ GameEditor::GameEditor() {
 	ObjInspector.setCoreEngine(&gameEngine);
 	levelInspector.setCoreEngine(&gameEngine);
 	ObjBrowser.setCoreEngine(&gameEngine);
+
+	//what does this do
 	while (gameEngine.getGameModel().getCurrentLevel().getNumGameObjects() < 1) {}
 	
 	//addAndMakeVisible(EditorController);

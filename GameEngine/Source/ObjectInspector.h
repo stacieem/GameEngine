@@ -39,14 +39,18 @@ public:
 		if (selectedObj != NULL) {
 			objPhysics.setValue(var(selectedObj->getXVel()));
 			objPhysicsProperties.add(new SliderPropertyComponent(objPhysics, "Linear Velocity(x):", 0.0, 10.0, 0.1));
+
 			objPhysics2.setValue(var(selectedObj->getYVel()));
 			objPhysicsProperties.add(new SliderPropertyComponent(objPhysics2, "Linear Velocity(y):", 0.0, 10.0, 0.1));
 
 			//adds menu
 			propertyPanel.addSection("Object Physics", objPhysicsProperties);
+			
 		}
-		//add Object Audio
+
 		//add Object Texture
+		//add Object Audio
+		
 	}
 	void resized() override
 	{
@@ -56,6 +60,8 @@ public:
 		
 		
 	}
+
+
 private:
 	CoreEngine* coreEngine;
 	GameObject* selectedObj;

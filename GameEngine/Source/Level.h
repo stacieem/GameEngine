@@ -32,6 +32,10 @@ public:
 		gameObjects.add(new GameObject(worldPhysics));
 	}
 
+	void addNewBlock() {
+		gameObjects.add(new GameObject(worldPhysics));
+	}
+
 	const OwnedArray<GameObject> & getGameObjects()
 	{
 		return gameObjects;

@@ -46,6 +46,12 @@ public:
 	*/
 	void swapRenderFramesBetweenLogicAndRender();
 
+
+	/*Functions for Game Editor to modify GameModel*/
+
+	void addBlock();
+	void toggleGamePause();
+
 private:
     //==========================================================================
     GameView gameView;

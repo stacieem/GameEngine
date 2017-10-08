@@ -16,11 +16,24 @@ public:
 	GameLogic(GameAudio & gameAudio) : Thread("GameLogic"), gameAudio(gameAudio)
     {
         //inputManager = new InputManager();
+		gamePaused = false;
     }
     
 	~GameLogic()
     {
         gameModelCurrentFrame = nullptr;
+	}
+
+	/** Sets whether or not the game is paused.
+	*/
+	void setPaused(bool paused)
+	{
+		gamePaused = paused;
+	}
+
+	/* Gets the current pause/play state of the game*/
+	bool isPaused() {
+		return gamePaused;
 	}
 
     /** Sets the GameModel current frame being processed for logic, and the
@@ -87,6 +100,7 @@ private:
         {
 
 
+
 			// ADD: If level changed, update the current level
 				// currentLevel = gameModelCurrentFrame->getCurrentLevel();
 
@@ -94,6 +108,19 @@ private:
 
 			// Wait for CoreEngine to signal() this loop
 			logicWaitable->wait();
+
+			if (gamePaused) {
+				currentTime = Time::currentTimeMillis();
+				DBG("toggle");
+				coreEngineWaitable->signal();
+				continue;
+			}
+
+			// Calculate time
+			newTime = Time::currentTimeMillis();
+			deltaTime = newTime - currentTime;
+			currentTime = newTime;
+			checkTime += deltaTime;
 
 			//locks in the commands for this iteration
 			inputManager->getCommands(newCommands);
@@ -132,12 +159,6 @@ private:
 					break;
 				}
 			}
-
-            // Calculate time
-			newTime = Time::currentTimeMillis();
-			deltaTime = newTime - currentTime;
-			currentTime = newTime;
-			checkTime += deltaTime;
             
             // Process Physics
 			currLevel.processWorldPhysics(deltaTime);
@@ -194,6 +215,8 @@ private:
 
 	//Physics World
 	WorldPhysics world;
+
+	bool gamePaused;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GameLogic)
 };

@@ -5,12 +5,13 @@
 #pragma once
 #include "Level.h";
 #include "CoreEngine.h"
-class LevelInspector : public Component {
+class LevelInspector : public Component, public Button::Listener {
 public:
 	LevelInspector(){
 		addAndMakeVisible(propertyPanel);
 		addAndMakeVisible(playButton);
 		playButton.setButtonText("Start/Stop Game");
+		playButton.addListener(this);
 	}
 	~LevelInspector() {
 
@@ -55,6 +56,13 @@ public:
 		propertyPanel.setBounds(r.getX(), buttonHeight, r.getWidth(), buttonHeight * 19);
 		//scrollBar.setBounds(0, 0, getWidth()*.2, getHeight());
 
+	}
+
+	void buttonClicked(Button * button) override {
+		if (button == &playButton) {
+			
+			coreEngine->toggleGamePause();
+		}
 	}
 private:
 	CoreEngine* coreEngine;

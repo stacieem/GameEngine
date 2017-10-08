@@ -12,13 +12,15 @@ public:
 
 	~TextureResource() {
 		if (texture != nullptr) {
-			DBG("delete texture");
 			delete texture;
 		}
 	}
 
 	void loadTexture(File texFile) {
 
+		if (!texFile.exists()) {
+			texFile = File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg");
+		}
 
 		//Create image from the texture file
 		Image textureImage = ImageFileFormat::loadFrom(texFile);

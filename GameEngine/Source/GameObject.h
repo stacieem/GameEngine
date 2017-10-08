@@ -33,12 +33,14 @@ public:
         // Default mapping to an objects audio
         mapAudioFileToPhysicalAction((File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav"), PhysicalAction::collsion);
 		objName = "Object Anonymous";
+
+		//Set default texture
+		setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg"));
     }
 
 	virtual ~GameObject() {
 
 	}
-
     
     /** Get the
      */

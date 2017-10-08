@@ -4265,9 +4265,6 @@
     <ClInclude Include="..\..\Source\Level.h">
       <Filter>GameEngine\Source\Objects</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\LevelInspector.h">
-      <Filter>GameEngine\Source\Objects</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\TextureResource.h">
       <Filter>GameEngine\Source\Interface\Tools\ResourceManager</Filter>
     </ClInclude>
@@ -4276,6 +4273,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\Resource.h">
       <Filter>GameEngine\Source\Interface\Tools\ResourceManager</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\LevelInspector.h">
+      <Filter>GameEngine\Source\Interface</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

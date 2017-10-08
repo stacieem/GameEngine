@@ -11,7 +11,6 @@ public:
 	}
 
 	virtual ~Resource() {
-		DBG("delete resrouce");
 	}
 
 	String getName() {

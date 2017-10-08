@@ -5,16 +5,19 @@
 */
 
 #include "CoreEngine.h"
-class ObjectBrowser : public Component {
+class ObjectBrowser : public Component, public Button::Listener {
 public:
 	ObjectBrowser() {
 		addAndMakeVisible(player);
 		addAndMakeVisible(enemy);
 		addAndMakeVisible(genericObj);
+		addAndMakeVisible(block);
 
 		player.setButtonText("Player Character");
 		enemy.setButtonText("Enemy Character");
 		genericObj.setButtonText("Generic Character");
+		block.setButtonText("Block");
+		block.addListener(this);
 		//addAndMakeVisible(scrollBar);
 		//scrollBar.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
 
@@ -38,13 +41,25 @@ public:
 		player.setBounds(r.getX(), 0, getWidth(), BUTTON_HEIGHT);
 		enemy.setBounds(r.getX(), BUTTON_HEIGHT, getWidth(), BUTTON_HEIGHT);
 		genericObj.setBounds(r.getX(), BUTTON_HEIGHT * 2, getWidth(), BUTTON_HEIGHT);
+		block.setBounds(r.getX(), BUTTON_HEIGHT * 3, getWidth(), BUTTON_HEIGHT);
 		//scrollBar.setBounds(getLocalBounds());
 	}
+
+	void buttonClicked(Button* button)
+	{
+		if (button == &block)
+		{
+			DBG("block clicked");
+			coreEngine->addBlock();
+		}
+	}
+
 private:
 	const int NUM_VISIBLE_BUTTONS = 5;
 	CoreEngine* coreEngine;
 	TextButton player;
 	TextButton enemy;
 	TextButton genericObj;
+	TextButton block;
 	//Slider scrollBar;
 };
