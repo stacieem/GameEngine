@@ -19,7 +19,7 @@ public:
 	void loadTexture(File texFile) {
 
 		if (!texFile.exists()) {
-			texFile = File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg");
+			texFile = File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/default.png");
 		}
 
 		//Create image from the texture file

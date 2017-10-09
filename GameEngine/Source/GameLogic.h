@@ -111,9 +111,7 @@ private:
 
 			if (gamePaused) {
 				currentTime = Time::currentTimeMillis();
-				DBG("toggle");
-				coreEngineWaitable->signal();
-				continue;
+				
 			}
 
 			// Calculate time
@@ -124,62 +122,76 @@ private:
 
 			//locks in the commands for this iteration
 			inputManager->getCommands(newCommands);
+
 			for (auto & command : newCommands)
 			{
 				switch (command)
 				{
-				case GameCommand::Player1MoveUp:
-					currLevel.getPlayer(0)->moveUp();
-					break;
-				case GameCommand::Player1MoveDown:
-					currLevel.getPlayer(0)->moveDown();
-					break;
-				case GameCommand::Player1MoveLeft:
-					currLevel.getPlayer(0)->moveLeft();
-					break;
-				case GameCommand::Player1MoveRight:
-					currLevel.getPlayer(0)->moveRight();
-					break;
-				//Player 2 commands
-				case GameCommand::Player2MoveUp:
-					currLevel.getPlayer(1)->moveUp();
-					break;
-				case GameCommand::Player2MoveDown:
-					currLevel.getPlayer(1)->moveDown();
-					break;
-				case GameCommand::Player2MoveLeft:
-					currLevel.getPlayer(1)->moveLeft();
-					break;
-				case GameCommand::Player2MoveRight:
-					currLevel.getPlayer(1)->moveRight();
-					break;
-				case GameCommand::reset:
-					currLevel.getPlayer(0)->reset();
-					currLevel.getPlayer(1)->reset();
-					break;
+					//Apparently if statements inside a switch are a thing, probably a bad thing
+					//Don't accept this input if the game is paused
+					if (!isPaused()) {
+
+						case GameCommand::Player1MoveUp:
+							DBG("MOVE UP");
+							currLevel.getPlayer(0)->moveUp();
+							break;
+						case GameCommand::Player1MoveDown:
+							currLevel.getPlayer(0)->moveDown();
+							break;
+						case GameCommand::Player1MoveLeft:
+							currLevel.getPlayer(0)->moveLeft();
+							break;
+						case GameCommand::Player1MoveRight:
+							currLevel.getPlayer(0)->moveRight();
+							break;
+						//Player 2 commands
+						case GameCommand::Player2MoveUp:
+							DBG("2MOVE UP");
+							currLevel.getPlayer(1)->moveUp();
+							break;
+						case GameCommand::Player2MoveDown:
+							currLevel.getPlayer(1)->moveDown();
+							break;
+						case GameCommand::Player2MoveLeft:
+							currLevel.getPlayer(1)->moveLeft();
+							break;
+						case GameCommand::Player2MoveRight:
+							currLevel.getPlayer(1)->moveRight();
+							break;
+						case GameCommand::reset:
+							currLevel.getPlayer(0)->reset();
+							currLevel.getPlayer(1)->reset();
+							break;
+					}
+				}
+				
+				
+			}
+			
+            //Only do these things if the game is not paused
+			if (!gamePaused) {
+				// Process Physics
+				currLevel.processWorldPhysics(deltaTime);
+
+				// Play Audio
+				// If any new collisions occur, play the specified collision audio
+				for (auto & object : currLevel.getGameObjects())
+				{
+					if (object->getPhysicsProperties().hasNewCollisions())
+					{
+						//                    File * audioFile = object->getAudioFileForAction(PhysicalAction::collsion);
+						//                 
+						//                     If audio file was not in the map, do nothing
+						//                    if (audioFile != nullptr)
+						//                    {
+						//                        gameAudio.playAudioFile(*audioFile, false);
+						//                    }
+						gameAudio.playAudioFile(object->getAudioFile(), false);
+
+					}
 				}
 			}
             
-            // Process Physics
-			currLevel.processWorldPhysics(deltaTime);
-            
-            // Play Audio
-            // If any new collisions occur, play the specified collision audio
-            for (auto & object : currLevel.getGameObjects())
-            {
-                if (object->getPhysicsProperties().hasNewCollisions())
-                {
-//                    File * audioFile = object->getAudioFileForAction(PhysicalAction::collsion);
-//                 
-//                     If audio file was not in the map, do nothing
-//                    if (audioFile != nullptr)
-//                    {
-//                        gameAudio.playAudioFile(*audioFile, false);
-//                    }
-                    gameAudio.playAudioFile(object->getAudioFile(), false);
-                    
-                }
-            }
             
             // Update the GameModel
 			//Update the number of DrawableObjects in the RenderSwapFrame

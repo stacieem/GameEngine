@@ -71,6 +71,7 @@ public:
 			coreEngine->toggleGamePause();
 		}
 	}
+
 private:
 	CoreEngine* coreEngine;
 	ToggleButton playButton;

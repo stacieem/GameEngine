@@ -63,6 +63,9 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
 	aKey = KeyPress('r');
 	inputManager->addCommand(aKey, GameCommand::reset);
 
+	//Register pause command
+	//inputManager->addCommand(KeyPress('p'), GameCommand::togglePause);
+
 	//XBOX Commands and testing
 
     // Start the GameLogic thread and the GameView's renderer
@@ -168,13 +171,9 @@ void CoreEngine::getNextAudioBlock (const AudioSourceChannelInfo &bufferToFill)
  */
 void CoreEngine::swapRenderFramesBetweenLogicAndRender()
 {
-	if (!gameLogic.isPaused()) {
 		RenderSwapFrame * tempLogicSwapFrame = gameLogic.getRenderSwapFrame();
 		gameLogic.setRenderSwapFrame(gameView.getRenderSwapFrame());
 		gameView.setRenderSwapFrame(tempLogicSwapFrame);
-	}
-
-	
 }
 
 /** Signals both the GameLogic and GameView renderer to start, then swaps their

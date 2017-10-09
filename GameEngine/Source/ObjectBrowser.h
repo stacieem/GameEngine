@@ -49,7 +49,6 @@ public:
 	{
 		if (button == &block)
 		{
-			DBG("block clicked");
 			coreEngine->addBlock();
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
