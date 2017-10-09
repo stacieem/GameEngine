@@ -5,7 +5,7 @@
 */
 
 #include "CoreEngine.h"
-class ObjectBrowser : public Component, public Button::Listener {
+class ObjectBrowser : public Component, public Button::Listener, public InspectorUpdater {
 public:
 	ObjectBrowser() {
 		addAndMakeVisible(player);
@@ -51,6 +51,7 @@ public:
 		{
 			DBG("block clicked");
 			coreEngine->addBlock();
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 	}
 

@@ -3,7 +3,9 @@
 		Lists the properties of the currently selected unit
 */
 #include "CoreEngine.h"
-class ObjectInspector : public Component {
+#include "Inspector.h"
+
+class ObjectInspector : public Component, public InspectorUpdater {
 public:
 	ObjectInspector() {
 		//addAndMakeVisible(scrollBar);
@@ -27,7 +29,13 @@ public:
 	}
 	void updateObj(GameObject* obj) {
 		selectedObj = obj;
+
 		propertyPanel.clear();
+		objPhysicsProperties.clear();
+		objAudioProperties.clear();
+		objBackgroundProperties.clear();
+
+
 
 		//add Level Physics
 

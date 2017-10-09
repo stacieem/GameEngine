@@ -5,7 +5,9 @@
 #pragma once
 #include "Level.h";
 #include "CoreEngine.h"
-class LevelInspector : public Component, public Button::Listener {
+#include "Inspector.h"
+
+class LevelInspector : public Component, public InspectorUpdater, public Button::Listener {
 public:
 	LevelInspector(){
 		addAndMakeVisible(propertyPanel);
@@ -26,6 +28,10 @@ public:
 	}
 	void updateInspector(Level & chosenLevel) {
 		propertyPanel.clear();
+		levelObjGraphProperties.clear();
+		levelPhysicsProperties.clear();
+		levelAudioProperties.clear();
+		levelBackgroundProperties.clear();
 		
 		//add object graph
 		for (auto gameObj : chosenLevel.getGameObjects()) {
@@ -43,6 +49,7 @@ public:
 		levelPhysicsProperties.add(new SliderPropertyComponent(physicsGravity, "Gravity:", -20.0,20.0, 0.1));
 		propertyPanel.addSection("World Physics", levelPhysicsProperties);
 		
+		DBG("UPADTED");
 		//add Level Audio
 
 		//add Level Background

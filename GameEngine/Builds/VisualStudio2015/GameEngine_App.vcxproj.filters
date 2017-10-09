@@ -4277,6 +4277,9 @@
     <ClInclude Include="..\..\Source\LevelInspector.h">
       <Filter>GameEngine\Source\Interface</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Inspector.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt">
