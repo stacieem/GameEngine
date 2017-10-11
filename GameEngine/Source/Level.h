@@ -36,7 +36,7 @@ public:
 
 		player = new PlayerObject(worldPhysics);
 
-		player->setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg"));
+		player->setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg")); 
 		player->setCanimate(false);
 		gameObjects.add(player);
 		players.add(player);
