@@ -97,17 +97,17 @@ public:
 		
 	}
 
-	void textPropertyComponentChanged(TextPropertyComponent * component) {
+	void textPropertyComponentChanged(TextPropertyComponent * component) override {
 
 		//Really bad hacky solution since these are generated on the fly right now, they don't exist as member variables
 		if (component->getName() == "Name:") {
 			selectedObj->setName(component->getText());
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
 
 		if (component->getName() == "Texture:") {
 			selectedObj->setTexture(File(component->getText()));
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
 	}
 

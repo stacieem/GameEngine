@@ -188,7 +188,6 @@ public:
 
         for (auto & drawableObject : renderSwapFrame->getDrawableObjects())
         {
-
 			OpenGLTexture* tex = texResourceManager.loadTexture(drawableObject->getTexture());
 
 			if (tex != nullptr) {

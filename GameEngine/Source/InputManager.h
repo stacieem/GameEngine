@@ -11,8 +11,6 @@
 #include <vector>
 #include <map>
 #include "GameCommand.h"
-#include <Windows.h>
-#include <Xinput.h>
 
 /*
 	Abstract button assignments to keep magical indeces out of this

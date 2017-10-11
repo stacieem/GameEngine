@@ -40,12 +40,12 @@ public:
     
     void resized () override
     {
-        const int w = getWidth();
-        const int h = getHeight();
-        
-        const int healthBarW = w / 12;
-        const int healthBarH = h * 0.9;
-        const int margin = 20;
+//        const int w = getWidth();
+//        const int h = getHeight();
+//        
+//        const int healthBarW = w / 12;
+//        const int healthBarH = h * 0.9;
+//        const int margin = 20;
         
         //healthBar.setBounds(margin, (h - healthBarH) / 2, healthBarW, healthBarH);
     }

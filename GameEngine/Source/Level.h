@@ -18,7 +18,11 @@ public:
 		gameObjects.add(player);
 		players.add(player);
 	}
-	~Level(){}
+    
+	~Level()
+    {
+        
+    }
 
 	int getNumGameObjects() {
 		return gameObjects.size();
@@ -39,11 +43,6 @@ public:
 	const OwnedArray<GameObject> & getGameObjects()
 	{
 		return gameObjects;
-	}
-
-	const OwnedArray<PlayerObject> & getPlayers()
-	{
-		return players;
 	}
 
 	//Return a player Object
@@ -76,7 +75,7 @@ public:
 	}
 private:
 	OwnedArray<GameObject> gameObjects;
-	OwnedArray<PlayerObject> players;
+	Array<PlayerObject *> players;
 	String levelName;
 	WorldPhysics worldPhysics;
 };

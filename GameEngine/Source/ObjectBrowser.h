@@ -45,12 +45,12 @@ public:
 		//scrollBar.setBounds(getLocalBounds());
 	}
 
-	void buttonClicked(Button* button)
+	void buttonClicked(Button* button) override
 	{
 		if (button == &block)
 		{
 			coreEngine->addBlock();
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
 	}
 

@@ -3,15 +3,20 @@
 
 
 GameEditor::GameEditor() {
-	setSize(1200, 800);
+	
+    // Default window size
+    setSize(1200, 800);
 
 	setOpaque(true);
 	
+    // Add components to the editor
 	addAndMakeVisible(gameEngine);
 	addAndMakeVisible(objInspector);
 	addAndMakeVisible(levelInspector);
 	addAndMakeVisible(objBrowser);
 
+    // Register inspectors with CoreEngine so they can access Controller (MVC)
+    // functions to get and set GameModel data
 	objInspector.setCoreEngine(&gameEngine);
 	levelInspector.setCoreEngine(&gameEngine);
 	objBrowser.setCoreEngine(&gameEngine);
@@ -23,14 +28,12 @@ GameEditor::GameEditor() {
 	objInspector.setChangeBroadcasterForUpdate(&updateInspectorsChangeBroadcaster);
 	levelInspector.setChangeBroadcasterForUpdate(&updateInspectorsChangeBroadcaster);
 	objBrowser.setChangeBroadcasterForUpdate(&updateInspectorsChangeBroadcaster);
-
-	//what does this do -- this was originally my work around for an issue that arose, good now
-	//while (gameEngine.getGameModel().getCurrentLevel().getNumGameObjects() < 1) {}
-	
-	//addAndMakeVisible(EditorController);
-	//gameEngine.setBoundsToFit(getWidth() *.2, 0, getWidth() * .5, getHeight()*.6, Justification::centredTop, true);
-
+    
+    // Update Inspectors to the starting state
 	updateInspectors();
+    
+    // Start the CoreEngine
+    gameEngine.startThread();
 }
 
 GameEditor::~GameEditor() {
@@ -47,21 +50,29 @@ void GameEditor::paint(Graphics& g)
 
 void GameEditor::resized()
 {
-	// This is called when the MainContentComponent is resized.
-	// If you add any child components, this is where you should
-	// update their positions.
-	gameEngine.setBounds(getWidth()*.3, 0, getWidth()*.5, getHeight());						//GameView panel
-	objBrowser.setBounds(getWidth()*.8, 0, getWidth()*.2, getHeight()*.5);						//TopRight panel displaying drag/drop objects
-	objInspector.setBounds(getWidth()*.8, getHeight()*.5, getWidth()*.2, getHeight()*.5);		//botRight panel displaying properties of selected object
-	levelInspector.setBounds(0, 0, getWidth()*.3, getHeight());										//Leftmost panel displaying all elements present in level
-	//EditorController.setBounds(getWidth()*.3, getHeight()*.5, getWidth()*.5, getHeight()*.5);	//centered bottom panel displaying controls
-																								// etc. start/stop
+    // Setting the bounds of the CoreEngine sets bounds of the GameView
+	gameEngine.setBounds(getWidth()*0.3, 0, getWidth()*0.5, getHeight());
+    
+    // Left Side
+    levelInspector.setBounds(0, 0, getWidth()*0.3, getHeight());
+    
+    // Top right
+	objBrowser.setBounds(getWidth()*0.8, 0, getWidth()*0.2, getHeight()*0.5);
+	
+    // Bottom right
+    objInspector.setBounds(getWidth()*0.8, getHeight()*0.5, getWidth()*0.2, getHeight()*0.5);
 }
 
 void GameEditor::updateInspectors()
 {
-	levelInspector.updateInspector(gameEngine.getCurrentLevel());
-	objInspector.updateObj(gameEngine.getGameModel().getCurrentLevel().getGameObjects().getFirst());
+    // Get Game Model
+    GameModel & gameModel = gameEngine.getGameModel();
+    
+    // Update Inspectors
+	levelInspector.updateInspector(gameModel);
+    
+    // WE WANT THIS TO BE THE CURRENTLY SELECTED OBJECT SO FIX LATER!!!!
+	objInspector.updateObj(gameModel.getCurrentLevel()->getGameObjects().getFirst());
 }
 
 void GameEditor::changeListenerCallback(ChangeBroadcaster * source)
@@ -71,5 +82,4 @@ void GameEditor::changeListenerCallback(ChangeBroadcaster * source)
 	{
 		updateInspectors();
 	}
-
 }

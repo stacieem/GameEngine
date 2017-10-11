@@ -94,24 +94,18 @@ private:
 		currentTime = Time::currentTimeMillis();
 		int64 checkTime = 0;
 
-		Level& currLevel = gameModelCurrentFrame->getCurrentLevel();
+		Level * currLevel = gameModelCurrentFrame->getCurrentLevel();
 		// Main Logic loop
 		while (!threadShouldExit())
         {
-
-
-
-			// ADD: If level changed, update the current level
-				// currentLevel = gameModelCurrentFrame->getCurrentLevel();
-
-
-
 			// Wait for CoreEngine to signal() this loop
 			logicWaitable->wait();
+            
+            // Grab current level
+            currLevel = gameModelCurrentFrame->getCurrentLevel();
 
 			if (gamePaused) {
 				currentTime = Time::currentTimeMillis();
-				
 			}
 
 			// Calculate time
@@ -133,34 +127,34 @@ private:
 
 						case GameCommand::Player1MoveUp:
 							DBG("MOVE UP");
-							currLevel.getPlayer(0)->moveUp();
+							currLevel->getPlayer(0)->moveUp();
 							break;
 						case GameCommand::Player1MoveDown:
-							currLevel.getPlayer(0)->moveDown();
+							currLevel->getPlayer(0)->moveDown();
 							break;
 						case GameCommand::Player1MoveLeft:
-							currLevel.getPlayer(0)->moveLeft();
+							currLevel->getPlayer(0)->moveLeft();
 							break;
 						case GameCommand::Player1MoveRight:
-							currLevel.getPlayer(0)->moveRight();
+							currLevel->getPlayer(0)->moveRight();
 							break;
 						//Player 2 commands
 						case GameCommand::Player2MoveUp:
 							DBG("2MOVE UP");
-							currLevel.getPlayer(1)->moveUp();
+							currLevel->getPlayer(1)->moveUp();
 							break;
 						case GameCommand::Player2MoveDown:
-							currLevel.getPlayer(1)->moveDown();
+							currLevel->getPlayer(1)->moveDown();
 							break;
 						case GameCommand::Player2MoveLeft:
-							currLevel.getPlayer(1)->moveLeft();
+							currLevel->getPlayer(1)->moveLeft();
 							break;
 						case GameCommand::Player2MoveRight:
-							currLevel.getPlayer(1)->moveRight();
+							currLevel->getPlayer(1)->moveRight();
 							break;
 						case GameCommand::reset:
-							currLevel.getPlayer(0)->reset();
-							currLevel.getPlayer(1)->reset();
+							currLevel->getPlayer(0)->reset();
+							currLevel->getPlayer(1)->reset();
 							break;
 					}
 				}
@@ -171,11 +165,11 @@ private:
             //Only do these things if the game is not paused
 			if (!gamePaused) {
 				// Process Physics
-				currLevel.processWorldPhysics(deltaTime);
+				currLevel->processWorldPhysics(deltaTime);
 
 				// Play Audio
 				// If any new collisions occur, play the specified collision audio
-				for (auto & object : currLevel.getGameObjects())
+				for (auto & object : currLevel->getGameObjects())
 				{
 					if (object->getPhysicsProperties().hasNewCollisions())
 					{
@@ -195,12 +189,20 @@ private:
             
             // Update the GameModel
 			//Update the number of DrawableObjects in the RenderSwapFrame
-			renderSwapFrame->setDrawableObjectsLength(currLevel.getNumGameObjects());
+			renderSwapFrame->setDrawableObjectsLength(currLevel->getNumGameObjects());
+            // Yo, if the number of drawable objects is the same as the number of
+            // objects that are in the level, then there is no point in having two
+            // types of objects. We just want ONE type of GameObject that has an
+            // ability to be drawable. Maybe it has a method: isDrawable() that
+            // returns whether or not the object is drawable. If it is drawable,
+            // load its textures where applicable, if not, load a default color
+            // or something. From what I can tell, we do not need two types
+            // of game objects.
 
-			for (int i = 0; i < currLevel.getGameObjects().size(); i++)
+			for (int i = 0; i < currLevel->getGameObjects().size(); i++)
 			{
-				renderSwapFrame->setDrawableObjectVertices(currLevel.getGameObjects()[i]->getVertices(), i);
-				renderSwapFrame->setDrawableObjectTexture(currLevel.getGameObjects()[i]->getTexture(), i);
+				renderSwapFrame->setDrawableObjectVertices(currLevel->getGameObjects()[i]->getVertices(), i);
+				renderSwapFrame->setDrawableObjectTexture(currLevel->getGameObjects()[i]->getTexture(), i);
 			}
             // Maybe actions are triggered here ???
             // IMPLEMENT . . .

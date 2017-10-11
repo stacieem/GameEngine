@@ -34,9 +34,8 @@ public:
     void releaseResources() override;
     void getNextAudioBlock (const AudioSourceChannelInfo &bufferToFill) override;
     
-    //accessors for the GameModel
+    //accessor for the GameModel
 	GameModel& getGameModel();
-	Level& getCurrentLevel();
 
     // Engine Thread Callback & Functions ======================================
     void run() override;
@@ -47,10 +46,15 @@ public:
 	void swapRenderFramesBetweenLogicAndRender();
 
 
-	/*Functions for Game Editor to modify GameModel*/
-
+	// Controller Functions for Game Editor to modify GameModel ================
 	void addBlock();
 	void toggleGamePause();
+    
+    void addLevel();
+    void removeLevel(int levelIndex);
+    void setCurrentLevel(int levelIndex);
+    
+    
 
 private:
     //==========================================================================
@@ -89,6 +93,12 @@ private:
     WaitableEvent logicWaitable;
     WaitableEvent renderWaitable;
     WaitableEvent coreEngineWaitable;
+    
+    /** Critical sections to lock when updating and receving GameModels to
+        prevent game logic and render from using the game model while it is
+        being updated
+     */
+    CriticalSection gameEditingControllerFunctionsLock;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CoreEngine)
 };

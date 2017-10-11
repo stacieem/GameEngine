@@ -29,16 +29,41 @@ public:
 		return *levels[levelNumber];
 	}
 
-	void addNewLevel(String levelName) {
+	void addLevel(String levelName) {
 		levels.add(new Level(levelName));
 	}
+    
+    /** THIS ALWAYS CAUSES AN ERROR???!!! */
+    void removeLevel(int levelIndex)
+    {
+        if (levels.size() > 1 && levelIndex < levels.size())
+        {
+            levels.remove(levelIndex);
+            setCurrentLevel(0);
+        }
+    }
 
-	Level & getCurrentLevel()
+	Level * getCurrentLevel()
 	{
-		return *levels[currentLevel];
+		return levels[currentLevel];
 	}
+    
+    void setCurrentLevel (int levelIndex)
+    {
+        currentLevel = levelIndex;
+    }
+    
+    int getCurrentLevelIndex()
+    {
+        return currentLevel;
+    }
+    
+    int getNumLevels()
+    {
+        return levels.size();
+    }
 
 private:
 	OwnedArray<Level> levels;
 	int currentLevel;
-  };
+};
