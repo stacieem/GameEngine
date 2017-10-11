@@ -4280,6 +4280,12 @@
     <ClInclude Include="..\..\Source\Inspector.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\SensorContactListener.h">
+      <Filter>GameEngine\Source\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\GameObjectType.h">
+      <Filter>GameEngine\Source\Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt">

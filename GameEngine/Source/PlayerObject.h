@@ -8,19 +8,22 @@ class PlayerObject : public GameObject{
 public:
 	PlayerObject(WorldPhysics & worldPhysics) : GameObject(worldPhysics)
 	{
+		objType = GameObjectType::Player;
 		setXVel(2.0f);
-		setYVel(8.0f);
-		
-		getPhysicsProperties().setFriction(0.6f);
+		setYVel(3.0f);
+		setXVelocityCap(3.0f);
+		setYVelocityCap(6.0f);
+		getPhysicsProperties().setFriction(0.5f);
 		linearDamp = 0.5f;
 		origin = getPhysicsProperties().GetPosition();
 	}
+	~PlayerObject(){}
 	void moveUp()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
 		store.y += getYVel();
-		if (store.y > 10) {
-			store.y = 10;
+		if (store.y > getYVelocityCap()) {
+			store.y = getYVelocityCap();
 		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
@@ -29,6 +32,9 @@ public:
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
 		store.y -= getYVel();
+		if (store.y < -getYVelocityCap()) {
+			store.y = -getYVelocityCap();
+		}
 
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
@@ -38,7 +44,9 @@ public:
 
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
 		store.x -= getXVel();
-
+		if (store.x < -getXVelocityCap()) {
+			store.x = -getXVelocityCap();
+		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
@@ -46,7 +54,9 @@ public:
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
 		store.x += getXVel();
-
+		if (store.x > getXVelocityCap()) {
+			store.x = getXVelocityCap();
+		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}

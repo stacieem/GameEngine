@@ -1898,6 +1898,7 @@
     <ClInclude Include="..\..\Source\GameLogic.h" />
     <ClInclude Include="..\..\Source\GameModel.h" />
     <ClInclude Include="..\..\Source\GameObject.h" />
+    <ClInclude Include="..\..\Source\GameObjectType.h" />
     <ClInclude Include="..\..\Source\GameView.h" />
     <ClInclude Include="..\..\Source\HealthBar.h" />
     <ClInclude Include="..\..\Source\InputManager.h" />
@@ -1911,6 +1912,7 @@
     <ClInclude Include="..\..\Source\PlayerObject.h" />
     <ClInclude Include="..\..\Source\RenderSwapFrame.h" />
     <ClInclude Include="..\..\Source\Resource.h" />
+    <ClInclude Include="..\..\Source\SensorContactListener.h" />
     <ClInclude Include="..\..\Source\TextureResource.h" />
     <ClInclude Include="..\..\Source\TextureResourceManager.h" />
     <ClInclude Include="..\..\Source\Uniforms.h" />

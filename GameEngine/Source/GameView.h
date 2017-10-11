@@ -250,6 +250,7 @@ public:
     // JUCE Callbacks ==========================================================
 	void paint(Graphics &g) override
 	{
+	
 	}
 	void resized() override
     {

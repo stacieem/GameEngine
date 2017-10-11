@@ -133,15 +133,31 @@ private:
 
 						case GameCommand::Player1MoveUp:
 							currLevel.getPlayer(0)->moveUp();
+
 							break;
 						case GameCommand::Player1MoveDown:
 							currLevel.getPlayer(0)->moveDown();
+
 							break;
 						case GameCommand::Player1MoveLeft:
 							currLevel.getPlayer(0)->moveLeft();
+							if (!currLevel.getPlayer(0)->getIsAnimating()) {
+								currLevel.getPlayer(0)->setAnimationStartTime(currentTime);
+								currLevel.getPlayer(0)->setLeftAnimation(true);
+								currLevel.getPlayer(0)->setIsAnimating(true);
+							}
+
 							break;
 						case GameCommand::Player1MoveRight:
 							currLevel.getPlayer(0)->moveRight();
+
+							if (!currLevel.getPlayer(0)->getIsAnimating()) {
+								currLevel.getPlayer(0)->setAnimationStartTime(currentTime);
+								currLevel.getPlayer(0)->setLeftAnimation(false);
+								currLevel.getPlayer(0)->setIsAnimating(true);
+							}
+							
+							
 							break;
 						//Player 2 commands
 						case GameCommand::Player2MoveUp:
@@ -165,6 +181,22 @@ private:
 				
 				
 			}
+
+			if ((oldCommands.contains(GameCommand::Player1MoveRight) && !newCommands.contains(GameCommand::Player1MoveRight)) ||
+				(oldCommands.contains(GameCommand::Player1MoveLeft) && !newCommands.contains(GameCommand::Player1MoveLeft)) ||
+				newCommands.contains(GameCommand::Player1MoveLeft) && newCommands.contains(GameCommand::Player1MoveRight)) {
+				//DBG("stop");
+
+				if (!newCommands.contains(GameCommand::Player1MoveLeft) && !newCommands.contains(GameCommand::Player1MoveRight) ||
+					newCommands.contains(GameCommand::Player1MoveLeft) && newCommands.contains(GameCommand::Player1MoveRight)) {
+					currLevel.getPlayer(0)->setIsAnimating(false);
+					
+				}
+
+				
+			}
+
+			oldCommands = newCommands;
 			
             //Only do these things if the game is not paused
 			if (!gamePaused) {
@@ -177,7 +209,7 @@ private:
 				{
 					if (object->getCanimate()) {
 						if (object->getIsAnimating()) {
-							object->updateAnimationCurrentTime(Time::currentTimeMillis());
+							object->updateAnimationCurrentTime(currentTime);
 						}
 					}
 
@@ -223,6 +255,8 @@ private:
 	//input handling
 	InputManager* inputManager;
 	Array<GameCommand> newCommands;
+	Array<GameCommand> oldCommands;
+
 
 	int64 newTime;
 	int64 currentTime;

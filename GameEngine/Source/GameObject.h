@@ -30,10 +30,16 @@ public:
 		vertices.add(new Vertex(Vector3D<GLfloat>(0.5f, -0.5f, 0.0f), 1, 0));
 		vertices.add(new Vertex(Vector3D<GLfloat>(-0.5f, -0.5f, 0.0f), 0, 0));
 		vertices.add(new Vertex(Vector3D<GLfloat>(-0.5f, 0.5f, 0.0f), 0, 1));
-
         // Default mapping to an objects audio
         mapAudioFileToPhysicalAction((File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav"), PhysicalAction::collsion);
 		objName = "Object Anonymous";
+		objType = GameObjectType::Generic;
+
+
+		physicsProperties.getBody()->SetUserData(this);
+
+		isAnimating = false;
+		leftAnimation = false;
 
     }
 
@@ -126,14 +132,12 @@ public:
 		physicsProperties.translateBy(x, y);
 	}
 
-	void addTexture(File tex) {
+	void addAnimationTexture(File tex) {
 		textureFiles.add(tex);
 	}
 
-	void setTexture(File tex, int index) {
-		if (textureFiles.size() > index) {
-			textureFiles[index] = tex;
-		}
+	void setIdleTexture(File tex) {
+		idleTexture = tex;
 		
 	}
 
@@ -162,16 +166,41 @@ public:
 	float getXVel() {
 		return xVel;
 	}
+	
 	float getYVel() {
 		return yVel;
 	}
+	
+	float getXVelocityCap() {
+		return xVelocityCap;
+	}
+	
+	float getYVelocityCap() {
+		return yVelocityCap;
+	}
+	
+	GameObjectType getObjType() {
+		return objType;
+	}
+
+
+	void setXVelocityCap(float newXVel) {
+		xVelocityCap = newXVel;
+	}
+
+	void setYVelocityCap(float newYVel) {
+		yVelocityCap = newYVel;
+	}
+
 
 	void setXVel(float newXVel) {
 		xVel = newXVel;
 	}
+
 	void setYVel(float newYVel) {
 		yVel = newYVel;
 	}
+
 
 	bool getIsAnimating() {
 		return isAnimating;
@@ -179,6 +208,17 @@ public:
 
 	void setIsAnimating(bool isAnimating) {
 		this->isAnimating = isAnimating;
+		
+	}
+
+	void setLeftAnimation(bool isLeft) {
+		if (isLeft != leftAnimation) {
+			reverseTextureCoords();
+
+		}
+
+		this->leftAnimation = isLeft;
+		
 	}
 
 	bool getCanimate() {
@@ -203,16 +243,17 @@ public:
 
 	File getTexture() {
 
-		if (textureFiles.size() == 0) {
-			return File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/default.png");
-		}
-
 		if (!canimate) {
-			return textureFiles[0];
+			return idleTexture;
 		}
 
 		if (!isAnimating) {
-			return textureFiles[0];
+			
+			return idleTexture;
+		}
+
+		if (textureFiles.size() == 0) {
+			return File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/default.png");
 		}
 
 		int size = textureFiles.size();
@@ -222,18 +263,40 @@ public:
 		int index = currentTime / ((animationTotalTime/1000.0) / (double)size);
 		
 		
-		DBG(currentTime);
 		return textureFiles[index];
 	}
 
+
+	void reverseTextureCoords() {
+		
+		std::swap(vertices[0]->texCoord, vertices[3]->texCoord);
+		std::swap(vertices[1]->texCoord, vertices[2]->texCoord);
+
+	}
 	
+
+	void setXPosition(float x) {
+		position.x = x;
+	}
+
+	void setYPosition(float y) {
+		position.y = y;
+	}
+	b2Vec2 getPosition() {
+		return b2Vec2(position.x, position.y);
+	}
+	
+
+protected:
+	GameObjectType objType;
 
 private:
     
     // Physical Position =======================================================
 	Vector3D<GLfloat> position;
-
+	
 	GLfloat xVel, yVel;
+	float xVelocityCap, yVelocityCap;
 	OwnedArray<Vertex> vertices;
 
     //Matrix3D<GLfloat> transformations;
@@ -247,15 +310,17 @@ private:
     File audioFile;
     
 	String objName;
+
 	Array<File> textureFiles;
+	File idleTexture;
 
 	bool canimate;
 	bool isAnimating;
+	bool leftAnimation;
 
 	int64 animationStartTime;
 	int64 animationCurrentTime;
 	int64 animationTotalTime;
-
 
 //    AudioFileList files;
 //    std::map<> actionToAudioMap;
