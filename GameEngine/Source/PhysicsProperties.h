@@ -34,15 +34,9 @@ public:
 		fixtureDef.friction = 0.7f;
 		fixtureDef.restitution = 0.0f;
 		fixtureDef.density = 1.0f;
-		//create a circular collision box for sensor
-		triggerRangeSphere.m_radius = .9;
-		triggerRangeSphere.m_p.Set(0, 0);
-		triggerFixtureDef.shape = &triggerRangeSphere;
 
 		//add fixtures to the body in the world
 		this->myFixture = body->CreateFixture(&fixtureDef);
-		this->triggerFixture = body->CreateFixture(&triggerFixtureDef);
-		triggerFixture->SetSensor(true);
 		//body->GetContactList()->contact();
 		//b2ContactEdge test;
 	}
@@ -201,6 +195,7 @@ public:
 	void setRestitution(float32 rest)
 	{b2Fixture* f = body->GetFixtureList();
 		f->SetRestitution(rest);
+		body->ResetMassData();
 	}
 
 	float32 getRestitution()
@@ -217,6 +212,7 @@ public:
 	{
 		b2Fixture* f = body->GetFixtureList();
 		f->SetFriction(fric);
+		body->ResetMassData();
 	}
 	float32 getFriction()
 	{

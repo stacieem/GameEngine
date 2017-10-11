@@ -33,7 +33,10 @@ public:
         mapAudioFileToPhysicalAction((File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav"), PhysicalAction::collsion);
 		objName = "Object Anonymous";
 		objType = GameObjectType::Generic;
-
+		yVelocityCap = 0;
+		xVelocityCap = 0;
+		xVel = 0;
+		yVel = 0;
 		physicsProperties.getBody()->SetUserData(this);
 		//Set default texture
 		setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg"));
@@ -82,11 +85,20 @@ public:
     {
         Vector3D<GLfloat> transformation (x, y, 0.0);
         
-        position += transformation;
+        position = transformation;
         
 		physicsProperties.translateTo(x, y);
     }
-    
+
+
+	void translateBy(GLfloat x, GLfloat y)
+	{
+		Vector3D<GLfloat> transformation(x, y, 0.0);
+
+		position += transformation;
+
+		physicsProperties.translateBy(x, y);
+	}
 
     PhysicsProperties & getPhysicsProperties()
     {
@@ -118,16 +130,7 @@ public:
     {
         return audioFile;
     }
-    
-    
-	void translateBy (GLfloat x, GLfloat y)
-	{
-		Vector3D<GLfloat> transformation(x, y, 0.0);
-
-		position += transformation;
-
-		physicsProperties.translateBy(x, y);
-	}
+  
 
 	/**
 	* Set the name of the texture to use for this object. Currently, 
@@ -171,25 +174,40 @@ public:
 
 	void setXVelocityCap(float newXVel) {
 		xVelocityCap = newXVel;
+		if (xVel > xVelocityCap) {
+			xVel = xVelocityCap;
+		}
 	}
 
 	void setYVelocityCap(float newYVel) {
 		yVelocityCap = newYVel;
+		if (yVel > yVelocityCap) {
+			yVel = yVelocityCap;
+		}
 	}
 
 	void setXVel(float newXVel) {
 		xVel = newXVel;
+		if (xVel > xVelocityCap) {
+			xVel = xVelocityCap;
+		}
 	}
 
 	void setYVel(float newYVel) {
 		yVel = newYVel;
+		if (yVel > yVelocityCap) {
+			yVel = yVelocityCap;
+		}
 	}
 	void setXPosition(float x) {
 		position.x = x;
+		translateTo(x, position.y);
+		DBG(getName());
 	}
 
 	void setYPosition(float y) {
 		position.y = y;
+		translateTo(position.x, y);
 	}
 	b2Vec2 getPosition() {
 		return b2Vec2(position.x, position.y);
