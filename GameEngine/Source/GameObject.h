@@ -35,7 +35,10 @@ public:
 		objName = "Object Anonymous";
 		objType = GameObjectType::Generic;
 
-
+		yVelocityCap = 0;
+		xVelocityCap = 0;
+		xVel = 0;
+		yVel = 0;
 		physicsProperties.getBody()->SetUserData(this);
 
 		isAnimating = false;
@@ -86,11 +89,20 @@ public:
     {
         Vector3D<GLfloat> transformation (x, y, 0.0);
         
-        position += transformation;
+        position = transformation;
         
 		physicsProperties.translateTo(x, y);
     }
-    
+
+
+	void translateBy(GLfloat x, GLfloat y)
+	{
+		Vector3D<GLfloat> transformation(x, y, 0.0);
+
+		position += transformation;
+
+		physicsProperties.translateBy(x, y);
+	}
 
     PhysicsProperties & getPhysicsProperties()
     {
@@ -122,15 +134,6 @@ public:
     {
         return audioFile;
     }
-    
-	void translateBy (GLfloat x, GLfloat y)
-	{
-		Vector3D<GLfloat> transformation(x, y, 0.0);
-
-		position += transformation;
-
-		physicsProperties.translateBy(x, y);
-	}
 
 	void addAnimationTexture(File tex) {
 		textureFiles.add(tex);
@@ -186,19 +189,31 @@ public:
 
 	void setXVelocityCap(float newXVel) {
 		xVelocityCap = newXVel;
+		if (xVel > xVelocityCap) {
+			xVel = xVelocityCap;
+		}
 	}
 
 	void setYVelocityCap(float newYVel) {
 		yVelocityCap = newYVel;
+		if (yVel > yVelocityCap) {
+			yVel = yVelocityCap;
+		}
 	}
 
 
 	void setXVel(float newXVel) {
 		xVel = newXVel;
+		if (xVel > xVelocityCap) {
+			xVel = xVelocityCap;
+		}
 	}
 
 	void setYVel(float newYVel) {
 		yVel = newYVel;
+		if (yVel > yVelocityCap) {
+			yVel = yVelocityCap;
+		}
 	}
 
 
@@ -277,10 +292,13 @@ public:
 
 	void setXPosition(float x) {
 		position.x = x;
+		translateTo(x, position.y);
+		DBG(getName());
 	}
 
 	void setYPosition(float y) {
 		position.y = y;
+		translateTo(position.x, y);
 	}
 	b2Vec2 getPosition() {
 		return b2Vec2(position.x, position.y);

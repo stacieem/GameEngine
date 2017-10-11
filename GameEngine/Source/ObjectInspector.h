@@ -5,8 +5,8 @@
 #include "CoreEngine.h"
 #include "Inspector.h"
 #include "GameObjectType.h"
-
-class ObjectInspector : public Component, public InspectorUpdater, public TextPropertyComponent::Listener {
+#include <string>
+class ObjectInspector : public Component, public InspectorUpdater, public TextPropertyComponent::Listener  {
 public:
 	ObjectInspector() {
 		//addAndMakeVisible(scrollBar);
@@ -77,7 +77,7 @@ public:
 	}
 	
 	
-	void textPropertyComponentChanged(TextPropertyComponent * component) {
+	void textPropertyComponentChanged(TextPropertyComponent * component) override{
 
 		//Really bad hacky solution since these are generated on the fly right now, they don't exist as member variables
 		if (component->getName() == "Name:") {
@@ -96,43 +96,99 @@ public:
 			selectedObj->setIdleTexture(textureFile);
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
-	}
-	void sliderValueChanged(TextPropertyComponent * component) {
 		if (component->getName() == "x-Position:") {
-			
 
+			float x = component->getText().getFloatValue()/100;
+			selectedObj->setXPosition(x);
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
+
+		if (component->getName() == "y-Position:") {
+			float y = component->getText().getFloatValue() / 100;
+			selectedObj->setYPosition(y);
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
+
+		if (component->getName() == "Linear Velocity(x):") {
+			float x = component->getText().getFloatValue();
+			selectedObj->setXVel(x);
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
+		if (component->getName() == "Linear Velocity(y):") {
+			float y = component->getText().getFloatValue();
+			selectedObj->setYVel(y);
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
+		if (component->getName() == "Linear Velocity(x) Cap:") {
+			float x = component->getText().getFloatValue();
+			selectedObj->setXVelocityCap(x);
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
+
+		if (component->getName() == "Linear Velocity(y) Cap:") {
+			float y = component->getText().getFloatValue();
+			selectedObj->setYVelocityCap(y);
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
+
+		if (component->getName() == "Friction:") {
+			float fric = component->getText().getFloatValue();
+			selectedObj->getPhysicsProperties().setFriction(fric);
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
+
+		if (component->getName() == "Restitution:") {
+			float rest = component->getText().getFloatValue();
+			selectedObj->getPhysicsProperties().setRestitution(rest);
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
+		if (component->getName() == "Density:") {
+			float dens = component->getText().getFloatValue()/100;
+			selectedObj->getPhysicsProperties().setDensity(dens);
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
+
 	}
 
 	//base physics properties
 	void addGenericMovementProperties() {
-		Value objPhysicsX, objPhysics2Y, objPhysicsXCap, objPhysicsYCap,
+		Value objPhysicsX, objPhysicsY, objPhysicsXCap, objPhysicsYCap,
 			  objPhysicsFriction, objPhysicsRestitution, objPhysicsDensity;
 
 		objPhysicsX.setValue(var(selectedObj->getXVel()));
-		objPhysicsProperties.add(new SliderPropertyComponent(objPhysicsX, "Linear Velocity(x):", 0.0, 10.0, 0.1));
+		TextPropertyComponent* objPhysicsXText = new TextPropertyComponent(objPhysicsX, "Linear Velocity(x):", 3, false);
+		objPhysicsXText->addListener(this);
+		objPhysicsProperties.add(objPhysicsXText);
 
-		objPhysics2Y.setValue(var(selectedObj->getYVel()));
-		objPhysicsProperties.add(new SliderPropertyComponent(objPhysics2Y, "Linear Velocity(y):", 0.0, 10.0, 0.1));
-
+		objPhysicsY.setValue(var(selectedObj->getYVel()));
+		TextPropertyComponent* objPhysicsYText = new TextPropertyComponent(objPhysicsY, "Linear Velocity(y):", 3, false);
+		objPhysicsYText->addListener(this);
+		objPhysicsProperties.add(objPhysicsYText);
 
 		objPhysicsXCap.setValue(var(selectedObj->getXVelocityCap()));
-		objPhysicsProperties.add(new SliderPropertyComponent(objPhysicsXCap, "Linear Velocity(x) Cap:", 0.0, 10.0, 0.1));
+		TextPropertyComponent* objPhysicsXCapText = new TextPropertyComponent(objPhysicsXCap, "Linear Velocity(x) Cap:", 3, false);
+		objPhysicsXCapText->addListener(this);
+		objPhysicsProperties.add(objPhysicsXCapText);
 
 		objPhysicsYCap.setValue(var(selectedObj->getYVelocityCap()));
-		objPhysicsProperties.add(new SliderPropertyComponent(objPhysicsYCap, "Linear Velocity(y) Cap:", 0.0, 10.0, 0.1));
-
+		TextPropertyComponent* objPhysicsYCapText = new TextPropertyComponent(objPhysicsYCap, "Linear Velocity(y) Cap:", 3, false);
+		objPhysicsYCapText->addListener(this);
+		objPhysicsProperties.add(objPhysicsYCapText);
 
 		objPhysicsFriction.setValue(var(selectedObj->getPhysicsProperties().getFriction()));
-		objPhysicsProperties.add(new SliderPropertyComponent(objPhysicsFriction, "Friction:", 0.0, 1.0, 0.01));
-
+		TextPropertyComponent* objFrictionText = new TextPropertyComponent(objPhysicsFriction, "Friction:", 3, false);
+		objFrictionText->addListener(this);
+		objPhysicsProperties.add(objFrictionText);
 
 		objPhysicsRestitution.setValue(var(selectedObj->getPhysicsProperties().getRestitution()));
-		objPhysicsProperties.add(new SliderPropertyComponent(objPhysicsRestitution, "Restitution:", 0.0, 1.0, 0.01));
+		TextPropertyComponent* objRestitutionText = new TextPropertyComponent(objPhysicsRestitution, "Restitution:", 3, false);
+		objRestitutionText->addListener(this);
+		objPhysicsProperties.add(objRestitutionText);
 
 		objPhysicsDensity.setValue(var(selectedObj->getPhysicsProperties().getDensity()));
-		objPhysicsProperties.add(new SliderPropertyComponent(objPhysicsDensity, "Density:", 0.0, 10.0, 0.1));
+		TextPropertyComponent* objDensityText = new TextPropertyComponent(objPhysicsDensity, "Density:", 3, false);
+		objDensityText->addListener(this);
+		objPhysicsProperties.add(objDensityText);
 
 	}
 
@@ -155,17 +211,21 @@ public:
 		objBackgroundProperties.add(objNameText);
 
 		//This is going to require a specification of the axis for the game
-		xPosition.setValue(var(selectedObj->getPosition().x * 100));
-		objBackgroundProperties.add(new SliderPropertyComponent(xPosition, "x-Position:", -100, 100, 1));
+		xPosition.setValue(var((int)selectedObj->getPosition().x * 100));
+		TextPropertyComponent* slider = new TextPropertyComponent(xPosition, "x-Position:", 4,false);
+		slider->addListener(this);
+		objBackgroundProperties.add(slider);
 
-		yPosition.setValue(var(selectedObj->getPosition().y*100));
-		objBackgroundProperties.add(new SliderPropertyComponent(yPosition, "y-Position:", 0.0, 100.0, 1));
+		//This is going to require a specification of the axis for the game
+		yPosition.setValue(var((int)selectedObj->getPosition().y));
+		TextPropertyComponent* slider2 = new TextPropertyComponent(yPosition, "y-Position:", 4, false);
+		slider2->addListener(this);
+		objBackgroundProperties.add(slider2);
 	}
 private:
 	CoreEngine* coreEngine;
 	GameObject* selectedObj;
 	//Slider scrollBar;
-
 	//selected object properties
 	PropertyPanel propertyPanel;
 	Array<PropertyComponent *> objPhysicsProperties;

@@ -3,11 +3,12 @@
 		Displays a hierarchy of all elements present in the level(scene)
 */
 #pragma once
-#include "Level.h";
+#include "../JuceLibraryCode/JuceHeader.h"
+#include "Level.h"
 #include "CoreEngine.h"
 #include "Inspector.h"
 
-class LevelInspector : public Component, public InspectorUpdater, public Button::Listener {
+class LevelInspector : public Component, public InspectorUpdater, public Button::Listener, public TextPropertyComponent::Listener {
 public:
 	LevelInspector(){
 		addAndMakeVisible(propertyPanel);
@@ -37,7 +38,9 @@ public:
 		for (auto gameObj : chosenLevel.getGameObjects()) {
 			Value gameObjName;
 			gameObjName.setValue(var(gameObj->getName()));
-			levelObjGraphProperties.add(new TextPropertyComponent(gameObjName,"Object Name:",21,false));
+			TextPropertyComponent * objName = new TextPropertyComponent(gameObjName, "Object Name:", 21, false);
+			objName->addListener(this);
+			levelObjGraphProperties.add(objName);
 		}
 		propertyPanel.addSection("Object Graph", levelObjGraphProperties);
 
@@ -46,7 +49,9 @@ public:
 
 		Value physicsGravity;
 		physicsGravity.setValue(var(-chosenLevel.getWorldPhysics().getGravity()));
-		levelPhysicsProperties.add(new SliderPropertyComponent(physicsGravity, "Gravity:", -20.0,20.0, 0.1));
+		TextPropertyComponent * worldGravity = new TextPropertyComponent(physicsGravity, "Gravity:", 3, false);
+		worldGravity->addListener(this);
+		levelPhysicsProperties.add(worldGravity);
 		propertyPanel.addSection("World Physics", levelPhysicsProperties);
 		
 		DBG("UPADTED");
@@ -54,6 +59,20 @@ public:
 
 		//add Level Background
 
+	}
+
+	void textPropertyComponentChanged(TextPropertyComponent * component) override {
+
+		//Really bad hacky solution since these are generated on the fly right now, they don't exist as member variables
+		if (component->getName() == "Gravity:") {
+			coreEngine->getGameModel().getCurrentLevel().
+				getWorldPhysics().setGravity(0,-component->getText().getFloatValue());
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
+
+		if (component->getName() == "Object Name:") {
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
 	}
 	void resized() override
 	{

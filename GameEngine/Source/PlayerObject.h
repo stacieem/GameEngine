@@ -9,10 +9,10 @@ public:
 	PlayerObject(WorldPhysics & worldPhysics) : GameObject(worldPhysics)
 	{
 		objType = GameObjectType::Player;
-		setXVel(2.0f);
-		setYVel(3.0f);
 		setXVelocityCap(3.0f);
 		setYVelocityCap(6.0f);
+		setXVel(2.0f);
+		setYVel(3.0f);
 		getPhysicsProperties().setFriction(0.5f);
 		linearDamp = 0.5f;
 		origin = getPhysicsProperties().GetPosition();
