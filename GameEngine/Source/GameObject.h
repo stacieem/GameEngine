@@ -29,11 +29,12 @@ public:
 		vertices.add(new Vertex(Vector3D<GLfloat>(0.5f, -0.5f, 0.0f), 1, 0));
 		vertices.add(new Vertex(Vector3D<GLfloat>(-0.5f, -0.5f, 0.0f), 0, 0));
 		vertices.add(new Vertex(Vector3D<GLfloat>(-0.5f, 0.5f, 0.0f), 0, 1));
-
         // Default mapping to an objects audio
         mapAudioFileToPhysicalAction((File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav"), PhysicalAction::collsion);
 		objName = "Object Anonymous";
+		objType = GameObjectType::Generic;
 
+		physicsProperties.getBody()->SetUserData(this);
 		//Set default texture
 		setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg"));
     }
@@ -151,23 +152,60 @@ public:
 	float getXVel() {
 		return xVel;
 	}
+	
 	float getYVel() {
 		return yVel;
 	}
+	
+	float getXVelocityCap() {
+		return xVelocityCap;
+	}
+	
+	float getYVelocityCap() {
+		return yVelocityCap;
+	}
+	
+	GameObjectType getObjType() {
+		return objType;
+	}
 
+	void setXVelocityCap(float newXVel) {
+		xVelocityCap = newXVel;
+	}
+
+	void setYVelocityCap(float newYVel) {
+		yVelocityCap = newYVel;
+	}
 
 	void setXVel(float newXVel) {
 		xVel = newXVel;
 	}
+
 	void setYVel(float newYVel) {
 		yVel = newYVel;
 	}
+	void setXPosition(float x) {
+		position.x = x;
+	}
+
+	void setYPosition(float y) {
+		position.y = y;
+	}
+	b2Vec2 getPosition() {
+		return b2Vec2(position.x, position.y);
+	}
+	
+
+protected:
+	GameObjectType objType;
+
 private:
     
     // Physical Position =======================================================
 	Vector3D<GLfloat> position;
-
+	
 	GLfloat xVel, yVel;
+	float xVelocityCap, yVelocityCap;
 	OwnedArray<Vertex> vertices;
 
     //Matrix3D<GLfloat> transformations;
@@ -182,7 +220,6 @@ private:
     
 	String objName;
 	File textureFile;
-
 //    AudioFileList files;
 //    std::map<> actionToAudioMap;
 //    

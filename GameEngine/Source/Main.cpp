@@ -64,9 +64,9 @@ public:
         MainWindow (String name)  : DocumentWindow (name,
                                                     Desktop::getInstance().getDefaultLookAndFeel()
                                                                           .findColour (ResizableWindow::backgroundColourId),
-                                                    DocumentWindow::allButtons)
+                                                    DocumentWindow::minimiseButton)
         {
-            setUsingNativeTitleBar (true);
+            //setUsingNativeTitleBar (true);
             setContentOwned (new GameEditor(), true);
             setResizable (true, true);
             centreWithSize (getWidth(), getHeight());
