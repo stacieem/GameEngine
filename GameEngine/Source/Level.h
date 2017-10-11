@@ -9,12 +9,32 @@ public:
 		this->levelName = levelName;
 		// Trystan's Multiplayer Test
 		PlayerObject* player = new PlayerObject(worldPhysics);
-		player->setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg"));
+
+		//player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/alienBlue_stand.png"));
+		player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_walk01.png"));
+		player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_walk02.png"));
+		player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_walk03.png"));
+		player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_walk04.png"));
+		player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_walk05.png"));
+		player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_walk06.png"));
+		player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_walk07.png"));
+		player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_walk08.png"));
+		player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_walk09.png"));
+		player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_walk10.png"));
+		player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_walk11.png"));
+
+		player->setCanimate(true);
+		player->setIsAnimating(true);
+		player->setAnimationStartTime(Time::currentTimeMillis());
+		player->setAnimationTotalTime(450);
+
 		gameObjects.add(player);
 		players.add(player);
 
 		player = new PlayerObject(worldPhysics);
-		player->setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/p2_stand.png"));
+
+		player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg"));
+		player->setCanimate(false);
 		gameObjects.add(player);
 		players.add(player);
 	}

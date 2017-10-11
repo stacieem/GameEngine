@@ -14,6 +14,7 @@
 #include "WorldPhysics.h"
 #include "PhysicalAction.h"
 #include <map>
+#include <algorithm>
 
 /** Represents an Object that holds vertices that can be rendered by OpenGL.
  */
@@ -34,8 +35,6 @@ public:
         mapAudioFileToPhysicalAction((File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav"), PhysicalAction::collsion);
 		objName = "Object Anonymous";
 
-		//Set default texture
-		setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg"));
     }
 
 	virtual ~GameObject() {
@@ -118,7 +117,6 @@ public:
         return audioFile;
     }
     
-    
 	void translateBy (GLfloat x, GLfloat y)
 	{
 		Vector3D<GLfloat> transformation(x, y, 0.0);
@@ -128,16 +126,29 @@ public:
 		physicsProperties.translateBy(x, y);
 	}
 
-	/**
-	* Set the name of the texture to use for this object. Currently, 
-	* all textures are loaded at runtime in GameView
-	*/
-	void setTexture(File tex) {
-		textureFile = tex;
+	void addTexture(File tex) {
+		textureFiles.add(tex);
 	}
 
-	File getTexture() {
-		return textureFile;
+	void setTexture(File tex, int index) {
+		if (textureFiles.size() > index) {
+			textureFiles[index] = tex;
+		}
+		
+	}
+
+	File getTextureAt(int index) {
+		if (index > textureFiles.size()) {
+			return File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/default.png");
+		}
+		return textureFiles[index];
+
+	}
+
+	int getNumTextures() {
+
+		return textureFiles.size();
+
 	}
     
 	String getName() {
@@ -155,13 +166,68 @@ public:
 		return yVel;
 	}
 
-
 	void setXVel(float newXVel) {
 		xVel = newXVel;
 	}
 	void setYVel(float newYVel) {
 		yVel = newYVel;
 	}
+
+	bool getIsAnimating() {
+		return isAnimating;
+	}
+
+	void setIsAnimating(bool isAnimating) {
+		this->isAnimating = isAnimating;
+	}
+
+	bool getCanimate() {
+		return canimate;
+	}
+
+	void setCanimate(bool canimate) {
+		this->canimate = canimate;
+	}
+
+	void setAnimationStartTime(int64 animationStartTime) {
+		this->animationStartTime = animationStartTime;
+	}
+
+	void updateAnimationCurrentTime(int64 animationCurrentTime) {
+		this->animationCurrentTime = animationCurrentTime;
+	}
+
+	void setAnimationTotalTime(int64 animationTotalTime) {
+		this->animationTotalTime = animationTotalTime;
+	}
+
+	File getTexture() {
+
+		if (textureFiles.size() == 0) {
+			return File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/default.png");
+		}
+
+		if (!canimate) {
+			return textureFiles[0];
+		}
+
+		if (!isAnimating) {
+			return textureFiles[0];
+		}
+
+		int size = textureFiles.size();
+
+		double currentTime = (((animationCurrentTime - animationStartTime) % animationTotalTime)) / 1000.0;
+
+		int index = currentTime / ((animationTotalTime/1000.0) / (double)size);
+		
+		
+		DBG(currentTime);
+		return textureFiles[index];
+	}
+
+	
+
 private:
     
     // Physical Position =======================================================
@@ -181,7 +247,15 @@ private:
     File audioFile;
     
 	String objName;
-	File textureFile;
+	Array<File> textureFiles;
+
+	bool canimate;
+	bool isAnimating;
+
+	int64 animationStartTime;
+	int64 animationCurrentTime;
+	int64 animationTotalTime;
+
 
 //    AudioFileList files;
 //    std::map<> actionToAudioMap;

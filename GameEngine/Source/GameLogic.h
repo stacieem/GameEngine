@@ -132,7 +132,6 @@ private:
 					if (!isPaused()) {
 
 						case GameCommand::Player1MoveUp:
-							DBG("MOVE UP");
 							currLevel.getPlayer(0)->moveUp();
 							break;
 						case GameCommand::Player1MoveDown:
@@ -146,7 +145,6 @@ private:
 							break;
 						//Player 2 commands
 						case GameCommand::Player2MoveUp:
-							DBG("2MOVE UP");
 							currLevel.getPlayer(1)->moveUp();
 							break;
 						case GameCommand::Player2MoveDown:
@@ -177,6 +175,12 @@ private:
 				// If any new collisions occur, play the specified collision audio
 				for (auto & object : currLevel.getGameObjects())
 				{
+					if (object->getCanimate()) {
+						if (object->getIsAnimating()) {
+							object->updateAnimationCurrentTime(Time::currentTimeMillis());
+						}
+					}
+
 					if (object->getPhysicsProperties().hasNewCollisions())
 					{
 						//                    File * audioFile = object->getAudioFileForAction(PhysicalAction::collsion);
@@ -192,7 +196,6 @@ private:
 				}
 			}
             
-            
             // Update the GameModel
 			//Update the number of DrawableObjects in the RenderSwapFrame
 			renderSwapFrame->setDrawableObjectsLength(currLevel.getNumGameObjects());
@@ -200,7 +203,8 @@ private:
 			for (int i = 0; i < currLevel.getGameObjects().size(); i++)
 			{
 				renderSwapFrame->setDrawableObjectVertices(currLevel.getGameObjects()[i]->getVertices(), i);
-				renderSwapFrame->setDrawableObjectTexture(currLevel.getGameObjects()[i]->getTexture(), i);
+
+				renderSwapFrame->setDrawableObjectTexture(currLevel.getGameObjects()[i]->getTexture(),i);
 			}
             // Maybe actions are triggered here ???
             // IMPLEMENT . . .

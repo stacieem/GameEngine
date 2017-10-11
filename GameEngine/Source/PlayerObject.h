@@ -14,7 +14,6 @@ public:
 		getPhysicsProperties().setFriction(0.6f);
 		linearDamp = 0.5f;
 		origin = getPhysicsProperties().GetPosition();
-		this->setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/p2_stand.png"));
 	}
 	void moveUp()
 	{

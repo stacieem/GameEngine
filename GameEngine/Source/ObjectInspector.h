@@ -66,7 +66,7 @@ public:
 
 			//Set objTexture to be the file path of the selected object's texture, and create its TextPropertyComponent
 			//Note that this should change to be a file picker
-			objTexture.setValue(var(selectedObj->getTexture().getFullPathName()));
+			objTexture.setValue(var(selectedObj->getTextureAt(0).getFullPathName()));
 			TextPropertyComponent* objTextureText = new TextPropertyComponent(objTexture, "Texture:", 400, false);
 			objTextureText->addListener(this);
 
@@ -106,7 +106,7 @@ public:
 		}
 
 		if (component->getName() == "Texture:") {
-			selectedObj->setTexture(File(component->getText()));
+			selectedObj->setTexture(File(component->getText()),0);
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 	}
