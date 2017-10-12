@@ -33,7 +33,6 @@ public:
 		levels.add(new Level(levelName));
 	}
     
-    /** THIS ALWAYS CAUSES AN ERROR???!!! */
     void removeLevel(int levelIndex)
     {
         if (levels.size() > 1 && levelIndex < levels.size())
