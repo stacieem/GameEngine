@@ -49,6 +49,12 @@ public:
 	virtual ~GameObject() {
 
 	}
+
+	enum AnimationSpeed {
+		FAST,
+		MED,
+		SLOW
+	};
     
     /** Get the
      */
@@ -136,7 +142,7 @@ public:
     }
 
 	void addAnimationTexture(File tex) {
-		textureFiles.add(tex);
+		animationTextureFiles.add(tex);
 	}
 
 	void setIdleTexture(File tex) {
@@ -145,16 +151,16 @@ public:
 	}
 
 	File getTextureAt(int index) {
-		if (index > textureFiles.size()) {
+		if (index > animationTextureFiles.size()) {
 			return File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/default.png");
 		}
-		return textureFiles[index];
+		return animationTextureFiles[index];
 
 	}
 
 	int getNumTextures() {
 
-		return textureFiles.size();
+		return animationTextureFiles.size();
 
 	}
     
@@ -252,8 +258,12 @@ public:
 		this->animationCurrentTime = animationCurrentTime;
 	}
 
-	void setAnimationTotalTime(int64 animationTotalTime) {
-		this->animationTotalTime = animationTotalTime;
+	void setAnimationSpeed(AnimationSpeed animationSpeed) {
+		this->animationSpeed = animationSpeed;
+	}
+
+	AnimationSpeed getAnimationSpeed() {
+		return animationSpeed;
 	}
 
 	File getTexture() {
@@ -267,18 +277,30 @@ public:
 			return idleTexture;
 		}
 
-		if (textureFiles.size() == 0) {
+		if (animationTextureFiles.size() == 0) {
 			return File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/default.png");
 		}
 
-		int size = textureFiles.size();
+		int computedAnimSpeed = animationTotalTime;
 
-		double currentTime = (((animationCurrentTime - animationStartTime) % animationTotalTime)) / 1000.0;
+		switch (animationSpeed) {
+			case FAST:
+				computedAnimSpeed /= 2;
+				break;
 
-		int index = currentTime / ((animationTotalTime/1000.0) / (double)size);
+			case SLOW:
+				computedAnimSpeed *= 2;
+				break;
+		}
+
+		int size = animationTextureFiles.size();
+
+		double currentTime = (((animationCurrentTime - animationStartTime) % computedAnimSpeed)) / 1000.0;
+
+		int index = currentTime / ((computedAnimSpeed /1000.0) / (double)size);
 		
 		
-		return textureFiles[index];
+		return animationTextureFiles[index];
 	}
 
 
@@ -287,6 +309,17 @@ public:
 		std::swap(vertices[0]->texCoord, vertices[3]->texCoord);
 		std::swap(vertices[1]->texCoord, vertices[2]->texCoord);
 
+	}
+
+	void setAnimationTextures(File directory) {
+		animationTextureFiles.clear();
+
+		DirectoryIterator iter(directory, false, "*.jpg;*.JPG;*.jpeg;*.JPEG;*.PNG;*.png");
+		while (iter.next())
+		{
+			File theFileItFound(iter.getFile());
+			animationTextureFiles.add(theFileItFound);
+		}
 	}
 	
 
@@ -329,7 +362,7 @@ private:
     
 	String objName;
 
-	Array<File> textureFiles;
+	Array<File> animationTextureFiles;
 	File idleTexture;
 
 	bool canimate;
@@ -338,8 +371,9 @@ private:
 
 	int64 animationStartTime;
 	int64 animationCurrentTime;
-	int64 animationTotalTime;
+	int64 animationTotalTime = 450;
 
+	AnimationSpeed animationSpeed;
 //    AudioFileList files;
 //    std::map<> actionToAudioMap;
 //    

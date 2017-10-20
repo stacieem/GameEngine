@@ -40,6 +40,8 @@ private:
 	CoreEngine gameEngine;
 	EditorControl EditorController;
 
+	
+
 	ObjectInspector objInspector;
 	ObjectBrowser objBrowser;
 	LevelInspector levelInspector;

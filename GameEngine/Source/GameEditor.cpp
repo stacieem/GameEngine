@@ -24,6 +24,8 @@ GameEditor::GameEditor() {
 	levelInspector.setChangeBroadcasterForUpdate(&updateInspectorsChangeBroadcaster);
 	objBrowser.setChangeBroadcasterForUpdate(&updateInspectorsChangeBroadcaster);
 
+
+
 	//what does this do -- this was originally my work around for an issue that arose, good now
 	//while (gameEngine.getGameModel().getCurrentLevel().getNumGameObjects() < 1) {}
 	
@@ -61,7 +63,7 @@ void GameEditor::resized()
 void GameEditor::updateInspectors()
 {
 	levelInspector.updateInspector(gameEngine.getCurrentLevel());
-	objInspector.updateObj(gameEngine.getGameModel().getCurrentLevel().getGameObjects().getFirst());
+	objInspector.setSelectedObj(levelInspector.getSelectedGameObject());
 }
 
 void GameEditor::changeListenerCallback(ChangeBroadcaster * source)

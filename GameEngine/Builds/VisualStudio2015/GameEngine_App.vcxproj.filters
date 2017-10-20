@@ -427,6 +427,9 @@
     <Filter Include="GameEngine\Source\Interface\Tools\ResourceManager">
       <UniqueIdentifier>{e088ef2e-05b7-4b51-b149-64d211c781d3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\Source\Interface\PropertyComponents">
+      <UniqueIdentifier>{bd1c9be1-c65a-4e7b-8b17-f3f84ebd03f8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
@@ -2202,9 +2205,6 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_video.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\Source\CoreEngine.cpp">
-      <Filter>GameEngine\Source\Interface\Tools</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\Source\GameAudio.cpp">
       <Filter>GameEngine\Source\Audio</Filter>
     </ClCompile>
@@ -2212,6 +2212,21 @@
       <Filter>GameEngine\Source\Interface</Filter>
     </ClCompile>
     <ClCompile Include="..\..\Source\GameEditor.cpp">
+      <Filter>GameEngine\Source\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\CoreEngine.cpp">
+      <Filter>GameEngine\Source\Interface</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\ComboBoxPropertyComponent.cpp">
+      <Filter>GameEngine\Source\Interface\PropertyComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\FilenamePropertyComponent.cpp">
+      <Filter>GameEngine\Source\Interface\PropertyComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\SelectObjectButtonPropertyComponent.cpp">
+      <Filter>GameEngine\Source\Interface\PropertyComponents</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\LevelInspector.cpp">
       <Filter>GameEngine\Source\Interface</Filter>
     </ClCompile>
   </ItemGroup>
@@ -4208,9 +4223,6 @@
     <ClInclude Include="..\..\Source\Attributes.h">
       <Filter>GameEngine\Source\Rendering</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\Source\CoreEngine.h">
-      <Filter>GameEngine\Source\Interface\Tools</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\Source\GameAudio.h">
       <Filter>GameEngine\Source\Audio</Filter>
     </ClInclude>
@@ -4285,6 +4297,18 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\GameObjectType.h">
       <Filter>GameEngine\Source\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CoreEngine.h">
+      <Filter>GameEngine\Source\Interface</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ComboBoxPropertyComponent.h">
+      <Filter>GameEngine\Source\Interface\PropertyComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\FilenamePropertyComponent.h">
+      <Filter>GameEngine\Source\Interface\PropertyComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\SelectObjectButtonPropertyComponent.h">
+      <Filter>GameEngine\Source\Interface\PropertyComponents</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

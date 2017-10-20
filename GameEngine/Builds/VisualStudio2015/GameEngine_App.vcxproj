@@ -138,9 +138,12 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\ComboBoxPropertyComponent.cpp" />
     <ClCompile Include="..\..\Source\CoreEngine.cpp" />
+    <ClCompile Include="..\..\Source\FilenamePropertyComponent.cpp" />
     <ClCompile Include="..\..\Source\GameAudio.cpp" />
     <ClCompile Include="..\..\Source\GameEditor.cpp" />
+    <ClCompile Include="..\..\Source\LevelInspector.cpp" />
     <ClCompile Include="..\..\Source\Main.cpp" />
     <ClCompile Include="..\..\..\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
@@ -1885,12 +1888,15 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_gui_extra.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_opengl.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_video.cpp" />
+    <ClCompile Include="..\..\Source\SelectObjectButtonPropertyComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Attributes.h" />
+    <ClInclude Include="..\..\Source\ComboBoxPropertyComponent.h" />
     <ClInclude Include="..\..\Source\CoreEngine.h" />
     <ClInclude Include="..\..\Source\DrawableObject.h" />
     <ClInclude Include="..\..\Source\EditorControl.h" />
+    <ClInclude Include="..\..\Source\FilenamePropertyComponent.h" />
     <ClInclude Include="..\..\Source\GameAudio.h" />
     <ClInclude Include="..\..\Source\GameCommand.h" />
     <ClInclude Include="..\..\Source\GameEditor.h" />
@@ -1912,6 +1918,7 @@
     <ClInclude Include="..\..\Source\PlayerObject.h" />
     <ClInclude Include="..\..\Source\RenderSwapFrame.h" />
     <ClInclude Include="..\..\Source\Resource.h" />
+    <ClInclude Include="..\..\Source\SelectObjectButtonPropertyComponent.h" />
     <ClInclude Include="..\..\Source\SensorContactListener.h" />
     <ClInclude Include="..\..\Source\TextureResource.h" />
     <ClInclude Include="..\..\Source\TextureResourceManager.h" />

@@ -29,7 +29,6 @@ public:
 		player->setCanimate(true);
 		//player->setIsAnimating(true);
 		//player->setAnimationStartTime(Time::currentTimeMillis());
-		player->setAnimationTotalTime(450);
 
 		gameObjects.add(player);
 		players.add(player);
@@ -41,6 +40,7 @@ public:
 		gameObjects.add(player);
 		players.add(player);
 	}
+
 	~Level(){}
 
 	int getNumGameObjects() {
