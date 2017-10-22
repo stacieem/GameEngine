@@ -153,8 +153,8 @@ private:
 							currLevel->getPlayer(1)->moveRight();
 							break;
 						case GameCommand::reset:
-							currLevel->getPlayer(0)->reset();
-							currLevel->getPlayer(1)->reset();
+                        //	currLevel->getPlayer(0)->reset();
+						//	currLevel->getPlayer(1)->reset();
 							break;
 					}
 				}
@@ -164,7 +164,8 @@ private:
 			
             //Only do these things if the game is not paused
 			if (!gamePaused) {
-				// Process Physics
+                
+				// Process Physics - processes physics and updates objects positions
 				currLevel->processWorldPhysics(deltaTime);
 
 				// Play Audio
@@ -173,40 +174,48 @@ private:
 				{
 					if (object->getPhysicsProperties().hasNewCollisions())
 					{
-						//                    File * audioFile = object->getAudioFileForAction(PhysicalAction::collsion);
-						//                 
-						//                     If audio file was not in the map, do nothing
-						//                    if (audioFile != nullptr)
-						//                    {
-						//                        gameAudio.playAudioFile(*audioFile, false);
-						//                    }
-						gameAudio.playAudioFile(object->getAudioFile(), false);
+                        File * audioFile = object->getAudioFileForAction(PhysicalAction::collsion);
+                     
+                        // If audio file was not in the map, do nothing
+                        if (audioFile != nullptr)
+                        {
+                            gameAudio.playAudioFile(*audioFile, false);
+                        }
 
 					}
 				}
 			}
             
+            // Update camera position based on the position of player 1
+            // The player1 object will be unmoving, while the world moves around it
+            Camera & camera = currLevel->getCamera();
+            camera.setXPosition(-currLevel->getPlayer(0)->getRenderableObject().position.x);
             
-            // Update the GameModel
-			//Update the number of DrawableObjects in the RenderSwapFrame
-			renderSwapFrame->setDrawableObjectsLength(currLevel->getNumGameObjects());
-            // Yo, if the number of drawable objects is the same as the number of
-            // objects that are in the level, then there is no point in having two
-            // types of objects. We just want ONE type of GameObject that has an
-            // ability to be drawable. Maybe it has a method: isDrawable() that
-            // returns whether or not the object is drawable. If it is drawable,
-            // load its textures where applicable, if not, load a default color
-            // or something. From what I can tell, we do not need two types
-            // of game objects.
-
-			for (int i = 0; i < currLevel->getGameObjects().size(); i++)
+            
+            // Update render frame =============================================
+            
+            // Set camera view matrix
+            renderSwapFrame->setViewMatrix(camera.getViewMatrix());
+            
+            // Create array of potentially renderable objects in view
+            /** DEV NOTE:
+                Add in some pre-render visiblity checking. If an object is
+                obviously going to be out of view, do not put it in a render
+                frame.
+             */
+            // For now, we simply add all objects as renderable
+            
+            vector<RenderableObject> renderableObjects;
+            
+            for (auto gameObject : currLevel->getGameObjects())
 			{
-				renderSwapFrame->setDrawableObjectVertices(currLevel->getGameObjects()[i]->getVertices(), i);
-				renderSwapFrame->setDrawableObjectTexture(currLevel->getGameObjects()[i]->getTexture(), i);
+                if (gameObject->isRenderable())
+                    renderableObjects.push_back(gameObject->getRenderableObject());
 			}
-            // Maybe actions are triggered here ???
-            // IMPLEMENT . . .
-
+            
+            renderSwapFrame->setRenderableObjects(renderableObjects);
+ 
+            
 			// Notify CoreEngine logic is done
 			coreEngineWaitable->signal();
 		}

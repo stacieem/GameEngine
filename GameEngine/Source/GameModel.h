@@ -4,9 +4,13 @@
 #include "PlayerObject.h"
 #include "WorldPhysics.h"
 #include "Level.h"
-/** Represents the data model for a game. This includes all Levels, Scenes, 
-    GameObjects, etc that describe a game. The data is manipulated by the
-    GameLogic class and is rendered by the GameView class.
+#include "RenderableObject.h"
+
+
+/** A singleton class which represents the data model for a game. This includes
+    all Levels, Scenes, GameObjects, etc that describe a game. The GameModel
+    data is manipulated by the GameLogic class, and data is copied into
+    renderable frames for the GameView to render.
  */
 class GameModel {
 

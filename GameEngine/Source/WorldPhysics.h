@@ -31,9 +31,9 @@ public:
          create a shape(box for this instance)
          */
 		b2PolygonShape groundBox;
-		b2PolygonShape wallBox;
-		groundBox.SetAsBox(100.0f, 0.5f);
-		wallBox.SetAsBox(0.3f, 100.0f);
+		//b2PolygonShape wallBox;
+		groundBox.SetAsBox(100000000.0f, 0.5f);
+		//wallBox.SetAsBox(0.3f, 100.0f);
 
 		
         /*
@@ -49,10 +49,10 @@ public:
 		
 		bodyDef.position.Set(-8.7f, 0.0f);
 		groundBody = world.CreateBody(&bodyDef);
-		groundBody->CreateFixture(&wallBox, 0.0f);
+		//groundBody->CreateFixture(&wallBox, 0.0f);
 		bodyDef.position.Set(8.7f, 0.0f);
 		groundBody = world.CreateBody(&bodyDef);
-		groundBody->CreateFixture(&wallBox, 0.0f);
+		//groundBody->CreateFixture(&wallBox, 0.0f);
 	}
 
 	~WorldPhysics()

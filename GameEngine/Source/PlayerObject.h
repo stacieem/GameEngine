@@ -13,7 +13,7 @@ public:
 		
 		getPhysicsProperties().setFriction(0.6f);
 		linearDamp = 0.5f;
-		origin = getPhysicsProperties().GetPosition();
+		//origin = getPhysicsProperties().GetPosition();
 		this->setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/p2_stand.png"));
 	}
 	void moveUp()
@@ -51,14 +51,15 @@ public:
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
-	void reset()
-	{
-		translateTo(origin.x, origin.y);
-		getPhysicsProperties().setLinearVelocity(0.0f,0.0f);
-	}
+    
+//	void reset()
+//	{
+//		translateTo(origin.x, origin.y);
+//		getPhysicsProperties().setLinearVelocity(0.0f,0.0f);
+//	}
 private:
 	GLfloat linearDamp;
-	b2Vec2 origin;
+	//b2Vec2 origin;
 
 	Vector3D<GLfloat> position;
 	OwnedArray<Vector3D<GLfloat>> vertices;	 // The vertices from the origin

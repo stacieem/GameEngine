@@ -9,11 +9,14 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Vertex.h"
 #include "PhysicsProperties.h"
 #include "WorldPhysics.h"
 #include "PhysicalAction.h"
 #include <map>
+#include "glm/glm.hpp"
+#include "glm/gtx/transform.hpp"
+#include "Model.h"
+#include "RenderableObject.h"
 
 /** Represents an Object that holds vertices that can be rendered by OpenGL.
  */
@@ -22,75 +25,111 @@ class GameObject
 public:
     /** Constructs a GameObject and attatches it to the world's physics.
      */
-    GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld()), audioFile (File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav")
+    GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld())
     {
-        // Default vertices and texture coordinates
-        vertices.add(new Vertex(Vector3D<GLfloat>(0.5f,   0.5f,  0.0f),1,1));
-		vertices.add(new Vertex(Vector3D<GLfloat>(0.5f, -0.5f, 0.0f), 1, 0));
-		vertices.add(new Vertex(Vector3D<GLfloat>(-0.5f, -0.5f, 0.0f), 0, 0));
-		vertices.add(new Vertex(Vector3D<GLfloat>(-0.5f, 0.5f, 0.0f), 0, 1));
-
-        // Default mapping to an objects audio
-        mapAudioFileToPhysicalAction((File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav"), PhysicalAction::collsion);
-		objName = "Object Anonymous";
+        // Come up with better default naming
+		name = "Game Object";
+        
+        // By default an object is not renderable
+        renderable = false;
+    
 
 		//Set default texture
-		setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg"));
+		//setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg"));
     }
 
 	virtual ~GameObject() {
 
 	}
     
-    /** Get the
+    String getName()
+    {
+        return name;
+    }
+    
+    void setName(String name)
+    {
+        this->name = name;
+    }
+    
+    // Rendering Data ==========================================================
+    
+    /** Returns true of the object is renderable and false otherwise.
      */
-    Array<Vertex> getVertices()
+    bool isRenderable()
     {
-        // Calculate vertices based on Box2D's transformations
-        
-        b2Vec2 box2DPos = physicsProperties.GetPosition();
-        position.x = box2DPos.x;
-        position.y = box2DPos.y;
-        
-		Array<Vertex> glVerticesArray;
-        // Calculate GLVertices
-        for (int i = 0; i < vertices.size(); i++)
-        {
-			Vertex v = *vertices[i];
-			
-            v.position += position;
-			glVerticesArray.add(v);
-           
-        }
-        
-        return glVerticesArray;
+        return renderable;
     }
     
-    std::size_t getSizeOfVertices()
+    /** Gets the renderable object for reading and copying.
+     */
+    const RenderableObject & getRenderableObject()
     {
-        return sizeof(GLfloat) * vertices.size() * 3;
+        return renderableObject;
     }
     
-    int getNumVertices()
+    /** Sets the Model for this GameObject. This also makes the object renderable
+        since it now has a model to render.
+     */
+    void setModel (Model * model)
     {
-        return vertices.size();
+        this->renderableObject.model = model;
+        renderable = true;
     }
-    
-    
-    void translateTo (GLfloat x, GLfloat y)
+
+    /** Sets the 2D position of a GameObject in world coordinates, not worrying
+        about updating the postition in the physical world
+     */
+    void setPosition (GLfloat x, GLfloat y)
     {
-        Vector3D<GLfloat> transformation (x, y, 0.0);
+        // Set position vector
+        renderableObject.position.x = x;
+        renderableObject.position.y = y;
         
-        position += transformation;
+        // Modify model matrix to translate object to correct position
+        renderableObject.modelMatrix[3][0] = x;
+        renderableObject.modelMatrix[3][1] = y;
         
-		physicsProperties.translateTo(x, y);
+        // Maybe update the stored physics properties position
     }
     
+    /** Scales the rendered Model.
+        PROBLEM: Physics still only knows the original vertices, not the scaled
+        vertices, we must give the physics world an update about the scale of
+        this object
+     */
+    void setScale (float x, float y)
+    {
+        renderableObject.modelMatrix[0][0] = x;
+        renderableObject.modelMatrix[1][1] = y;
+        
+        // Update physics so it knows about the visual change in vertices
+        physicsProperties.updateModelScale(renderableObject.model, x, y);
+    }
+    
+    /** Sets the 2D position of a GameObject in world coordinates and in the
+        physics world
+     */
+    void setPositionWithPhysics (GLfloat x, GLfloat y)
+    {
+        // Update visual object position
+        renderableObject.position.x = x;
+        renderableObject.position.y = y;
+        
+        // Modify model matrix to translate object to correct position
+        renderableObject.modelMatrix[3][0] = x;
+        renderableObject.modelMatrix[3][1] = y;
+        
+        // Update physical object position
+        physicsProperties.setPosition (x, y);
+    }
 
     PhysicsProperties & getPhysicsProperties()
     {
         return physicsProperties;
     }
+    
+    // Audio to Action Mapping =================================================
     
     /** Maps an audio file to play when a specific action happens to this object
         in the physical game world.
@@ -111,66 +150,66 @@ public:
         else
             return nullptr;
     }
-    
-    // !FIX! Dont need this if the map stuff works
-    File getAudioFile()
-    {
-        return audioFile;
-    }
-    
-    
-	void translateBy (GLfloat x, GLfloat y)
-	{
-		Vector3D<GLfloat> transformation(x, y, 0.0);
 
-		position += transformation;
 
-		physicsProperties.translateBy(x, y);
-	}
-
+    // TO BE REMOVED
+    // Textures ================================================================
 	/**
 	* Set the name of the texture to use for this object. Currently, 
 	* all textures are loaded at runtime in GameView
 	*/
-	void setTexture(File tex) {
+	void setTexture(File tex)
+    {
 		textureFile = tex;
 	}
 
-	File getTexture() {
+	File getTexture()
+    {
 		return textureFile;
 	}
     
-	String getName() {
-		return objName;
-	}
-	void setName(String name) {
-		objName = name;
-	}
 
+    // Animation ?? ============================================================
 
-	float getXVel() {
+	float getXVel()
+    {
 		return xVel;
 	}
-	float getYVel() {
+	float getYVel()
+    {
 		return yVel;
 	}
 
 
-	void setXVel(float newXVel) {
+	void setXVel(float newXVel)
+    {
 		xVel = newXVel;
 	}
-	void setYVel(float newYVel) {
+    
+	void setYVel(float newYVel)
+    {
 		yVel = newYVel;
 	}
+    
 private:
     
     // Physical Position =======================================================
-	Vector3D<GLfloat> position;
 
+    // FIX
+    // What are these? Are these physical properties? If so it should be in
+    // Physical Properties. Else is it an animation thing? Consider putting into
+    // an Animatoin struct or class.
 	GLfloat xVel, yVel;
-	OwnedArray<Vertex> vertices;
 
-    //Matrix3D<GLfloat> transformations;
+    /** Name of object */
+    String name;
+    
+    /** Specifies wether or not the object will be rendered visually to the screen */
+    bool renderable;
+    
+    /** Renderable representation of this object.
+     */
+    RenderableObject renderableObject;
     
     /** Physical properties associated with the object */
     PhysicsProperties physicsProperties;
@@ -178,14 +217,11 @@ private:
     /** Map of in-game physics-based actions to specific audio files */
     std::map<PhysicalAction, File> actionToAudio;
     
-    File audioFile;
     
-	String objName;
+    // THIS WILL BE REMOVED AND IS INCLUDED IN THE MODEL OBJECT
 	File textureFile;
 
-//    AudioFileList files;
-//    std::map<> actionToAudioMap;
-//    
+    
 //    AnimationList animations;
 //    std::map<> actionToAnimationMap;
     
@@ -206,12 +242,5 @@ private:
     //      // etc for all other things to do when an action is triggered . . .
     // }
     
-    
-    
-    
-    //Vector3D<GLfloat> color;
-    
 	JUCE_LEAK_DETECTOR(GameObject)
-
-
 };
