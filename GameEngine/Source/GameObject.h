@@ -56,6 +56,10 @@ public:
 		SLOW
 	};
     
+	enum ObjectStateType {
+		DYNAMIC,
+		STATIC
+	};
     /** Get the
      */
     Array<Vertex> getVertices()
@@ -261,7 +265,16 @@ public:
 	void setAnimationSpeed(AnimationSpeed animationSpeed) {
 		this->animationSpeed = animationSpeed;
 	}
-
+	void updateState(ObjectStateType state) {
+		switch (state) {
+		case STATIC:
+			physicsProperties.toStatic();
+			break;
+		case DYNAMIC:
+			physicsProperties.toDynamic();
+			break;
+		}
+	}
 	AnimationSpeed getAnimationSpeed() {
 		return animationSpeed;
 	}

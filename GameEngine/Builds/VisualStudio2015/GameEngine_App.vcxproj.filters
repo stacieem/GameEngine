@@ -4310,6 +4310,12 @@
     <ClInclude Include="..\..\Source\SelectObjectButtonPropertyComponent.h">
       <Filter>GameEngine\Source\Interface\PropertyComponents</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\GoalPointObject.h">
+      <Filter>GameEngine\Source\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\EnemyObject.h">
+      <Filter>GameEngine\Source\Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt">

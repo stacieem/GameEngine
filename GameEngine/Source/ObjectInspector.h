@@ -100,11 +100,6 @@ public:
 
 	}
 
-	
-
-
-
-
 	void valueChanged(Value &value) {
 		if (value.refersToSameSourceAs(xPosition)) {
 			if (value.getValue().isDouble()) {
@@ -140,6 +135,18 @@ public:
 				break;
 			case 3:
 				selectedObj->setAnimationSpeed(GameObject::FAST);
+				break;
+			}
+		}
+
+		if (value.refersToSameSourceAs(stateComboValue)) {
+
+			switch ((int)stateComboValue.getValue()) {
+			case 1:
+				selectedObj->updateState(GameObject::STATIC);
+				break;
+			case 2:
+				selectedObj->updateState(GameObject::DYNAMIC);
 				break;
 			}
 		}
@@ -194,12 +201,15 @@ private:
 			case Generic:	//environment?
 				break;
 			case Player:	//player
-				addGenericMovementProperties();
+				//addGenericMovementProperties();
 				break;
 			case Enemy:	//ai, maybe differntiate between types of ai with this?
-				addGenericMovementProperties();
+				//addGenericMovementProperties();
 				break;
+			
 			}
+
+			addGenericMovementProperties();
 			addGenericGraphicProperties();
 			//add to panel
 			propertyPanel.addSection("Object Physics", objPhysicsProperties);
@@ -247,6 +257,14 @@ private:
 		SliderPropertyComponent* objRestitutionText = new SliderPropertyComponent(objPhysicsRestitution, "Bounciness:", 0, 10.0, 0.1);
 		objPhysicsRestitution.addListener(this);
 		objPhysicsProperties.add(objRestitutionText);
+
+		stateComboValue.setValue(var((int)1));
+		ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(stateComboValue, "State:");
+		combo->setTextWhenNothingSelected("Choose State");
+		combo->addItem("Dynamic", 2);
+		combo->addItem("Static", 1);
+		stateComboValue.addListener(this);
+		objPhysicsProperties.add(combo);
 
 		//Density removed for now
 		/*objPhysicsDensity.setValue(var(selectedObj->getPhysicsProperties().getDensity()));
@@ -315,7 +333,7 @@ private:
 	Value objTexture, objName, xPosition, yPosition,
 		  objPhysicsX, objPhysicsY, objPhysicsXCap, objPhysicsYCap,
 		  objPhysicsFriction, objPhysicsRestitution, objPhysicsDensity,
-	      comboValue;
+	      comboValue, stateComboValue;
 
 	ScopedPointer<FilenameComponent> chooseFile;
 
