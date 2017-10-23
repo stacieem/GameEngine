@@ -211,7 +211,7 @@ public:
 		objBackgroundProperties.add(objNameText);
 
 		//This is going to require a specification of the axis for the game
-		xPosition.setValue(var((int)selectedObj->getPosition().x * 100));
+		xPosition.setValue(var((int)selectedObj->getPosition().x* 10));
 		TextPropertyComponent* slider = new TextPropertyComponent(xPosition, "x-Position:", 4,false);
 		slider->addListener(this);
 		objBackgroundProperties.add(slider);
