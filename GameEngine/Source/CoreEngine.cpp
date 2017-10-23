@@ -209,7 +209,11 @@ void CoreEngine::addBlock()
 	gameModelCurrentFrame->getCurrentLevel().addNewBlock();
 
 }
+void CoreEngine::addEnemy()
+{
+	gameModelCurrentFrame->getCurrentLevel().addNewEnemy();
 
+}
 void CoreEngine::toggleGamePause()
 {
 	

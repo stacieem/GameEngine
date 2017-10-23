@@ -14,6 +14,7 @@ public:
 		enemy.setButtonText("Enemy Character");
 		block.setButtonText("Block");
 		block.addListener(this);
+		enemy.addListener(this);
 		//addAndMakeVisible(scrollBar);
 		//scrollBar.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
 
@@ -45,6 +46,11 @@ public:
 		if (button == &block)
 		{
 			coreEngine->addBlock();
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
+		if (button == &enemy)
+		{
+			coreEngine->addEnemy();
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 	}

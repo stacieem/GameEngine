@@ -11,8 +11,7 @@ public:
 		objType = GameObjectType::Player;
 		setXVelocityCap(Speed::Low);
 		setYVelocityCap(Speed::Low);
-		setXVel(2.0f);
-		setYVel(3.0f);
+
 		getPhysicsProperties().setFriction(0.5f);
 		linearDamp = 0.5f;
 		origin = getPhysicsProperties().GetPosition();

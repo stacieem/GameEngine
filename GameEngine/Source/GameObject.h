@@ -49,7 +49,6 @@ public:
 	virtual ~GameObject() {
 
 	}
-
 	enum AnimationSpeed {
 		FAST,
 		MED,

@@ -9,38 +9,79 @@ class EnemyObject : public GameObject {
 public:
 	EnemyObject(WorldPhysics & worldPhysics) : GameObject(worldPhysics)
 	{
+		
 		objType = GameObjectType::Enemy;
-		setXVelocityCap(3.0f);
-		setYVelocityCap(6.0f);
-		setXVel(2.0f);
-		setYVel(3.0f);
+		aiState = CHASE;
+		setXVelocityCap(Speed::Low);
+		setYVelocityCap(Speed::Low);
+		detection_radius = 25;
 		getPhysicsProperties().setFriction(0.5f);
 		linearDamp = 0.5f;
 		origin = getPhysicsProperties().GetPosition();
 	}
 	~EnemyObject() {}
 	enum AIType {
-		RANDOM,
+		Patrol,
 		CHASE,
 		SCAREDAF
 	};
-
+	void changeAI(AIType type) {
+		aiState = type;
+	}
 	void decision(PlayerObject& player) {
+
 		switch (aiState) {
-		case RANDOM:
+		case Patrol:
+
 			break;
 		case CHASE:
-
+			if ((getPosition() - player.getPosition()).Length() < 7)	//detected
+			{
+				b2Vec2 myPos = getPosition();
+				b2Vec2 theirPos = player.getPosition();
+				if (myPos.x < theirPos.x) {
+					moveRight();
+				}
+				else if(myPos.x > theirPos.x)
+				{
+					moveLeft();
+				}
+				if (myPos.y < theirPos.y) {
+					moveUp();
+				}
+				else if (myPos.y > theirPos.y)
+				{
+					moveDown();
+				}
+			}
 			break;
 		case SCAREDAF:
-
+			if ((getPosition() - player.getPosition()).Length() < 7)	//detected
+			{
+				b2Vec2 myPos = getPosition();
+				b2Vec2 theirPos = player.getPosition();
+				if (myPos.x > theirPos.x) {
+					moveRight();
+				}
+				else
+				{
+					moveLeft();
+				}
+				if (myPos.y > theirPos.y) {
+					moveDown();
+				}
+				else
+				{
+					moveUp();
+				}
+			}
 			break;
 		}
 	}
 	void moveUp()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y += getYVel();
+		store.y += getYVel()/2;
 		if (store.y > getYVelocityCap()) {
 			store.y = getYVelocityCap();
 		}
@@ -50,7 +91,7 @@ public:
 	void moveDown()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y -= getYVel();
+		store.y -= getYVel()/2;
 		if (store.y < -getYVelocityCap()) {
 			store.y = -getYVelocityCap();
 		}
@@ -62,7 +103,7 @@ public:
 	{
 
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x -= getXVel();
+		store.x -= getXVel()/2;
 		if (store.x < -getXVelocityCap()) {
 			store.x = -getXVelocityCap();
 		}
@@ -72,7 +113,7 @@ public:
 	void moveRight()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x += getXVel();
+		store.x += getXVel()/2;
 		if (store.x > getXVelocityCap()) {
 			store.x = getXVelocityCap();
 		}
@@ -87,7 +128,11 @@ public:
 private:
 	GLfloat linearDamp;
 	b2Vec2 origin;
+	
 	AIType aiState;
+	//bounds at which to patrol
+	float leftBound, rightBound;
+	float detection_radius;
 	Vector3D<GLfloat> position;
 	OwnedArray<Vector3D<GLfloat>> vertices;	 // The vertices from the origin
 	ScopedPointer<GLfloat> glVertices;

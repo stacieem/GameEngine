@@ -2,6 +2,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PlayerObject.h"
+#include "EnemyObject.h"
 #include "GameObject.h"
 class Level {
 public:
@@ -24,12 +25,12 @@ public:
 		gameObjects.add(player);
 		players.add(player);
 
-		player = new PlayerObject(worldPhysics);
+		//player = new PlayerObject(worldPhysics);
 
-		player->setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg")); 
-		player->setCanimate(false);
-		gameObjects.add(player);
-		players.add(player);
+		//player->setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg")); 
+		//player->setCanimate(false);
+		//gameObjects.add(player);
+		//players.add(player);
 	}
 
 	~Level(){}
@@ -49,7 +50,18 @@ public:
 	void addNewBlock() {
 		gameObjects.add(new GameObject(worldPhysics));
 	}
+	void addNewEnemy() {
+		DBG("ImadeIT");
+		EnemyObject* enm = new EnemyObject(worldPhysics);
+		enm->setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
 
+
+		enm->setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_stand.png"));
+
+
+		enm->setCanimate(true);
+		gameObjects.add(enm);
+	}
 	const OwnedArray<GameObject> & getGameObjects()
 	{
 		return gameObjects;

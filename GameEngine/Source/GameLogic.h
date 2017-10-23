@@ -98,7 +98,13 @@ private:
 		// Main Logic loop
 		while (!threadShouldExit())
         {
-
+			//ai motions
+			for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel().getGameObjects()) {
+				if (obj->getObjType() == GameObjectType::Enemy) {
+					EnemyObject* objEnemy = dynamic_cast<EnemyObject*>(obj);
+					objEnemy->decision(*gameModelCurrentFrame->getCurrentLevel().getPlayer(0));
+				}
+			}
 
 
 			// ADD: If level changed, update the current level

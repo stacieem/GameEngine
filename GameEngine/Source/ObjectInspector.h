@@ -16,9 +16,6 @@ public:
 		//scrollBar.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
 		addAndMakeVisible(propertyPanel);
 		selectedObj = NULL;
-
-		
-
 	}
 	~ObjectInspector() {
 
@@ -158,6 +155,18 @@ public:
 			}
 		}
 
+		if (value.refersToSameSourceAs(aiState)) {
+
+			switch ((int)aiState.getValue()) {
+			case 1:
+				dynamic_cast<EnemyObject *>(selectedObj)->changeAI(EnemyObject::CHASE);
+				break;
+			case 2:
+				dynamic_cast<EnemyObject *>(selectedObj)->changeAI(EnemyObject::SCAREDAF);
+				break;
+			}
+		}
+
 		if (value.refersToSameSourceAs(objPhysicsFriction)) {
 			float fric = (float)value.getValue();
 			selectedObj->getPhysicsProperties().setFriction(fric);
@@ -197,6 +206,7 @@ private:
 		//create additional functions in desired objects to make it easier to retrieve information.
 		//add sections to physics menu
 		if (selectedObj != NULL) {
+			addGenericMovementProperties();
 			/*Add physics properties to object inspector
 			-Linear Velocity(x)
 			-Linear Velocity(y)
@@ -209,12 +219,17 @@ private:
 				//addGenericMovementProperties();
 				break;
 			case Enemy:	//ai, maybe differntiate between types of ai with this?
-				//addGenericMovementProperties();
+				aiState.setValue(var((int)1));
+				ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(aiState, "Move Speed:");
+				combo->setTextWhenNothingSelected("Choose Ai Type");
+				combo->addItem("Flee", 2);
+				combo->addItem("Chase", 1);
+				aiState.addListener(this);
+				objPhysicsProperties.add(combo);
 				break;
 			
 			}
 
-			addGenericMovementProperties();
 			addGenericGraphicProperties();
 			//add to panel
 			propertyPanel.addSection("Object Physics", objPhysicsProperties);
@@ -335,7 +350,7 @@ private:
 	Value objTexture, objName, xPosition, yPosition,
 		  objPhysicsX, objPhysicsY, objPhysicsXCap, objPhysicsYCap,
 		  objPhysicsFriction, objPhysicsRestitution, objPhysicsDensity,
-	      comboValue, stateComboValue;
+	      comboValue, stateComboValue, aiState;
 
 	ScopedPointer<FilenameComponent> chooseFile;
 
