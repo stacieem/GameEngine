@@ -220,7 +220,7 @@ private:
 				break;
 			case Enemy:	//ai, maybe differntiate between types of ai with this?
 				aiState.setValue(var((int)1));
-				ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(aiState, "Move Speed:");
+				ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(aiState, "Ai Mode:");
 				combo->setTextWhenNothingSelected("Choose Ai Type");
 				combo->addItem("Flee", 2);
 				combo->addItem("Chase", 1);

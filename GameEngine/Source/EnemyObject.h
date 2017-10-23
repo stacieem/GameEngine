@@ -35,7 +35,7 @@ public:
 
 			break;
 		case CHASE:
-			if ((getPosition() - player.getPosition()).Length() < 7)	//detected
+			if ((getPosition() - player.getPosition()).Length() < 10)	//detected
 			{
 				b2Vec2 myPos = getPosition();
 				b2Vec2 theirPos = player.getPosition();
@@ -56,7 +56,7 @@ public:
 			}
 			break;
 		case SCAREDAF:
-			if ((getPosition() - player.getPosition()).Length() < 7)	//detected
+			if ((getPosition() - player.getPosition()).Length() < 10)	//detected
 			{
 				b2Vec2 myPos = getPosition();
 				b2Vec2 theirPos = player.getPosition();
