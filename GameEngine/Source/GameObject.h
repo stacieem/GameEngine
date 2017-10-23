@@ -55,7 +55,11 @@ public:
 		MED,
 		SLOW
 	};
-    
+	enum Speed {
+		High,
+		Med,
+		Low
+	};
 	enum ObjectStateType {
 		DYNAMIC,
 		STATIC
@@ -197,18 +201,46 @@ public:
 	}
 
 
-	void setXVelocityCap(float newXVel) {
+	void setXVelocityCap(Speed moveSpeed) {
+		int newXVel = 0;
+		switch (moveSpeed) {
+		case High:
+			newXVel = 8;
+			break;
+		case Med:
+			newXVel = 5;
+			break;
+		case Low:
+			newXVel = 2;
+			break;
+		}
 		xVelocityCap = newXVel;
 		if (xVel > xVelocityCap) {
 			xVel = xVelocityCap;
 		}
+		xVel = xVelocityCap / 3;
+		
 	}
 
-	void setYVelocityCap(float newYVel) {
+	void setYVelocityCap(Speed Jumpspeed) {
+		int newYVel = 0;
+		switch (Jumpspeed) {
+		case High:
+			newYVel = 12;
+			break;
+		case Med:
+			newYVel = 9;
+			break;
+		case Low:
+			newYVel = 5;
+			break;
+		}
 		yVelocityCap = newYVel;
 		if (yVel > yVelocityCap) {
 			yVel = yVelocityCap;
 		}
+
+		yVel = yVelocityCap / 3;
 	}
 
 

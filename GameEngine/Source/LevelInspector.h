@@ -8,6 +8,7 @@
 #include "CoreEngine.h"
 #include "Inspector.h"
 #include "SelectObjectButtonPropertyComponent.h"
+#include "ComboBoxPropertyComponent.h"
 
 class LevelInspector : public Component, public InspectorUpdater, public Button::Listener, public TextPropertyComponent::Listener, public Value::Listener {
 public:
@@ -26,7 +27,6 @@ public:
 
 	void buttonClicked(Button * button) override;
 
-
 	void valueChanged(Value &value);
 
 	void setChildrenEnabled(bool shouldBeEnabled);
@@ -37,7 +37,7 @@ private:
 	ToggleButton playButton;
 	OwnedArray<TextButton> buttons;
 	PropertyPanel propertyPanel;
-	Value selectedObjectValue;
+	Value selectedObjectValue, gravity;
 	Array<GameObject*> gameObjects;
 
 	GameObject* selectedObject;

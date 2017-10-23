@@ -9,8 +9,8 @@ public:
 	PlayerObject(WorldPhysics & worldPhysics) : GameObject(worldPhysics)
 	{
 		objType = GameObjectType::Player;
-		setXVelocityCap(3.0f);
-		setYVelocityCap(6.0f);
+		setXVelocityCap(Speed::Low);
+		setYVelocityCap(Speed::Low);
 		setXVel(2.0f);
 		setYVel(3.0f);
 		getPhysicsProperties().setFriction(0.5f);
