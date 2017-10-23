@@ -266,6 +266,14 @@ public:
 		return animationSpeed;
 	}
 
+	File getIdleTexture() {
+		return idleTexture;
+	}
+
+	File getAnimationTextureDirectory() {
+		return animationDirectory;
+	}
+
 	File getTexture() {
 
 		if (!canimate) {
@@ -312,9 +320,11 @@ public:
 	}
 
 	void setAnimationTextures(File directory) {
+		animationDirectory = directory;
+
 		animationTextureFiles.clear();
 
-		DirectoryIterator iter(directory, false, "*.jpg;*.JPG;*.jpeg;*.JPEG;*.PNG;*.png");
+		DirectoryIterator iter(animationDirectory, false, "*.jpg;*.JPG;*.jpeg;*.JPEG;*.PNG;*.png");
 		while (iter.next())
 		{
 			File theFileItFound(iter.getFile());
@@ -364,6 +374,7 @@ private:
 
 	Array<File> animationTextureFiles;
 	File idleTexture;
+	File animationDirectory;
 
 	bool canimate;
 	bool isAnimating;

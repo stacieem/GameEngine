@@ -51,6 +51,7 @@ public:
 
 	void addBlock();
 	void toggleGamePause();
+	bool isPaused();
 
 private:
     //==========================================================================

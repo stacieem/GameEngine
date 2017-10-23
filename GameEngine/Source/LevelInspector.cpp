@@ -5,7 +5,6 @@
 		addAndMakeVisible(playButton);
 		playButton.setButtonText("Start/Stop Game");
 		playButton.addListener(this);
-
 		selectedObjectValue.addListener(this);
 	}
 	LevelInspector::~LevelInspector() {
@@ -23,7 +22,6 @@
 
 		if (&chosenLevel != selectedLevel) {
 			selectedLevel = &chosenLevel;
-			DBG("start");
 			selectedObject = chosenLevel.getGameObjects().getFirst();
 
 		}
@@ -97,6 +95,7 @@
 		if (button == &playButton) {
 
 			coreEngine->toggleGamePause();
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 	}
 
@@ -104,6 +103,11 @@
 	void LevelInspector::valueChanged(Value &value) {
 		selectedObject = gameObjects[(int)value.getValue()];
 		updateInspectorsChangeBroadcaster->sendChangeMessage();
+	}
+
+	void LevelInspector::setChildrenEnabled(bool shouldBeEnabled)
+	{
+		propertyPanel.setEnabled(shouldBeEnabled);
 	}
 
 	GameObject* LevelInspector::getSelectedGameObject() {

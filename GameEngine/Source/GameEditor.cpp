@@ -71,7 +71,19 @@ void GameEditor::changeListenerCallback(ChangeBroadcaster * source)
 	// Update all Components that diplay GameModel information
 	if (source == &updateInspectorsChangeBroadcaster)
 	{
-		updateInspectors();
+		if (gameEngine.isPaused()) {
+			objBrowser.setEnabled(true);
+			objInspector.setEnabled(true);
+			levelInspector.setChildrenEnabled(true);
+			updateInspectors();
+			
+		} else {
+			objBrowser.setEnabled(false);
+			objInspector.setEnabled(false);
+			levelInspector.setChildrenEnabled(false);
+
+		}
+		
 	}
 
 }

@@ -29,6 +29,8 @@ public:
 
 	void valueChanged(Value &value);
 
+	void setChildrenEnabled(bool shouldBeEnabled);
+
 	GameObject* getSelectedGameObject();
 private:
 	CoreEngine* coreEngine;

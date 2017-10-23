@@ -29,11 +29,11 @@ public:
 		coreEngine = engine;
 	}
 	void setSelectedObj(GameObject* obj) {
-			DBG(obj->getName());
-		
+			
 		if (selectedObj != obj) {
-			updateObj();
 			selectedObj = obj;
+			updateObj();
+			
 		}
 		
 	}
@@ -229,12 +229,12 @@ private:
 		objPhysicsProperties.add(objPhysicsYText);
 
 		objPhysicsXCap.setValue(var(selectedObj->getXVelocityCap()));
-		TextPropertyComponent* objPhysicsXCapText = new TextPropertyComponent(objPhysicsXCap, "Speed (x) Cap:", 3, false);
+		TextPropertyComponent* objPhysicsXCapText = new TextPropertyComponent(objPhysicsXCap, "Speed(x) Cap:", 3, false);
 		objPhysicsXCapText->addListener(this);
 		objPhysicsProperties.add(objPhysicsXCapText);
 
 		objPhysicsYCap.setValue(var(selectedObj->getYVelocityCap()));
-		TextPropertyComponent* objPhysicsYCapText = new TextPropertyComponent(objPhysicsYCap, "Speed (y) Cap:", 3, false);
+		TextPropertyComponent* objPhysicsYCapText = new TextPropertyComponent(objPhysicsYCap, "Speed(y) Cap:", 3, false);
 		objPhysicsYCapText->addListener(this);
 		objPhysicsProperties.add(objPhysicsYCapText);
 
@@ -244,14 +244,15 @@ private:
 		objPhysicsProperties.add(objFrictionText);
 
 		objPhysicsRestitution.setValue(var(selectedObj->getPhysicsProperties().getRestitution()));
-		SliderPropertyComponent* objRestitutionText = new SliderPropertyComponent(objPhysicsRestitution, "Bounce:", 0, 10.0, 0.1);
+		SliderPropertyComponent* objRestitutionText = new SliderPropertyComponent(objPhysicsRestitution, "Bounciness:", 0, 10.0, 0.1);
 		objPhysicsRestitution.addListener(this);
 		objPhysicsProperties.add(objRestitutionText);
 
-		objPhysicsDensity.setValue(var(selectedObj->getPhysicsProperties().getDensity()));
+		//Density removed for now
+		/*objPhysicsDensity.setValue(var(selectedObj->getPhysicsProperties().getDensity()));
 		TextPropertyComponent* objDensityText = new TextPropertyComponent(objPhysicsDensity, "Density:", 3, false);
 		objDensityText->addListener(this);
-		objPhysicsProperties.add(objDensityText);
+		objPhysicsProperties.add(objDensityText);*/
 
 	}
 
@@ -282,7 +283,7 @@ private:
 		yPosition.addListener(this);
 		objBackgroundProperties.add(slider2);
 
-		//Note that ComboBoxPropertyComponent is a custom property component and not in JUCE docs
+		//Note that this is the custom ComboBoxPropertyComponent JUCE docs
 		comboValue.setValue(var((int)1));
 		ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(comboValue, "Animation Speed:");
 		combo->setTextWhenNothingSelected("Choose Speed");
@@ -292,12 +293,12 @@ private:
 		comboValue.addListener(this);
 		objBackgroundProperties.add(combo);
 
-		FilenamePropertyComponent* filename = new FilenamePropertyComponent("Choose Idle Texture", selectedObj->getTexture(), false, false, false, "", "", "Select a file");
+		FilenamePropertyComponent* filename = new FilenamePropertyComponent("Choose Idle Texture", selectedObj->getIdleTexture(), false, false, false, "", "", "Select a file");
 		filename->addListener(this);
 
 		objBackgroundProperties.add(filename);
 
-		FilenamePropertyComponent* animationDirectory = new FilenamePropertyComponent("Animation Directory", File(), false, true, false, "", "", "Select a Dir");
+		FilenamePropertyComponent* animationDirectory = new FilenamePropertyComponent("Animation Directory", selectedObj->getAnimationTextureDirectory(), false, true, false, "", "", "Select a Dir");
 		animationDirectory->addListener(this);
 		objBackgroundProperties.add(animationDirectory);
 	}

@@ -64,7 +64,7 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
 	inputManager->addCommand(aKey, GameCommand::reset);
 
 	//Register pause command
-	//inputManager->addCommand(KeyPress('p'), GameCommand::togglePause);
+	//inputManager->addCommand(KeyPress('p'), GameCommand::TOGGLEPAUSE);
 
 	//XBOX Commands and testing
 
@@ -219,4 +219,9 @@ void CoreEngine::toggleGamePause()
 		gameLogic.setPaused(true);
 	}
 	
+}
+
+bool CoreEngine::isPaused()
+{
+	return gameLogic.isPaused();
 }

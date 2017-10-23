@@ -16,7 +16,7 @@ public:
 	GameLogic(GameAudio & gameAudio) : Thread("GameLogic"), gameAudio(gameAudio)
     {
         //inputManager = new InputManager();
-		gamePaused = false;
+		gamePaused = true;
     }
     
 	~GameLogic()
@@ -127,28 +127,32 @@ private:
 			{
 				switch (command)
 				{
-					//Apparently if statements inside a switch are a thing, probably a bad thing
-					//Don't accept this input if the game is paused
-					if (!isPaused()) {
-
-						case GameCommand::Player1MoveUp:
+				
+					case GameCommand::Player1MoveUp:
+						if (!isPaused()) {
 							currLevel.getPlayer(0)->moveUp();
+						}
 
-							break;
-						case GameCommand::Player1MoveDown:
+						break;
+					case GameCommand::Player1MoveDown:
+						if (!isPaused()) {
 							currLevel.getPlayer(0)->moveDown();
+						}
 
-							break;
-						case GameCommand::Player1MoveLeft:
+						break;
+					case GameCommand::Player1MoveLeft:
+						if (!isPaused()) {
 							currLevel.getPlayer(0)->moveLeft();
 							if (!currLevel.getPlayer(0)->getIsAnimating()) {
 								currLevel.getPlayer(0)->setAnimationStartTime(currentTime);
 								currLevel.getPlayer(0)->setLeftAnimation(true);
 								currLevel.getPlayer(0)->setIsAnimating(true);
 							}
+						}
 
-							break;
-						case GameCommand::Player1MoveRight:
+						break;
+					case GameCommand::Player1MoveRight:
+						if (!isPaused()) {
 							currLevel.getPlayer(0)->moveRight();
 
 							if (!currLevel.getPlayer(0)->getIsAnimating()) {
@@ -156,45 +160,57 @@ private:
 								currLevel.getPlayer(0)->setLeftAnimation(false);
 								currLevel.getPlayer(0)->setIsAnimating(true);
 							}
+						}
 							
 							
-							break;
-						//Player 2 commands
-						case GameCommand::Player2MoveUp:
+						break;
+					//Player 2 commands
+					case GameCommand::Player2MoveUp:
+						if (!isPaused()) {
 							currLevel.getPlayer(1)->moveUp();
-							break;
-						case GameCommand::Player2MoveDown:
+						}
+						break;
+					case GameCommand::Player2MoveDown:
+						if (!isPaused()) {
 							currLevel.getPlayer(1)->moveDown();
-							break;
-						case GameCommand::Player2MoveLeft:
+						}
+						break;
+					case GameCommand::Player2MoveLeft:
+						if (!isPaused()) {
 							currLevel.getPlayer(1)->moveLeft();
-							break;
-						case GameCommand::Player2MoveRight:
+						}
+						break;
+					case GameCommand::Player2MoveRight:
+						if (!isPaused()) {
 							currLevel.getPlayer(1)->moveRight();
-							break;
-						case GameCommand::reset:
+						}
+						break;
+					case GameCommand::reset:
+						if (!isPaused()) {
 							currLevel.getPlayer(0)->reset();
 							currLevel.getPlayer(1)->reset();
-							break;
-					}
+						}
+						break;
 				}
 				
 				
+				
 			}
+
 
 			if ((oldCommands.contains(GameCommand::Player1MoveRight) && !newCommands.contains(GameCommand::Player1MoveRight)) ||
 				(oldCommands.contains(GameCommand::Player1MoveLeft) && !newCommands.contains(GameCommand::Player1MoveLeft)) ||
 				newCommands.contains(GameCommand::Player1MoveLeft) && newCommands.contains(GameCommand::Player1MoveRight)) {
-				//DBG("stop");
 
 				if (!newCommands.contains(GameCommand::Player1MoveLeft) && !newCommands.contains(GameCommand::Player1MoveRight) ||
 					newCommands.contains(GameCommand::Player1MoveLeft) && newCommands.contains(GameCommand::Player1MoveRight)) {
 					currLevel.getPlayer(0)->setIsAnimating(false);
-					
+
 				}
 
-				
+
 			}
+			
 
 			oldCommands = newCommands;
 			
