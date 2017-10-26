@@ -48,6 +48,7 @@ public:
 
 	// Controller Functions for Game Editor to modify GameModel ================
 	void addBlock();
+	void addEnemy();
 	void toggleGamePause();
     
     void addLevel();

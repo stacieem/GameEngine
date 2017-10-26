@@ -2,6 +2,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PlayerObject.h"
+#include "EnemyObject.h"
 #include "GameObject.h"
 #include "Camera.h"
 
@@ -30,7 +31,9 @@ public:
 		gameObjects.add(player);
 		players.add(player);
 
+
         player->setModel(modelsForRendering[0]);
+
 
 
 	}
@@ -55,10 +58,21 @@ public:
 	void addNewBlock() {
         GameObject * gameObj = new GameObject(worldPhysics);
         gameObj->setModel(modelsForRendering[0]);
-        gameObj->setScale(3.0f, 1.0f);
+        gameObj->setScale(1.0f, 1.0f);
 		gameObjects.add(gameObj);
 	}
+	void addNewEnemy() {
+		DBG("ImadeIT");
+		EnemyObject* enm = new EnemyObject(worldPhysics);
+		enm->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
 
+
+		enm->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_stand.png"));
+
+
+		enm->getRenderableObject().animationProperties.setCanimate(true);
+		gameObjects.add(enm);
+	}
 	const OwnedArray<GameObject> & getGameObjects()
 	{
 		return gameObjects;

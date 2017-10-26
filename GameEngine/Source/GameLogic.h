@@ -98,6 +98,15 @@ private:
 		// Main Logic loop
 		while (!threadShouldExit())
         {
+
+			//ai motions
+			for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
+				if (obj->getObjType() == GameObjectType::Enemy) {
+					EnemyObject* objEnemy = dynamic_cast<EnemyObject*>(obj);
+					objEnemy->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0));
+				}
+			}
+
 			// Wait for CoreEngine to signal() this loop
 			logicWaitable->wait();
             
@@ -257,11 +266,10 @@ private:
                 if (gameObject->isRenderable())
                     renderableObjects.push_back(gameObject->getRenderableObject());
 
-			}
-            
+			}        
             renderSwapFrame->setRenderableObjects(renderableObjects);
  
-            
+
 			// Notify CoreEngine logic is done
 			coreEngineWaitable->signal();
 		}

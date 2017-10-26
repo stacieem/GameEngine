@@ -62,9 +62,13 @@ public:
     }
     
     // Rendering Data ==========================================================
-    
-    /** Returns true of the object is renderable and false otherwise.
-     */
+   
+	enum ObjectStateType {
+		DYNAMIC,
+		STATIC
+	};
+
+
     bool isRenderable()
     {
         return renderable;
@@ -216,18 +220,49 @@ public:
 		return objType;
 	}
 
-	void setXVelocityCap(float newXVel) {
+
+
+	void setXVelocityCap(Speed moveSpeed) {
+		int newXVel = 0;
+		switch (moveSpeed) {
+		case FAST:
+			newXVel = 8;
+			break;
+		case MED:
+			newXVel = 5;
+			break;
+		case SLOW:
+			newXVel = 2;
+			break;
+		}
+
 		xVelocityCap = newXVel;
 		if (xVel > xVelocityCap) {
 			xVel = xVelocityCap;
 		}
+		xVel = xVelocityCap / 3;
+		
 	}
 
-	void setYVelocityCap(float newYVel) {
+	void setYVelocityCap(Speed Jumpspeed) {
+		int newYVel = 0;
+		switch (Jumpspeed) {
+		case FAST:
+			newYVel = 12;
+			break;
+		case MED:
+			newYVel = 9;
+			break;
+		case SLOW:
+			newYVel = 5;
+			break;
+		}
 		yVelocityCap = newYVel;
 		if (yVel > yVelocityCap) {
 			yVel = yVelocityCap;
 		}
+
+		yVel = yVelocityCap / 3;
 	}
 
 
@@ -243,6 +278,17 @@ public:
 		yVel = newYVel;
 		if (yVel > yVelocityCap) {
 			yVel = yVelocityCap;
+		}
+	}
+
+	void updateState(ObjectStateType state) {
+		switch (state) {
+		case STATIC:
+			physicsProperties.toStatic();
+			break;
+		case DYNAMIC:
+			physicsProperties.toDynamic();
+			break;
 		}
 	}
 

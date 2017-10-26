@@ -1,3 +1,4 @@
+
 /*
 
 	holds an array of all draggable/droppable objects
@@ -8,16 +9,13 @@
 class ObjectBrowser : public Component, public Button::Listener, public InspectorUpdater {
 public:
 	ObjectBrowser() {
-		addAndMakeVisible(player);
 		addAndMakeVisible(enemy);
-		addAndMakeVisible(genericObj);
 		addAndMakeVisible(block);
 
-		player.setButtonText("Player Character");
 		enemy.setButtonText("Enemy Character");
-		genericObj.setButtonText("Generic Character");
 		block.setButtonText("Block");
 		block.addListener(this);
+		enemy.addListener(this);
 		//addAndMakeVisible(scrollBar);
 		//scrollBar.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
 
@@ -38,28 +36,31 @@ public:
 	{
 		juce::Rectangle<int> r = getLocalBounds();
 		int BUTTON_HEIGHT = r.getHeight() / NUM_VISIBLE_BUTTONS;
-		player.setBounds(r.getX(), 0, getWidth(), BUTTON_HEIGHT);
-		enemy.setBounds(r.getX(), BUTTON_HEIGHT, getWidth(), BUTTON_HEIGHT);
-		genericObj.setBounds(r.getX(), BUTTON_HEIGHT * 2, getWidth(), BUTTON_HEIGHT);
-		block.setBounds(r.getX(), BUTTON_HEIGHT * 3, getWidth(), BUTTON_HEIGHT);
+		
+		enemy.setBounds(r.getX(), 0, getWidth(), BUTTON_HEIGHT);
+		block.setBounds(r.getX(), BUTTON_HEIGHT, getWidth(), BUTTON_HEIGHT);
 		//scrollBar.setBounds(getLocalBounds());
 	}
 
-	void buttonClicked(Button* button) override
+	void buttonClicked(Button* button)
 	{
 		if (button == &block)
 		{
 			coreEngine->addBlock();
-			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
+		if (button == &enemy)
+		{
+			coreEngine->addEnemy();
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 	}
 
 private:
 	const int NUM_VISIBLE_BUTTONS = 5;
 	CoreEngine* coreEngine;
-	TextButton player;
 	TextButton enemy;
-	TextButton genericObj;
 	TextButton block;
 	//Slider scrollBar;
 };
+

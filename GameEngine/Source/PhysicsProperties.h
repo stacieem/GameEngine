@@ -340,6 +340,13 @@ public:
 	b2Body* getBody() {
 		return body;
 	}
+	void toStatic() {
+		body->SetType(b2_staticBody);
+	}
+	void toDynamic() {
+		body->SetType(b2_dynamicBody);
+
+	}
 private:
 	const float RADTODEG = 57.29577951308f;
 	const float DEGTORAD = 0.017453292519f;

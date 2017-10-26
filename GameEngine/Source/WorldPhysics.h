@@ -60,6 +60,11 @@ public:
 
 	}
 
+	enum gravityLevel {
+		Normal,
+		AntiGrav,
+		HighGrav
+	};
 
 	/**************************************************************************
 	*
@@ -139,6 +144,22 @@ public:
 	{
 		world.SetGravity(b2Vec2(gravx,gravy));
 	}
+
+	void setGravity(gravityLevel grav)
+	{
+		gravityLev = grav;
+		switch (grav) {
+		case Normal:
+			world.SetGravity(b2Vec2(0, -9.8));
+			break;
+		case AntiGrav:
+			world.SetGravity(b2Vec2(0, 9.8));
+			break;
+		case HighGrav:
+			world.SetGravity(b2Vec2(0, -18.0));
+			break;
+		}
+	}
 	/**************************************************************************
 	*
 	*	set the gravity
@@ -161,8 +182,10 @@ public:
 	float getGravity() {
 		return world.GetGravity().y;
 	}
+	
 private:
 	b2World world;
+	gravityLevel gravityLev;
 	juce::int32 velocityIterations;
 	juce::int32 positionIterations;
 	float32 timeStep;

@@ -6,12 +6,11 @@
 #include "Inspector.h"
 #include "GameObjectType.h"
 #include <string>   
-#include <string>   
 #include "ComboBoxPropertyComponent.h"
 #include "FilenamePropertyComponent.h"
 #include "Speed.h"
 
-class ObjectInspector : public Component, public InspectorUpdater, public TextPropertyComponent::Listener, Value::Listener, FilenameComponentListener {
+class ObjectInspector : public Component, public InspectorUpdater, public TextPropertyComponent::Listener, public Value::Listener, FilenameComponentListener {
 public:
 	ObjectInspector() {
 		//addAndMakeVisible(scrollBar);
@@ -67,27 +66,6 @@ public:
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 
-		if (component->getName() == "Acceleration(x):") {
-			float x = component->getText().getFloatValue();
-			selectedObj->setXVel(x);
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
-		}
-		if (component->getName() == "Acceleration(y):") {
-			float y = component->getText().getFloatValue();
-			selectedObj->setYVel(y);
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
-		}
-		if (component->getName() == "Speed (x) Cap:") {
-			float x = component->getText().getFloatValue();
-			selectedObj->setXVelocityCap(x);
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
-		}
-
-		if (component->getName() == "Speed (y) Cap:") {
-			float y = component->getText().getFloatValue();
-			selectedObj->setYVelocityCap(y);
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
-		}
 
 		if (component->getName() == "Density:") {
 			float dens = component->getText().getFloatValue()/100;
@@ -105,6 +83,35 @@ public:
 				selectedObj->setXPositionWithPhysics(x);
 				updateInspectorsChangeBroadcaster->sendChangeMessage();
 
+			}
+
+		}
+		if (value.refersToSameSourceAs(objPhysicsXCap)) {
+			switch ((int)objPhysicsXCap.getValue()) {
+			case 1:
+				selectedObj->setXVelocityCap(Speed::SLOW);
+				break;
+			case 2:
+				selectedObj->setXVelocityCap(Speed::MED);
+				break;
+			case 3:
+				selectedObj->setXVelocityCap(Speed::FAST);
+				break;
+			}
+
+		}
+
+		if (value.refersToSameSourceAs(objPhysicsYCap)) {
+			switch ((int)objPhysicsYCap.getValue()) {
+			case 1:
+				selectedObj->setYVelocityCap(Speed::SLOW);
+				break;
+			case 2:
+				selectedObj->setYVelocityCap(Speed::MED);
+				break;
+			case 3:
+				selectedObj->setYVelocityCap(Speed::FAST);
+				break;
 			}
 
 		}
@@ -132,6 +139,30 @@ public:
 				break;
 			case 3:
 				selectedObj->getRenderableObject().animationProperties.setAnimationSpeed(Speed::FAST);
+				break;
+			}
+		}
+
+		if (value.refersToSameSourceAs(stateComboValue)) {
+
+			switch ((int)stateComboValue.getValue()) {
+			case 1:
+				selectedObj->updateState(GameObject::STATIC);
+				break;
+			case 2:
+				selectedObj->updateState(GameObject::DYNAMIC);
+				break;
+			}
+		}
+
+		if (value.refersToSameSourceAs(aiState)) {
+
+			switch ((int)aiState.getValue()) {
+			case 1:
+				dynamic_cast<EnemyObject *>(selectedObj)->changeAI(EnemyObject::CHASE);
+				break;
+			case 2:
+				dynamic_cast<EnemyObject *>(selectedObj)->changeAI(EnemyObject::SCAREDAF);
 				break;
 			}
 		}
@@ -166,8 +197,6 @@ public:
 private:
 
 	void updateObj() {
-		
-
 		propertyPanel.clear();
 		objPhysicsProperties.clear();
 		objAudioProperties.clear();
@@ -177,20 +206,26 @@ private:
 		//create additional functions in desired objects to make it easier to retrieve information.
 		//add sections to physics menu
 		if (selectedObj != NULL) {
-			//selectedObj->getObjType();
-			/*//differentiate between types of objects ai, player, environment. . .
 			switch (selectedObj->getObjType()) {
 			case Generic:	//environment?
+				addGenericMovementProperties();
 				break;
 			case Player:	//player
 				addGenericMovementProperties();
 				break;
 			case Enemy:	//ai, maybe differntiate between types of ai with this?
-				addGenericMovementProperties();
+				aiState.setValue(var((int)1));
+				ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(aiState, "Move Speed:");
+				combo->setTextWhenNothingSelected("Choose Ai Type");
+				combo->addItem("Flee", 2);
+				combo->addItem("Chase", 1);
+				aiState.addListener(this);
+				objPhysicsProperties.add(combo);
 				break;
-			}*/
 
-			addGenericMovementProperties();
+			
+			}
+
 			addGenericGraphicProperties();
 			//add to panel
 			propertyPanel.addSection("Object Physics", objPhysicsProperties);
@@ -208,26 +243,23 @@ private:
 	//base physics properties
 	void addGenericMovementProperties() {
 
+		objPhysicsXCap.setValue(var((int)1));
+		ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(objPhysicsXCap, "Move Speed:");
+		combo->setTextWhenNothingSelected("Choose Move Speed");
+		combo->addItem("High", 3);
+		combo->addItem("Med", 2);
+		combo->addItem("Low", 1);
+		objPhysicsXCap.addListener(this);
+		objPhysicsProperties.add(combo);
 
-		objPhysicsX.setValue(var(selectedObj->getXVel()));
-		TextPropertyComponent* objPhysicsXText = new TextPropertyComponent(objPhysicsX, "Acceleration(x):", 3, false);
-		objPhysicsXText->addListener(this);
-		objPhysicsProperties.add(objPhysicsXText);
-
-		objPhysicsY.setValue(var(selectedObj->getYVel()));
-		TextPropertyComponent* objPhysicsYText = new TextPropertyComponent(objPhysicsY, "Acceleration(y):", 3, false);
-		objPhysicsYText->addListener(this);
-		objPhysicsProperties.add(objPhysicsYText);
-
-		objPhysicsXCap.setValue(var(selectedObj->getXVelocityCap()));
-		TextPropertyComponent* objPhysicsXCapText = new TextPropertyComponent(objPhysicsXCap, "Speed(x) Cap:", 3, false);
-		objPhysicsXCapText->addListener(this);
-		objPhysicsProperties.add(objPhysicsXCapText);
-
-		objPhysicsYCap.setValue(var(selectedObj->getYVelocityCap()));
-		TextPropertyComponent* objPhysicsYCapText = new TextPropertyComponent(objPhysicsYCap, "Speed(y) Cap:", 3, false);
-		objPhysicsYCapText->addListener(this);
-		objPhysicsProperties.add(objPhysicsYCapText);
+		objPhysicsYCap.setValue(var((int)1));
+		combo = new ComboBoxPropertyComponent(objPhysicsYCap, "Jump Speed:");
+		combo->setTextWhenNothingSelected("Choose Jump Speed");
+		combo->addItem("High", 3);
+		combo->addItem("Med", 2);
+		combo->addItem("Low", 1);
+		objPhysicsYCap.addListener(this);
+		objPhysicsProperties.add(combo);
 
 		objPhysicsFriction.setValue(var(selectedObj->getPhysicsProperties().getFriction()));
 		SliderPropertyComponent* objFrictionText = new SliderPropertyComponent(objPhysicsFriction, "Friction:", 0, 1.0, 0.1);
@@ -238,6 +270,14 @@ private:
 		SliderPropertyComponent* objRestitutionText = new SliderPropertyComponent(objPhysicsRestitution, "Bounciness:", 0, 10.0, 0.1);
 		objPhysicsRestitution.addListener(this);
 		objPhysicsProperties.add(objRestitutionText);
+
+		stateComboValue.setValue(var((int)1));
+		combo = new ComboBoxPropertyComponent(stateComboValue, "State:");
+		combo->setTextWhenNothingSelected("Choose State");
+		combo->addItem("Dynamic", 2);
+		combo->addItem("Static", 1);
+		stateComboValue.addListener(this);
+		objPhysicsProperties.add(combo);
 
 		//Density removed for now
 		/*objPhysicsDensity.setValue(var(selectedObj->getPhysicsProperties().getDensity()));
@@ -306,7 +346,7 @@ private:
 	Value objTexture, objName, xPosition, yPosition,
 		  objPhysicsX, objPhysicsY, objPhysicsXCap, objPhysicsYCap,
 		  objPhysicsFriction, objPhysicsRestitution, objPhysicsDensity,
-	      comboValue;
+	      comboValue, stateComboValue, aiState;
 
 	ScopedPointer<FilenameComponent> chooseFile;
 
