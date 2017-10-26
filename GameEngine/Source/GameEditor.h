@@ -46,6 +46,7 @@ private:
     ObjectInspector objInspector;
     
     /** Library of default GameObjects for user to pick from and use in game */
+
 	ObjectBrowser objBrowser;
     
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GameEditor)

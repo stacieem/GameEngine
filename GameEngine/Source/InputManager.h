@@ -11,6 +11,8 @@
 #include <vector>
 #include <map>
 #include "GameCommand.h"
+#include <Windows.h>
+#include <Xinput.h>
 
 /*
 	Abstract button assignments to keep magical indeces out of this
@@ -71,10 +73,7 @@ public:
 
 	// mouse has limited controls, looking at possible hard code.
 	void mouseDown(const MouseEvent& event){
-		//forcibly reset bit position 5 in commands
-		if (commands.indexOf(GameCommand::reset) == -1) {
-			commands.add(GameCommand::reset);
-		}
+		
 	}
 
 private:
@@ -83,3 +82,4 @@ private:
 
 	JUCE_LEAK_DETECTOR(InputManager)
 };
+

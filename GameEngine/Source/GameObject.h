@@ -17,6 +17,8 @@
 #include "glm/gtx/transform.hpp"
 #include "Model.h"
 #include "RenderableObject.h"
+#include <algorithm>
+#include "GameObjectType.h"
 
 /** Represents an Object that holds vertices that can be rendered by OpenGL.
  */
@@ -27,21 +29,28 @@ public:
      */
     GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld())
     {
+
         // Come up with better default naming
 		name = "Game Object";
         
         // By default an object is not renderable
         renderable = false;
-    
 
-		//Set default texture
-		//setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg"));
+		objType = GameObjectType::Generic;
+
+		yVelocityCap = 0;
+		xVelocityCap = 0;
+		xVel = 0;
+		yVel = 0;
+
+
+
     }
 
 	virtual ~GameObject() {
 
 	}
-    
+
     String getName()
     {
         return name;
@@ -62,8 +71,9 @@ public:
     }
     
     /** Gets the renderable object for reading and copying.
+		(const was taken out for now, put back in with getters/setters in GameObject)
      */
-    const RenderableObject & getRenderableObject()
+    RenderableObject & getRenderableObject()
     {
         return renderableObject;
     }
@@ -90,7 +100,6 @@ public:
         renderableObject.modelMatrix[3][0] = x;
         renderableObject.modelMatrix[3][1] = y;
         
-        // Maybe update the stored physics properties position
     }
     
     /** Scales the rendered Model.
@@ -106,6 +115,7 @@ public:
         // Update physics so it knows about the visual change in vertices
         physicsProperties.updateModelScale(renderableObject.model, x, y);
     }
+
     
     /** Sets the 2D position of a GameObject in world coordinates and in the
         physics world
@@ -123,6 +133,36 @@ public:
         // Update physical object position
         physicsProperties.setPosition (x, y);
     }
+
+	/** Sets the 2D position of a GameObject in world coordinates and in the
+	physics world
+	*/
+	void setYPositionWithPhysics(GLfloat y)
+	{
+		// Update visual object position
+		renderableObject.position.y = y;
+
+		// Modify model matrix to translate object to correct position
+		renderableObject.modelMatrix[3][1] = y;
+
+		// Update physical object position
+		physicsProperties.setPosition(renderableObject.position.x, y);
+	}
+
+	/** Sets the 2D position of a GameObject in world coordinates and in the
+	physics world
+	*/
+	void setXPositionWithPhysics(GLfloat x)
+	{
+		// Update visual object position
+		renderableObject.position.x = x;
+
+		// Modify model matrix to translate object to correct position
+		renderableObject.modelMatrix[3][0] = x;
+
+		// Update physical object position
+		physicsProperties.setPosition(x, renderableObject.position.y);
+	}
 
     PhysicsProperties & getPhysicsProperties()
     {
@@ -150,57 +190,67 @@ public:
         else
             return nullptr;
     }
-
-
-    // TO BE REMOVED
-    // Textures ================================================================
-	/**
-	* Set the name of the texture to use for this object. Currently, 
-	* all textures are loaded at runtime in GameView
-	*/
-	void setTexture(File tex)
-    {
-		textureFile = tex;
-	}
-
-	File getTexture()
-    {
-		return textureFile;
-	}
-    
-
+ 
     // Animation ?? ============================================================
 
 	float getXVel()
     {
 		return xVel;
 	}
-	float getYVel()
-    {
+
+	
+	float getYVel() {
+
 		return yVel;
+	}
+	
+	float getXVelocityCap() {
+		return xVelocityCap;
+	}
+	
+	float getYVelocityCap() {
+		return yVelocityCap;
+	}
+	
+	GameObjectType getObjType() {
+		return objType;
+	}
+
+	void setXVelocityCap(float newXVel) {
+		xVelocityCap = newXVel;
+		if (xVel > xVelocityCap) {
+			xVel = xVelocityCap;
+		}
+	}
+
+	void setYVelocityCap(float newYVel) {
+		yVelocityCap = newYVel;
+		if (yVel > yVelocityCap) {
+			yVel = yVelocityCap;
+		}
 	}
 
 
 	void setXVel(float newXVel)
     {
 		xVel = newXVel;
+		if (xVel > xVelocityCap) {
+			xVel = xVelocityCap;
+		}
 	}
-    
-	void setYVel(float newYVel)
-    {
+
+	void setYVel(float newYVel) {
 		yVel = newYVel;
+		if (yVel > yVelocityCap) {
+			yVel = yVelocityCap;
+		}
 	}
-    
+
+protected:
+	GameObjectType objType;
+
 private:
-    
-    // Physical Position =======================================================
-
-    // FIX
-    // What are these? Are these physical properties? If so it should be in
-    // Physical Properties. Else is it an animation thing? Consider putting into
-    // an Animatoin struct or class.
-	GLfloat xVel, yVel;
-
+	
     /** Name of object */
     String name;
     
@@ -213,34 +263,16 @@ private:
     
     /** Physical properties associated with the object */
     PhysicsProperties physicsProperties;
+
+	//Physics related accelerations and max velocities
+	/*EVENTUALLY should go in PhysicsProperties*/
+	GLfloat xVel, yVel;
+	float xVelocityCap, yVelocityCap;
     
     /** Map of in-game physics-based actions to specific audio files */
     std::map<PhysicalAction, File> actionToAudio;
     
-    
-    // THIS WILL BE REMOVED AND IS INCLUDED IN THE MODEL OBJECT
-	File textureFile;
+	String objName;
 
-    
-//    AnimationList animations;
-//    std::map<> actionToAnimationMap;
-    
-    // Someone setting up a peice of audio to be triggered by an action:
-    // actionToAudioMap.map(files[0], IN_RANGE_ACTION);
-    // actionToAudioMap.map(files[1], COLLISION_ACTION);
-    // actionToAudioMap.map(files[1], INTERACTION_ACTION);
-    //
-    // actionToAnimationMap.map (animations[0], IN_RANGE_ACTION);
-    //
-    // Then the corresponding audio is called in the actionTriggered calback in
-    //  this object:
-    //
-    //  void actionTriggered (actionId) {
-    //
-    //      playAudio (actionToAudioMap.get(actionId));
-    //      startAnimaction (actionToAnimationMap.get(actionId));
-    //      // etc for all other things to do when an action is triggered . . .
-    // }
-    
 	JUCE_LEAK_DETECTOR(GameObject)
 };

@@ -16,7 +16,7 @@ public:
 	GameLogic(GameAudio & gameAudio) : Thread("GameLogic"), gameAudio(gameAudio)
     {
         //inputManager = new InputManager();
-		gamePaused = false;
+		gamePaused = true;
     }
     
 	~GameLogic()
@@ -121,46 +121,85 @@ private:
 			{
 				switch (command)
 				{
-					//Apparently if statements inside a switch are a thing, probably a bad thing
-					//Don't accept this input if the game is paused
-					if (!isPaused()) {
-
-						case GameCommand::Player1MoveUp:
-							DBG("MOVE UP");
+				
+					case GameCommand::Player1MoveUp:
+						if (!isPaused()) {
 							currLevel->getPlayer(0)->moveUp();
-							break;
-						case GameCommand::Player1MoveDown:
+						}
+
+						break;
+					case GameCommand::Player1MoveDown:
+						if (!isPaused()) {
 							currLevel->getPlayer(0)->moveDown();
-							break;
-						case GameCommand::Player1MoveLeft:
+						}
+
+						break;
+					case GameCommand::Player1MoveLeft:
+						if (!isPaused()) {
 							currLevel->getPlayer(0)->moveLeft();
-							break;
-						case GameCommand::Player1MoveRight:
+							if (!currLevel->getPlayer(0)->getRenderableObject().animationProperties.getIsAnimating()) {
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setAnimationStartTime(currentTime);
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setLeftAnimation(true);
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setIsAnimating(true);
+							}
+						}
+
+						break;
+					case GameCommand::Player1MoveRight:
+						if (!isPaused()) {
 							currLevel->getPlayer(0)->moveRight();
-							break;
-						//Player 2 commands
-						case GameCommand::Player2MoveUp:
-							DBG("2MOVE UP");
+
+							if (!currLevel->getPlayer(0)->getRenderableObject().animationProperties.getIsAnimating()) {
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setAnimationStartTime(currentTime);
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setLeftAnimation(false);
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setIsAnimating(true);
+							}
+						}
+							
+							
+						break;
+					//Player 2 commands
+					case GameCommand::Player2MoveUp:
+						if (!isPaused()) {
 							currLevel->getPlayer(1)->moveUp();
-							break;
-						case GameCommand::Player2MoveDown:
+						}
+						break;
+					case GameCommand::Player2MoveDown:
+						if (!isPaused()) {
 							currLevel->getPlayer(1)->moveDown();
-							break;
-						case GameCommand::Player2MoveLeft:
+						}
+						break;
+					case GameCommand::Player2MoveLeft:
+						if (!isPaused()) {
 							currLevel->getPlayer(1)->moveLeft();
-							break;
-						case GameCommand::Player2MoveRight:
+						}
+						break;
+					case GameCommand::Player2MoveRight:
+						if (!isPaused()) {
 							currLevel->getPlayer(1)->moveRight();
-							break;
-						case GameCommand::reset:
-                        //	currLevel->getPlayer(0)->reset();
-						//	currLevel->getPlayer(1)->reset();
-							break;
-					}
+						}
+						break;
 				}
 				
 				
+				
 			}
+
+
+			if ((oldCommands.contains(GameCommand::Player1MoveRight) && !newCommands.contains(GameCommand::Player1MoveRight)) ||
+				(oldCommands.contains(GameCommand::Player1MoveLeft) && !newCommands.contains(GameCommand::Player1MoveLeft)) ||
+				newCommands.contains(GameCommand::Player1MoveLeft) && newCommands.contains(GameCommand::Player1MoveRight)) {
+
+				if (!newCommands.contains(GameCommand::Player1MoveLeft) && !newCommands.contains(GameCommand::Player1MoveRight) ||
+					newCommands.contains(GameCommand::Player1MoveLeft) && newCommands.contains(GameCommand::Player1MoveRight)) {
+					currLevel->getPlayer(0)->getRenderableObject().animationProperties.setIsAnimating(false);
+
+				}
+
+
+			}
+
+			oldCommands = newCommands;
 			
             //Only do these things if the game is not paused
 			if (!gamePaused) {
@@ -172,6 +211,12 @@ private:
 				// If any new collisions occur, play the specified collision audio
 				for (auto & object : currLevel->getGameObjects())
 				{
+					if (object->getRenderableObject().animationProperties.getCanimate()) {
+						if (object->getRenderableObject().animationProperties.getIsAnimating()) {
+							object->getRenderableObject().animationProperties.updateAnimationCurrentTime(currentTime);
+						}
+					}
+
 					if (object->getPhysicsProperties().hasNewCollisions())
 					{
                         File * audioFile = object->getAudioFileForAction(PhysicalAction::collsion);
@@ -211,6 +256,7 @@ private:
 			{
                 if (gameObject->isRenderable())
                     renderableObjects.push_back(gameObject->getRenderableObject());
+
 			}
             
             renderSwapFrame->setRenderableObjects(renderableObjects);
@@ -230,6 +276,8 @@ private:
 	//input handling
 	InputManager* inputManager;
 	Array<GameCommand> newCommands;
+	Array<GameCommand> oldCommands;
+
 
 	int64 newTime;
 	int64 currentTime;

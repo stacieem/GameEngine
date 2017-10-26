@@ -15,7 +15,8 @@ public:
         this->renderableObjects = renderableObjects;
     }
     
-    const vector<RenderableObject> & getRenderableObjects()
+	//Const removed for now to allow accessing of animationProperties in RenderableObject
+    vector<RenderableObject> & getRenderableObjects()
     {
         return renderableObjects;
     }

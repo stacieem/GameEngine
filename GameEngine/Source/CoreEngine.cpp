@@ -40,6 +40,7 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
 
 	// !FIX! MOVE LATER TO AN INPUT MAP AS THE DEFAULT INPUT MAP
 	KeyPress aKey('w');
+
 	inputManager->addCommand(aKey, GameCommand::Player1MoveUp);
 	aKey = KeyPress('s');
 	inputManager->addCommand(aKey, GameCommand::Player1MoveDown);
@@ -63,7 +64,7 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
 	inputManager->addCommand(aKey, GameCommand::reset);
 
 	//Register pause command
-	//inputManager->addCommand(KeyPress('p'), GameCommand::togglePause);
+	//inputManager->addCommand(KeyPress('p'), GameCommand::TOGGLEPAUSE);
 
     // Start the GameLogic thread and the GameView's renderer
     gameLogic.startThread();
@@ -178,25 +179,17 @@ void CoreEngine::run() {
 		//	gameView.grabKeyboardFocus();
 		//}
         
-        // Lock the Controller functions being used by the GameEditor
-        // (this could've been a scoped lock, but wanted to be explicit)
-        gameEditingControllerFunctionsLock.enter();
-        
-            // Allow GameLogic and GameView's rendering to start
-            logicWaitable.signal();
-            renderWaitable.signal();
+        // Allow GameLogic and GameView's rendering to start
+        logicWaitable.signal();
+        renderWaitable.signal();
             
-            // Stop CoreEngine until both GameLogic and GameView's render have finished processing
-            coreEngineWaitable.wait();
-            coreEngineWaitable.wait();
+        // Stop CoreEngine until both GameLogic and GameView's render have finished processing
+        coreEngineWaitable.wait();
+        coreEngineWaitable.wait();
             
-            // Swap render frames
-            swapRenderFramesBetweenLogicAndRender();
+        // Swap render frames
+        swapRenderFramesBetweenLogicAndRender();
         
-        // Unlock the Controller functions so the GameEditor can make changes
-        gameEditingControllerFunctionsLock.exit();
-        
-        // GameEditor calls to Controller functions in CoreEngine will run here
     }
 
 }
@@ -204,7 +197,6 @@ void CoreEngine::run() {
 
 // Accessors ===================================================================
 GameModel& CoreEngine::getGameModel() {
-    const ScopedLock gameEditingControllerLock (gameEditingControllerFunctionsLock);
     return *gameModelCurrentFrame;
 }
 
@@ -212,7 +204,6 @@ GameModel& CoreEngine::getGameModel() {
 
 void CoreEngine::addBlock()
 {
-    const ScopedLock gameEditingControllerLock (gameEditingControllerFunctionsLock);
 	gameModelCurrentFrame->getCurrentLevel()->addNewBlock();
 
 }
@@ -228,20 +219,24 @@ void CoreEngine::toggleGamePause()
 	
 }
 
+
 void CoreEngine::addLevel()
 {
-    const ScopedLock gameEditingControllerLock (gameEditingControllerFunctionsLock);
     gameModelCurrentFrame->addLevel("Another level");
 }
 
 void CoreEngine::removeLevel(int levelIndex)
 {
-    const ScopedLock gameEditingControllerLock (gameEditingControllerFunctionsLock);
     gameModelCurrentFrame->removeLevel(levelIndex);
 }
 
 void CoreEngine::setCurrentLevel(int levelIndex)
 {
-    const ScopedLock gameEditingControllerLock (gameEditingControllerFunctionsLock);
-    gameModelCurrentFrame->setCurrentLevel(levelIndex);
+	gameModelCurrentFrame->setCurrentLevel(levelIndex);
+}
+
+bool CoreEngine::isPaused()
+{
+	return gameLogic.isPaused();
+
 }

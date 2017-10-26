@@ -8,7 +8,10 @@
 
 
 #include "../JuceLibraryCode/JuceHeader.h"
+
 #include "Model.h"
+
+
 
 /*
 	Holds all the properties that are used for any new
@@ -19,24 +22,32 @@ class PhysicsProperties
 public:
 	PhysicsProperties(b2World& world) 
 	{
+
         // FIX
         // Default should be no physics properties, these are added as a Model
         // is added to a GameObject
+
+	
+		
+		//bodies position within the world
+
 		bodyDef.type = b2_dynamicBody;
 		bodyDef.position.Set(0.0f, 0.0f);
 
+		//add the body to the world
 		body = world.CreateBody(&bodyDef);
-		dynamicBox.SetAsBox(0.5f, 0.5f);
-		dynamicCircle.m_radius = .5;
-		dynamicCircle.m_p.Set(0, 0);
-		fixtureDef.shape = &dynamicBox;
 
-		//default properties
-		fixtureDef.friction = 0.7f;
+		//create the objects collision box with properties
+		dynamicBox.SetAsBox(0.5f, 0.5f);
+		fixtureDef.shape = &dynamicBox;
+		fixtureDef.friction = 1.2f;
 		fixtureDef.restitution = 0.0f;
 		fixtureDef.density = 1.0f;
 
+		//add fixtures to the body in the world
 		this->myFixture = body->CreateFixture(&fixtureDef);
+		//body->GetContactList()->contact();
+		//b2ContactEdge test;
 	}
 	
 	PhysicsProperties(b2World& world, float originx, float originy,float width,float height) 
@@ -215,6 +226,13 @@ public:
 	void setRestitution(float32 rest)
 	{b2Fixture* f = body->GetFixtureList();
 		f->SetRestitution(rest);
+		body->ResetMassData();
+	}
+
+	float32 getRestitution()
+	{
+		b2Fixture* f = body->GetFixtureList();
+		return f->GetRestitution();
 	}
 	/**************************************************************************
 	*
@@ -225,7 +243,14 @@ public:
 	{
 		b2Fixture* f = body->GetFixtureList();
 		f->SetFriction(fric);
+		body->ResetMassData();
 	}
+	float32 getFriction()
+	{
+		b2Fixture* f = body->GetFixtureList();
+		return f->GetFriction();
+	}
+
 	/**************************************************************************
 	*
 	*	set the density of the body, reset body to apply correct mass
@@ -236,6 +261,11 @@ public:
 		b2Fixture* f = body->GetFixtureList();
 		f->SetDensity(dens);
 		body->ResetMassData();
+	}
+	float32 getDensity()
+	{
+		b2Fixture* f = body->GetFixtureList();
+		return f->GetDensity();
 	}
 	/**************************************************************************
 	*
@@ -271,6 +301,21 @@ public:
 
 		this->myFixture = body->CreateFixture(&fixtureDef);
 	}
+
+	/// b2Shape properties
+	void setSensorRadius(GLfloat radius)
+	{
+
+		triggerRangeSphere.m_radius = .9;
+		triggerRangeSphere.m_p.Set(0, 0);
+		triggerFixtureDef.shape = &triggerRangeSphere;
+		triggerFixtureDef.isSensor = true;
+
+		fixtureDef.shape = &triggerRangeSphere;
+		body->DestroyFixture(this->triggerFixture);
+
+		this->triggerFixture = body->CreateFixture(&fixtureDef);
+	}
     
     /** Determines whether or not new Collisions are present in an object.
         Returns true if new collisions have been added, returns false if not.
@@ -292,24 +337,31 @@ public:
         return hasNewCollisions;
     }
     
-    
+	b2Body* getBody() {
+		return body;
+	}
 private:
 	const float RADTODEG = 57.29577951308f;
 	const float DEGTORAD = 0.017453292519f;
 	const float PI = 3.14159f;
-	b2Body* body;
-    
+ 
     /** The number of collisions that were last checked. */
     int lastNumCollsions = 0;
     
     /** Any new collisions have been reported. */
     bool reportedNewCollsions = false;
 
-    
+	//object within the physics world
+	b2Body* body;
 	b2Fixture* myFixture;
-	b2FixtureDef fixtureDef;	
 	b2BodyDef bodyDef;
-	b2PolygonShape dynamicBox;
-	b2CircleShape dynamicCircle;
 
+	//Default object collision box information
+	b2FixtureDef fixtureDef;
+	b2PolygonShape dynamicBox;
+
+	//Trigger range sensor
+	b2Fixture* triggerFixture;
+	b2FixtureDef triggerFixtureDef;
+	b2CircleShape triggerRangeSphere;
 };

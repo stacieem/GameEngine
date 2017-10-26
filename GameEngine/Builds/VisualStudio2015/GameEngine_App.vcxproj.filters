@@ -2187,6 +2187,18 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_video.cpp">
       <Filter>Juce Library Code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\ComboBoxPropertyComponent.cpp">
+      <Filter>GameEngine\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\FilenamePropertyComponent.cpp">
+      <Filter>GameEngine\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\LevelInspector.cpp">
+      <Filter>GameEngine\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Source\SelectObjectButtonPropertyComponent.cpp">
+      <Filter>GameEngine\Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\Source\Attributes.h">
@@ -4263,6 +4275,30 @@
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\RenderableObject.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\CollisionFiltering.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ComboBoxPropertyComponent.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\FilenamePropertyComponent.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\GameObjectType.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\SelectObjectButtonPropertyComponent.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\SensorContactListener.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\AnimationProperties.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Speed.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
   </ItemGroup>

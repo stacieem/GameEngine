@@ -15,16 +15,24 @@ public:
 		this->levelName = levelName;
 		// Trystan's Multiplayer Test
 		PlayerObject* player = new PlayerObject(worldPhysics);
-		player->setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/flower.jpg"));
-        player->setModel(modelsForRendering[0]);
+
+		//player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/alienBlue_stand.png"));
+		player->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
+		
+
+		player->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_stand.png"));
+
+
+		player->getRenderableObject().animationProperties.setCanimate(true);
+		//player->setIsAnimating(true);
+		//player->setAnimationStartTime(Time::currentTimeMillis());
+
 		gameObjects.add(player);
 		players.add(player);
 
-		player = new PlayerObject(worldPhysics);
-		player->setTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/p2_stand.png"));
         player->setModel(modelsForRendering[0]);
-		gameObjects.add(player);
-		players.add(player);
+
+
 	}
     
 	~Level()

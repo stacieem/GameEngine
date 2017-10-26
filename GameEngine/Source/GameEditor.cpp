@@ -28,8 +28,15 @@ GameEditor::GameEditor() {
 	objInspector.setChangeBroadcasterForUpdate(&updateInspectorsChangeBroadcaster);
 	levelInspector.setChangeBroadcasterForUpdate(&updateInspectorsChangeBroadcaster);
 	objBrowser.setChangeBroadcasterForUpdate(&updateInspectorsChangeBroadcaster);
-    
-    // Update Inspectors to the starting state
+
+
+	//what does this do -- this was originally my work around for an issue that arose, good now
+	//while (gameEngine.getGameModel().getCurrentLevel().getNumGameObjects() < 1) {}
+	
+	//addAndMakeVisible(EditorController);
+	//gameEngine.setBoundsToFit(getWidth() *.2, 0, getWidth() * .5, getHeight()*.6, Justification::centredTop, true);
+
+
 	updateInspectors();
     
     // Start the CoreEngine
@@ -70,9 +77,7 @@ void GameEditor::updateInspectors()
     
     // Update Inspectors
 	levelInspector.updateInspector(gameModel);
-    
-    // WE WANT THIS TO BE THE CURRENTLY SELECTED OBJECT SO FIX LATER!!!!
-	objInspector.updateObj(gameModel.getCurrentLevel()->getGameObjects().getFirst());
+   	objInspector.setSelectedObj(levelInspector.getSelectedGameObject());
 }
 
 void GameEditor::changeListenerCallback(ChangeBroadcaster * source)
@@ -80,6 +85,18 @@ void GameEditor::changeListenerCallback(ChangeBroadcaster * source)
 	// Update all Components that diplay GameModel information
 	if (source == &updateInspectorsChangeBroadcaster)
 	{
-		updateInspectors();
+		if (gameEngine.isPaused()) {
+			objBrowser.setEnabled(true);
+			objInspector.setEnabled(true);
+			levelInspector.setChildrenEnabled(true);
+			updateInspectors();
+			
+		} else {
+			objBrowser.setEnabled(false);
+			objInspector.setEnabled(false);
+			levelInspector.setChildrenEnabled(false);
+
+		}
+		
 	}
 }

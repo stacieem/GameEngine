@@ -53,8 +53,10 @@ public:
     void addLevel();
     void removeLevel(int levelIndex);
     void setCurrentLevel(int levelIndex);
-    
-    
+   
+
+	bool isPaused();
+
 
 private:
     //==========================================================================
@@ -93,12 +95,6 @@ private:
     WaitableEvent logicWaitable;
     WaitableEvent renderWaitable;
     WaitableEvent coreEngineWaitable;
-    
-    /** Critical sections to lock when updating and receving GameModels to
-        prevent game logic and render from using the game model while it is
-        being updated
-     */
-    CriticalSection gameEditingControllerFunctionsLock;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CoreEngine)
 };

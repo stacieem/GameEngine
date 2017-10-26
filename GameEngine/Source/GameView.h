@@ -167,11 +167,6 @@ public:
         
         // Use Shader Program that's been defined
         shader->use();
-
-//		if (uniforms->demoTexture != nullptr)
-//		{
-//			uniforms->demoTexture->set((GLint)0);
-//		}
         
         // Set Projection Matrix
 		if (uniforms->projectionMatrix != nullptr)
@@ -203,8 +198,18 @@ public:
                 renderableObject.model->registerWithOpenGLContext(openGLContext);
             }
             
+			OpenGLTexture* tex = texResourceManager.loadTexture(renderableObject.animationProperties.getTexture());
+			
+			if (tex != nullptr) {	
+				tex->bind();
+			}
+
             // Draw Model
             renderableObject.model->drawModelToOpenGLContext(openGLContext);
+
+			if (tex != nullptr) {
+				tex->unbind();
+			}
         }
         
         
@@ -270,6 +275,7 @@ public:
     // JUCE Callbacks ==========================================================
 	void paint(Graphics &g) override
 	{
+	
 	}
     
 	void resized() override
@@ -365,11 +371,11 @@ private:
         "in vec4 vertexColor;\n"
         "in vec2 textureCoordOut;\n"
         "out vec4 color;\n"
-		//"uniform sampler2D uniformTexture;\n"
+		"uniform sampler2D uniformTexture;\n"
         "void main()\n"
         "{\n"
-		"   color = vertexColor;\n"
-        //"   color = texture(uniformTexture, textureCoordOut);\n"
+		//"   color = vertexColor;\n"
+        "   color = texture(uniformTexture, textureCoordOut);\n"
         "}\n";
         
         ScopedPointer<OpenGLShaderProgram> newShader (new OpenGLShaderProgram (openGLContext));
