@@ -19,15 +19,23 @@ public:
 		linearDamp = 0.5f;
 		origin = getPhysicsProperties().GetPosition();
 	}
+
 	~EnemyObject() {}
+
 	enum AIType {
 		Patrol,
 		CHASE,
 		SCAREDAF
 	};
+
 	void changeAI(AIType type) {
 		aiState = type;
 	}
+
+	AIType getAIState() {
+		return aiState;
+	}
+
 	void decision(PlayerObject& player) {
 
 		switch (aiState) {

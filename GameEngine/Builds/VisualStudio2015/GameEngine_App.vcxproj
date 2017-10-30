@@ -1899,6 +1899,7 @@
     <ClInclude Include="..\..\Source\CoreEngine.h" />
     <ClInclude Include="..\..\Source\DrawableObject.h" />
     <ClInclude Include="..\..\Source\EditorControl.h" />
+    <ClInclude Include="..\..\Source\EnemyObject.h" />
     <ClInclude Include="..\..\Source\FilenamePropertyComponent.h" />
     <ClInclude Include="..\..\Source\GameAudio.h" />
     <ClInclude Include="..\..\Source\GameCommand.h" />
@@ -1909,6 +1910,7 @@
     <ClInclude Include="..\..\Source\GameObject.h" />
     <ClInclude Include="..\..\Source\GameObjectType.h" />
     <ClInclude Include="..\..\Source\GameView.h" />
+    <ClInclude Include="..\..\Source\GoalPointObject.h" />
     <ClInclude Include="..\..\Source\HealthBar.h" />
     <ClInclude Include="..\..\Source\InputManager.h" />
     <ClInclude Include="..\..\Source\Inspector.h" />

@@ -62,7 +62,6 @@ public:
 		gameObjects.add(gameObj);
 	}
 	void addNewEnemy() {
-		DBG("ImadeIT");
 		EnemyObject* enm = new EnemyObject(worldPhysics);
 		enm->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
 
@@ -71,6 +70,9 @@ public:
 
 
 		enm->getRenderableObject().animationProperties.setCanimate(true);
+
+		enm->setModel(modelsForRendering[0]);
+		enm->setScale(1.0f, 1.0f);
 		gameObjects.add(enm);
 	}
 	const OwnedArray<GameObject> & getGameObjects()

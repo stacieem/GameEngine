@@ -172,8 +172,15 @@ void CoreEngine::swapRenderFramesBetweenLogicAndRender()
     GameModel swap frames and repeats.
  */
 void CoreEngine::run() {
-    while (!threadShouldExit())
+    while (true)
     {
+	
+		if (threadShouldExit()) {
+			logicWaitable.signal();
+			renderWaitable.signal();
+			break;
+		}
+
 		//comment this out to debug properly
 		//if (!gameView.hasKeyboardFocus(false)) {
 		//	gameView.grabKeyboardFocus();
