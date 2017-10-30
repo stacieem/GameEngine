@@ -214,11 +214,12 @@ private:
 				addGenericMovementProperties();
 				break;
 			case Enemy:	//ai, maybe differntiate between types of ai with this?
-				aiState.setValue(var((int)1));
-				ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(aiState, "Ai Mode:");
-				combo->setTextWhenNothingSelected("Choose Ai Type");
+				aiState.setValue(var( ( (EnemyObject*)selectedObj)->getAIState()));
+				ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(aiState, "AI:");
+				combo->setTextWhenNothingSelected("Choose AI Type");
 				combo->addItem("Flee", 2);
 				combo->addItem("Chase", 1);
+				combo->setSelectedId(((EnemyObject*)selectedObj)->getAIState(), dontSendNotification);
 				aiState.addListener(this);
 				objPhysicsProperties.add(combo);
 				break;
@@ -246,18 +247,20 @@ private:
 		objPhysicsXCap.setValue(var((int)1));
 		ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(objPhysicsXCap, "Move Speed:");
 		combo->setTextWhenNothingSelected("Choose Move Speed");
-		combo->addItem("High", 3);
-		combo->addItem("Med", 2);
-		combo->addItem("Low", 1);
+		combo->addItem("Fast", 3);
+		combo->addItem("Medium", 2);
+		combo->addItem("Slow", 1);
+		combo->setSelectedId(1, dontSendNotification);
 		objPhysicsXCap.addListener(this);
 		objPhysicsProperties.add(combo);
 
 		objPhysicsYCap.setValue(var((int)1));
 		combo = new ComboBoxPropertyComponent(objPhysicsYCap, "Jump Speed:");
 		combo->setTextWhenNothingSelected("Choose Jump Speed");
-		combo->addItem("High", 3);
-		combo->addItem("Med", 2);
-		combo->addItem("Low", 1);
+		combo->addItem("Fast", 3);
+		combo->addItem("Medium", 2);
+		combo->addItem("Slow", 1);
+		combo->setSelectedId(1, dontSendNotification);
 		objPhysicsYCap.addListener(this);
 		objPhysicsProperties.add(combo);
 
@@ -276,6 +279,7 @@ private:
 		combo->setTextWhenNothingSelected("Choose State");
 		combo->addItem("Dynamic", 2);
 		combo->addItem("Static", 1);
+		combo->setSelectedId(1, dontSendNotification);
 		stateComboValue.addListener(this);
 		objPhysicsProperties.add(combo);
 
@@ -315,12 +319,13 @@ private:
 		objBackgroundProperties.add(slider2);
 
 		//Note that this is the custom ComboBoxPropertyComponent JUCE docs
-		comboValue.setValue(var((int)1));
+		comboValue.setValue(var((int)2));
 		ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(comboValue, "Animation Speed:");
 		combo->setTextWhenNothingSelected("Choose Speed");
 		combo->addItem("Fast", 3);
 		combo->addItem("Normal", 2);
 		combo->addItem("Slow", 1);
+		combo->setSelectedId(2, dontSendNotification);
 		comboValue.addListener(this);
 		objBackgroundProperties.add(combo);
 

@@ -197,6 +197,17 @@ public:
             {
                 renderableObject.model->registerWithOpenGLContext(openGLContext);
             }
+
+			// Reverse texture coords if left animation
+			if (renderableObject.animationProperties.isLeftAnimation())
+			{
+				//uniforms->isLeftAnimation->set(true);
+			}
+			else
+			{
+				//uniforms->isLeftAnimation->set(false);
+			
+			}
             
 			OpenGLTexture* tex = texResourceManager.loadTexture(renderableObject.animationProperties.getTexture());
 			

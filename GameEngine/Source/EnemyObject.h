@@ -18,16 +18,25 @@ public:
 		getPhysicsProperties().setFriction(0.5f);
 		linearDamp = 0.5f;
 		origin = getPhysicsProperties().GetPosition();
+		
 	}
+
 	~EnemyObject() {}
+
 	enum AIType {
 		Patrol,
 		CHASE,
 		SCAREDAF
 	};
+
 	void changeAI(AIType type) {
 		aiState = type;
 	}
+
+	AIType getAIState() {
+		return aiState;
+	}
+
 	void decision(PlayerObject& player) {
 
 		switch (aiState) {
@@ -49,7 +58,7 @@ public:
 				if (myPos.y < theirPos.y) {
 					moveUp();
 				}
-				else if (myPos.y > theirPos.y)
+				else if (myPos.y > theirPos.y+3)
 				{
 					moveDown();
 				}

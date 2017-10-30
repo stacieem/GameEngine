@@ -4301,6 +4301,19 @@
     <ClInclude Include="..\..\Source\Speed.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
+<<<<<<< HEAD
+    <ClInclude Include="..\..\Source\GoalPointObject.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\EnemyObject.h">
+=======
+    <ClInclude Include="..\..\Source\EnemyObject.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\GoalPointObject.h">
+>>>>>>> 99c48ab5820c32b432b3f317101fde4edd191ac9
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt">

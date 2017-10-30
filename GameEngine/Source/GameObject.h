@@ -244,17 +244,17 @@ public:
 		
 	}
 
-	void setYVelocityCap(Speed Jumpspeed) {
+	void setYVelocityCap(Speed jumpspeed) {
 		int newYVel = 0;
-		switch (Jumpspeed) {
+		switch (jumpspeed) {
 		case FAST:
-			newYVel = 12;
+			newYVel = 40;
 			break;
 		case MED:
-			newYVel = 9;
+			newYVel = 30;
 			break;
 		case SLOW:
-			newYVel = 5;
+			newYVel = 20;
 			break;
 		}
 		yVelocityCap = newYVel;
