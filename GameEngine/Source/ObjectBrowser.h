@@ -1,3 +1,4 @@
+
 /*
 
 	holds an array of all draggable/droppable objects
@@ -62,3 +63,4 @@ private:
 	TextButton block;
 	//Slider scrollBar;
 };
+

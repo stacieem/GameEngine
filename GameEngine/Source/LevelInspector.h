@@ -10,29 +10,45 @@
 #include "SelectObjectButtonPropertyComponent.h"
 #include "ComboBoxPropertyComponent.h"
 
-class LevelInspector : public Component, public InspectorUpdater, public Button::Listener, public TextPropertyComponent::Listener, public Value::Listener {
+class LevelInspector : public Component, public InspectorUpdater,
+                       public Button::Listener, public ComboBox::Listener, 
+					   public TextPropertyComponent::Listener, public Value::Listener
+{
 public:
 	LevelInspector();
+
 
 	~LevelInspector();
 
 	void setCoreEngine(CoreEngine* engine);
 	// JUCE GUI Callbacks ======================================================
+
+	void updateInspector(GameModel & gameModel);
 	void paint(Graphics& g) override;
-	void updateInspector(Level & chosenLevel);
 
 	void textPropertyComponentChanged(TextPropertyComponent * component) override;
 
-	void resized();
+	void resized() override;
 
 	void buttonClicked(Button * button) override;
+    
+	void comboBoxChanged(ComboBox *comboBoxThatHasChanged) override;
+
 
 	void valueChanged(Value &value);
 
 	void setChildrenEnabled(bool shouldBeEnabled);
 
+
 	GameObject* getSelectedGameObject();
 private:
+    
+    Label levelLabel;
+    ComboBox levelComboBox;
+    TextButton addLevelButton;
+    TextButton removeLevelButton;
+    int currentLevelIndex;
+    
 	CoreEngine* coreEngine;
 	ToggleButton playButton;
 	OwnedArray<TextButton> buttons;

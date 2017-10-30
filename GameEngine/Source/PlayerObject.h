@@ -9,12 +9,14 @@ public:
 	PlayerObject(WorldPhysics & worldPhysics) : GameObject(worldPhysics)
 	{
 		objType = GameObjectType::Player;
-		setXVelocityCap(Speed::Low);
-		setYVelocityCap(Speed::Low);
+		setXVelocityCap(Speed::SLOW);
+		setYVelocityCap(Speed::SLOW);
 
 		getPhysicsProperties().setFriction(0.5f);
 		linearDamp = 0.5f;
-		origin = getPhysicsProperties().GetPosition();
+
+		//origin = getPhysicsProperties().GetPosition();
+
 	}
 	~PlayerObject(){}
 	void moveUp()
@@ -59,14 +61,15 @@ public:
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
-	void reset()
-	{
-		translateTo(origin.x, origin.y);
-		getPhysicsProperties().setLinearVelocity(0.0f,0.0f);
-	}
+    
+//	void reset()
+//	{
+//		translateTo(origin.x, origin.y);
+//		getPhysicsProperties().setLinearVelocity(0.0f,0.0f);
+//	}
 private:
 	GLfloat linearDamp;
-	b2Vec2 origin;
+	//b2Vec2 origin;
 
 	Vector3D<GLfloat> position;
 	OwnedArray<Vector3D<GLfloat>> vertices;	 // The vertices from the origin

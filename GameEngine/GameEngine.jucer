@@ -3,36 +3,51 @@
 <JUCERPROJECT id="uxmnJz" name="GameEngine" displaySplashScreen="1" reportAppUsage="1"
               splashScreenColour="Dark" projectType="guiapp" version="1.0.0"
               bundleIdentifier="com.yourcompany.GameEngine" includeBinaryInAppConfig="1"
-              cppLanguageStandard="11" jucerVersion="5.1.1">
+              cppLanguageStandard="11" jucerVersion="5.1.0">
   <MAINGROUP id="FQiawi" name="GameEngine">
     <GROUP id="{A90B6C66-5187-763C-2B86-1EE26DFD5E8F}" name="Source">
-      <FILE id="se8Ro4" name="Attributes.h" compile="0" resource="0" file="Source/Attributes.h"/>
-      <FILE id="Qjo1yN" name="CoreEngine.cpp" compile="1" resource="0" file="Source/CoreEngine.cpp"/>
-      <FILE id="Nbb33E" name="CoreEngine.h" compile="0" resource="0" file="Source/CoreEngine.h"/>
-      <FILE id="W17thS" name="DrawableObject.h" compile="0" resource="0"
+      <FILE id="JCgw7r" name="Attributes.h" compile="0" resource="0" file="Source/Attributes.h"/>
+      <FILE id="wyQIll" name="CoreEngine.cpp" compile="1" resource="0" file="Source/CoreEngine.cpp"/>
+      <FILE id="QmCaND" name="CoreEngine.h" compile="0" resource="0" file="Source/CoreEngine.h"/>
+      <FILE id="HsddjA" name="DrawableObject.h" compile="0" resource="0"
             file="Source/DrawableObject.h"/>
-      <FILE id="dJeX8L" name="GameAudio.cpp" compile="1" resource="0" file="Source/GameAudio.cpp"/>
-      <FILE id="VyTRuz" name="GameAudio.h" compile="0" resource="0" file="Source/GameAudio.h"/>
-      <FILE id="lcJRxg" name="GameCommand.h" compile="0" resource="0" file="Source/GameCommand.h"/>
-      <FILE id="ARFVyF" name="GameHUD.h" compile="0" resource="0" file="Source/GameHUD.h"/>
-      <FILE id="U19LFo" name="GameLogic.h" compile="0" resource="0" file="Source/GameLogic.h"/>
-      <FILE id="LE45zQ" name="GameModel.h" compile="0" resource="0" file="Source/GameModel.h"/>
-      <FILE id="XpdXVV" name="GameObject.h" compile="0" resource="0" file="Source/GameObject.h"/>
-      <FILE id="UYgpaP" name="GameView.h" compile="0" resource="0" file="Source/GameView.h"/>
-      <FILE id="FxQVLH" name="HealthBar.h" compile="0" resource="0" file="Source/HealthBar.h"/>
-      <FILE id="iSMo7o" name="InputManager.h" compile="0" resource="0" file="Source/InputManager.h"/>
-      <FILE id="Ce24Dp" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
-      <FILE id="s6l8HX" name="PhysicalAction.h" compile="0" resource="0"
+      <FILE id="Jm3PWs" name="EditorControl.h" compile="0" resource="0" file="Source/EditorControl.h"/>
+      <FILE id="BalUUF" name="GameAudio.cpp" compile="1" resource="0" file="Source/GameAudio.cpp"/>
+      <FILE id="fwUYVv" name="GameAudio.h" compile="0" resource="0" file="Source/GameAudio.h"/>
+      <FILE id="hGLI6J" name="GameCommand.h" compile="0" resource="0" file="Source/GameCommand.h"/>
+      <FILE id="LpeCOQ" name="GameEditor.cpp" compile="1" resource="0" file="Source/GameEditor.cpp"/>
+      <FILE id="P8Rlil" name="GameEditor.h" compile="0" resource="0" file="Source/GameEditor.h"/>
+      <FILE id="t8N4p8" name="GameHUD.h" compile="0" resource="0" file="Source/GameHUD.h"/>
+      <FILE id="bRcULb" name="GameLogic.h" compile="0" resource="0" file="Source/GameLogic.h"/>
+      <FILE id="RTSW7h" name="GameModel.h" compile="0" resource="0" file="Source/GameModel.h"/>
+      <FILE id="Kuk5dd" name="GameObject.h" compile="0" resource="0" file="Source/GameObject.h"/>
+      <FILE id="RaibBO" name="GameView.h" compile="0" resource="0" file="Source/GameView.h"/>
+      <FILE id="KGZfTm" name="HealthBar.h" compile="0" resource="0" file="Source/HealthBar.h"/>
+      <FILE id="e5kFNS" name="InputManager.h" compile="0" resource="0" file="Source/InputManager.h"/>
+      <FILE id="IyfvgM" name="Inspector.h" compile="0" resource="0" file="Source/Inspector.h"/>
+      <FILE id="yUrEO5" name="Level.h" compile="0" resource="0" file="Source/Level.h"/>
+      <FILE id="De2hBh" name="LevelInspector.h" compile="0" resource="0"
+            file="Source/LevelInspector.h"/>
+      <FILE id="Gc42pS" name="Main.cpp" compile="1" resource="0" file="Source/Main.cpp"/>
+      <FILE id="C2wja5" name="ObjectBrowser.h" compile="0" resource="0" file="Source/ObjectBrowser.h"/>
+      <FILE id="ctaBfQ" name="ObjectInspector.h" compile="0" resource="0"
+            file="Source/ObjectInspector.h"/>
+      <FILE id="QNzJIj" name="PhysicalAction.h" compile="0" resource="0"
             file="Source/PhysicalAction.h"/>
-      <FILE id="voGw6l" name="PhysicsProperties.h" compile="0" resource="0"
+      <FILE id="aCxc1k" name="PhysicsProperties.h" compile="0" resource="0"
             file="Source/PhysicsProperties.h"/>
-      <FILE id="yKXqCz" name="PlayerObject.h" compile="0" resource="0" file="Source/PlayerObject.h"/>
-      <FILE id="N4zMrx" name="RenderSwapFrame.h" compile="0" resource="0"
+      <FILE id="lnUw4E" name="PlayerObject.h" compile="0" resource="0" file="Source/PlayerObject.h"/>
+      <FILE id="dYUadl" name="RenderSwapFrame.h" compile="0" resource="0"
             file="Source/RenderSwapFrame.h"/>
-      <FILE id="bqxeOP" name="Uniforms.h" compile="0" resource="0" file="Source/Uniforms.h"/>
-      <FILE id="ddq6Qa" name="Vertex.h" compile="0" resource="0" file="Source/Vertex.h"/>
-      <FILE id="Gv7YMD" name="VertexBuffer.h" compile="0" resource="0" file="Source/VertexBuffer.h"/>
-      <FILE id="wdsgn2" name="WorldPhysics.h" compile="0" resource="0" file="Source/WorldPhysics.h"/>
+      <FILE id="gPILSd" name="Resource.h" compile="0" resource="0" file="Source/Resource.h"/>
+      <FILE id="i4vEoC" name="TextureResource.h" compile="0" resource="0"
+            file="Source/TextureResource.h"/>
+      <FILE id="WcqTju" name="TextureResourceManager.h" compile="0" resource="0"
+            file="Source/TextureResourceManager.h"/>
+      <FILE id="tkzIdz" name="Uniforms.h" compile="0" resource="0" file="Source/Uniforms.h"/>
+      <FILE id="A9rY4A" name="Vertex.h" compile="0" resource="0" file="Source/Vertex.h"/>
+      <FILE id="M7PWcx" name="VertexBuffer.h" compile="0" resource="0" file="Source/VertexBuffer.h"/>
+      <FILE id="MVEhqS" name="WorldPhysics.h" compile="0" resource="0" file="Source/WorldPhysics.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

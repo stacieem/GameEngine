@@ -8,8 +8,11 @@
 
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "CollisionFiltering.h"
-#include "SensorContactListener.h"
+
+#include "Model.h"
+
+
+
 /*
 	Holds all the properties that are used for any new
 	object.
@@ -19,9 +22,15 @@ class PhysicsProperties
 public:
 	PhysicsProperties(b2World& world) 
 	{
+
+        // FIX
+        // Default should be no physics properties, these are added as a Model
+        // is added to a GameObject
+
 	
-		world.SetContactListener(&sensorContactListener);
+		
 		//bodies position within the world
+
 		bodyDef.type = b2_dynamicBody;
 		bodyDef.position.Set(0.0f, 0.0f);
 
@@ -144,16 +153,38 @@ public:
 		center.y += y;
 		body->SetTransform(center, 0.0);
 	}
+    
 	/**************************************************************************
 	*
 	*	moves the center of the object over by x and y units
 	*	Note: Conversion equation would be nice from pixels/coords to position
 	*
 	**************************************************************************/
-	void translateTo(GLfloat x, GLfloat y)
+	void setPosition(GLfloat x, GLfloat y)
 	{
 		body->SetTransform(b2Vec2(x,y), 0.0);
 	}
+    
+    // BADDDD
+    // HARD CODED EXPECTING THAT VERTICES GO OUT TO MAX 0.5 in all directions
+    // IN FUTURE: Somehow use the model object to get the bounding box in model
+    // coordinates of the Model
+    /** Updates the scaling of the physics body based on the scaling of the
+        renderable Model
+     */
+    void updateModelScale (Model * model, float x, float y)
+    {
+        // Set the shape to fit the new form factor
+        dynamicBox.SetAsBox(0.5f * x, 0.5f * y);
+        
+        // Trystan, double check I did this right, I deleted the old fixture
+        // and created a new one from the modified shape
+        fixtureDef.shape = &dynamicBox;
+        body->DestroyFixture(myFixture);
+        this->myFixture = body->CreateFixture(&fixtureDef);
+        // I worry that this resets the position to the same position??
+    }
+    
 	/**************************************************************************
 	*
 	*	rotates the body around the current center a certain number of degrees
@@ -340,5 +371,4 @@ private:
 	b2Fixture* triggerFixture;
 	b2FixtureDef triggerFixtureDef;
 	b2CircleShape triggerRangeSphere;
-	SensorContactListener sensorContactListener;
 };

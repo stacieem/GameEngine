@@ -94,30 +94,27 @@ private:
 		currentTime = Time::currentTimeMillis();
 		int64 checkTime = 0;
 
-		Level& currLevel = gameModelCurrentFrame->getCurrentLevel();
+		Level * currLevel = gameModelCurrentFrame->getCurrentLevel();
 		// Main Logic loop
 		while (!threadShouldExit())
         {
+
 			//ai motions
-			for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel().getGameObjects()) {
+			for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
 				if (obj->getObjType() == GameObjectType::Enemy) {
 					EnemyObject* objEnemy = dynamic_cast<EnemyObject*>(obj);
-					objEnemy->decision(*gameModelCurrentFrame->getCurrentLevel().getPlayer(0));
+					objEnemy->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0));
 				}
 			}
 
-
-			// ADD: If level changed, update the current level
-				// currentLevel = gameModelCurrentFrame->getCurrentLevel();
-
-
-
 			// Wait for CoreEngine to signal() this loop
 			logicWaitable->wait();
+            
+            // Grab current level
+            currLevel = gameModelCurrentFrame->getCurrentLevel();
 
 			if (gamePaused) {
 				currentTime = Time::currentTimeMillis();
-				
 			}
 
 			// Calculate time
@@ -136,35 +133,35 @@ private:
 				
 					case GameCommand::Player1MoveUp:
 						if (!isPaused()) {
-							currLevel.getPlayer(0)->moveUp();
+							currLevel->getPlayer(0)->moveUp();
 						}
 
 						break;
 					case GameCommand::Player1MoveDown:
 						if (!isPaused()) {
-							currLevel.getPlayer(0)->moveDown();
+							currLevel->getPlayer(0)->moveDown();
 						}
 
 						break;
 					case GameCommand::Player1MoveLeft:
 						if (!isPaused()) {
-							currLevel.getPlayer(0)->moveLeft();
-							if (!currLevel.getPlayer(0)->getIsAnimating()) {
-								currLevel.getPlayer(0)->setAnimationStartTime(currentTime);
-								currLevel.getPlayer(0)->setLeftAnimation(true);
-								currLevel.getPlayer(0)->setIsAnimating(true);
+							currLevel->getPlayer(0)->moveLeft();
+							if (!currLevel->getPlayer(0)->getRenderableObject().animationProperties.getIsAnimating()) {
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setAnimationStartTime(currentTime);
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setLeftAnimation(true);
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setIsAnimating(true);
 							}
 						}
 
 						break;
 					case GameCommand::Player1MoveRight:
 						if (!isPaused()) {
-							currLevel.getPlayer(0)->moveRight();
+							currLevel->getPlayer(0)->moveRight();
 
-							if (!currLevel.getPlayer(0)->getIsAnimating()) {
-								currLevel.getPlayer(0)->setAnimationStartTime(currentTime);
-								currLevel.getPlayer(0)->setLeftAnimation(false);
-								currLevel.getPlayer(0)->setIsAnimating(true);
+							if (!currLevel->getPlayer(0)->getRenderableObject().animationProperties.getIsAnimating()) {
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setAnimationStartTime(currentTime);
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setLeftAnimation(false);
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setIsAnimating(true);
 							}
 						}
 							
@@ -173,28 +170,22 @@ private:
 					//Player 2 commands
 					case GameCommand::Player2MoveUp:
 						if (!isPaused()) {
-							currLevel.getPlayer(1)->moveUp();
+							currLevel->getPlayer(1)->moveUp();
 						}
 						break;
 					case GameCommand::Player2MoveDown:
 						if (!isPaused()) {
-							currLevel.getPlayer(1)->moveDown();
+							currLevel->getPlayer(1)->moveDown();
 						}
 						break;
 					case GameCommand::Player2MoveLeft:
 						if (!isPaused()) {
-							currLevel.getPlayer(1)->moveLeft();
+							currLevel->getPlayer(1)->moveLeft();
 						}
 						break;
 					case GameCommand::Player2MoveRight:
 						if (!isPaused()) {
-							currLevel.getPlayer(1)->moveRight();
-						}
-						break;
-					case GameCommand::reset:
-						if (!isPaused()) {
-							currLevel.getPlayer(0)->reset();
-							currLevel.getPlayer(1)->reset();
+							currLevel->getPlayer(1)->moveRight();
 						}
 						break;
 				}
@@ -210,59 +201,74 @@ private:
 
 				if (!newCommands.contains(GameCommand::Player1MoveLeft) && !newCommands.contains(GameCommand::Player1MoveRight) ||
 					newCommands.contains(GameCommand::Player1MoveLeft) && newCommands.contains(GameCommand::Player1MoveRight)) {
-					currLevel.getPlayer(0)->setIsAnimating(false);
+					currLevel->getPlayer(0)->getRenderableObject().animationProperties.setIsAnimating(false);
 
 				}
 
 
 			}
-			
 
 			oldCommands = newCommands;
 			
             //Only do these things if the game is not paused
 			if (!gamePaused) {
-				// Process Physics
-				currLevel.processWorldPhysics(deltaTime);
+                
+				// Process Physics - processes physics and updates objects positions
+				currLevel->processWorldPhysics(deltaTime);
 
 				// Play Audio
 				// If any new collisions occur, play the specified collision audio
-				for (auto & object : currLevel.getGameObjects())
+				for (auto & object : currLevel->getGameObjects())
 				{
-					if (object->getCanimate()) {
-						if (object->getIsAnimating()) {
-							object->updateAnimationCurrentTime(currentTime);
+					if (object->getRenderableObject().animationProperties.getCanimate()) {
+						if (object->getRenderableObject().animationProperties.getIsAnimating()) {
+							object->getRenderableObject().animationProperties.updateAnimationCurrentTime(currentTime);
 						}
 					}
 
 					if (object->getPhysicsProperties().hasNewCollisions())
 					{
-						//                    File * audioFile = object->getAudioFileForAction(PhysicalAction::collsion);
-						//                 
-						//                     If audio file was not in the map, do nothing
-						//                    if (audioFile != nullptr)
-						//                    {
-						//                        gameAudio.playAudioFile(*audioFile, false);
-						//                    }
-						gameAudio.playAudioFile(object->getAudioFile(), false);
+                        File * audioFile = object->getAudioFileForAction(PhysicalAction::collsion);
+                     
+                        // If audio file was not in the map, do nothing
+                        if (audioFile != nullptr)
+                        {
+                            gameAudio.playAudioFile(*audioFile, false);
+                        }
 
 					}
 				}
 			}
             
-            // Update the GameModel
-			//Update the number of DrawableObjects in the RenderSwapFrame
-			renderSwapFrame->setDrawableObjectsLength(currLevel.getNumGameObjects());
-
-			for (int i = 0; i < currLevel.getGameObjects().size(); i++)
+            // Update camera position based on the position of player 1
+            // The player1 object will be unmoving, while the world moves around it
+            Camera & camera = currLevel->getCamera();
+            camera.setXPosition(-currLevel->getPlayer(0)->getRenderableObject().position.x);
+            
+            
+            // Update render frame =============================================
+            
+            // Set camera view matrix
+            renderSwapFrame->setViewMatrix(camera.getViewMatrix());
+            
+            // Create array of potentially renderable objects in view
+            /** DEV NOTE:
+                Add in some pre-render visiblity checking. If an object is
+                obviously going to be out of view, do not put it in a render
+                frame.
+             */
+            // For now, we simply add all objects as renderable
+            
+            vector<RenderableObject> renderableObjects;
+            
+            for (auto gameObject : currLevel->getGameObjects())
 			{
-				renderSwapFrame->setDrawableObjectVertices(currLevel.getGameObjects()[i]->getVertices(), i);
+                if (gameObject->isRenderable())
+                    renderableObjects.push_back(gameObject->getRenderableObject());
 
-				renderSwapFrame->setDrawableObjectTexture(currLevel.getGameObjects()[i]->getTexture(),i);
-			}
-            // Maybe actions are triggered here ???
-            // IMPLEMENT . . .
-
+			}        
+            renderSwapFrame->setRenderableObjects(renderableObjects);
+ 
 
 			// Notify CoreEngine logic is done
 			coreEngineWaitable->signal();

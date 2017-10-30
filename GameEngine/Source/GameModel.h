@@ -4,9 +4,13 @@
 #include "PlayerObject.h"
 #include "WorldPhysics.h"
 #include "Level.h"
-/** Represents the data model for a game. This includes all Levels, Scenes, 
-    GameObjects, etc that describe a game. The data is manipulated by the
-    GameLogic class and is rendered by the GameView class.
+#include "RenderableObject.h"
+
+
+/** A singleton class which represents the data model for a game. This includes
+    all Levels, Scenes, GameObjects, etc that describe a game. The GameModel
+    data is manipulated by the GameLogic class, and data is copied into
+    renderable frames for the GameView to render.
  */
 class GameModel {
 
@@ -29,16 +33,40 @@ public:
 		return *levels[levelNumber];
 	}
 
-	void addNewLevel(String levelName) {
+	void addLevel(String levelName) {
 		levels.add(new Level(levelName));
 	}
+    
+    void removeLevel(int levelIndex)
+    {
+        if (levels.size() > 1 && levelIndex < levels.size())
+        {
+            levels.remove(levelIndex);
+            setCurrentLevel(0);
+        }
+    }
 
-	Level & getCurrentLevel()
+	Level * getCurrentLevel()
 	{
-		return *levels[currentLevel];
+		return levels[currentLevel];
 	}
+    
+    void setCurrentLevel (int levelIndex)
+    {
+        currentLevel = levelIndex;
+    }
+    
+    int getCurrentLevelIndex()
+    {
+        return currentLevel;
+    }
+    
+    int getNumLevels()
+    {
+        return levels.size();
+    }
 
 private:
 	OwnedArray<Level> levels;
 	int currentLevel;
-  };
+};

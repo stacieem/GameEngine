@@ -9,12 +9,16 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Vertex.h"
 #include "PhysicsProperties.h"
 #include "WorldPhysics.h"
 #include "PhysicalAction.h"
 #include <map>
+#include "glm/glm.hpp"
+#include "glm/gtx/transform.hpp"
+#include "Model.h"
+#include "RenderableObject.h"
 #include <algorithm>
+#include "GameObjectType.h"
 
 /** Represents an Object that holds vertices that can be rendered by OpenGL.
  */
@@ -23,104 +27,153 @@ class GameObject
 public:
     /** Constructs a GameObject and attatches it to the world's physics.
      */
-    GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld()), audioFile (File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav")
+    GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld())
     {
-        // Default vertices and texture coordinates
-        vertices.add(new Vertex(Vector3D<GLfloat>(0.5f,   0.5f,  0.0f),1,1));
-		vertices.add(new Vertex(Vector3D<GLfloat>(0.5f, -0.5f, 0.0f), 1, 0));
-		vertices.add(new Vertex(Vector3D<GLfloat>(-0.5f, -0.5f, 0.0f), 0, 0));
-		vertices.add(new Vertex(Vector3D<GLfloat>(-0.5f, 0.5f, 0.0f), 0, 1));
-        // Default mapping to an objects audio
-        mapAudioFileToPhysicalAction((File::getCurrentWorkingDirectory().getFullPathName() + "/Air Horn.wav"), PhysicalAction::collsion);
-		objName = "Object Anonymous";
+
+        // Come up with better default naming
+		name = "Game Object";
+        
+        // By default an object is not renderable
+        renderable = false;
+
 		objType = GameObjectType::Generic;
 
 		yVelocityCap = 0;
 		xVelocityCap = 0;
 		xVel = 0;
 		yVel = 0;
-		physicsProperties.getBody()->SetUserData(this);
 
-		isAnimating = false;
-		leftAnimation = false;
+
 
     }
 
 	virtual ~GameObject() {
 
 	}
-	enum AnimationSpeed {
-		FAST,
-		MED,
-		SLOW
-	};
-	enum Speed {
-		High,
-		Med,
-		Low
-	};
+
+    String getName()
+    {
+        return name;
+    }
+    
+    void setName(String name)
+    {
+        this->name = name;
+    }
+    
+    // Rendering Data ==========================================================
+   
 	enum ObjectStateType {
 		DYNAMIC,
 		STATIC
 	};
-    /** Get the
+
+
+    bool isRenderable()
+    {
+        return renderable;
+    }
+    
+    /** Gets the renderable object for reading and copying.
+		(const was taken out for now, put back in with getters/setters in GameObject)
      */
-    Array<Vertex> getVertices()
+    RenderableObject & getRenderableObject()
     {
-        // Calculate vertices based on Box2D's transformations
-        
-        b2Vec2 box2DPos = physicsProperties.GetPosition();
-        position.x = box2DPos.x;
-        position.y = box2DPos.y;
-        
-		Array<Vertex> glVerticesArray;
-        // Calculate GLVertices
-        for (int i = 0; i < vertices.size(); i++)
-        {
-			Vertex v = *vertices[i];
-			
-            v.position += position;
-			glVerticesArray.add(v);
-           
-        }
-        
-        return glVerticesArray;
+        return renderableObject;
     }
     
-    std::size_t getSizeOfVertices()
+    /** Sets the Model for this GameObject. This also makes the object renderable
+        since it now has a model to render.
+     */
+    void setModel (Model * model)
     {
-        return sizeof(GLfloat) * vertices.size() * 3;
-    }
-    
-    int getNumVertices()
-    {
-        return vertices.size();
-    }
-    
-    
-    void translateTo (GLfloat x, GLfloat y)
-    {
-        Vector3D<GLfloat> transformation (x, y, 0.0);
-        
-        position = transformation;
-        
-		physicsProperties.translateTo(x, y);
+        this->renderableObject.model = model;
+        renderable = true;
     }
 
+    /** Sets the 2D position of a GameObject in world coordinates, not worrying
+        about updating the postition in the physical world
+     */
+    void setPosition (GLfloat x, GLfloat y)
+    {
+        // Set position vector
+        renderableObject.position.x = x;
+        renderableObject.position.y = y;
+        
+        // Modify model matrix to translate object to correct position
+        renderableObject.modelMatrix[3][0] = x;
+        renderableObject.modelMatrix[3][1] = y;
+        
+    }
+    
+    /** Scales the rendered Model.
+        PROBLEM: Physics still only knows the original vertices, not the scaled
+        vertices, we must give the physics world an update about the scale of
+        this object
+     */
+    void setScale (float x, float y)
+    {
+        renderableObject.modelMatrix[0][0] = x;
+        renderableObject.modelMatrix[1][1] = y;
+        
+        // Update physics so it knows about the visual change in vertices
+        physicsProperties.updateModelScale(renderableObject.model, x, y);
+    }
 
-	void translateBy(GLfloat x, GLfloat y)
+    
+    /** Sets the 2D position of a GameObject in world coordinates and in the
+        physics world
+     */
+    void setPositionWithPhysics (GLfloat x, GLfloat y)
+    {
+        // Update visual object position
+        renderableObject.position.x = x;
+        renderableObject.position.y = y;
+        
+        // Modify model matrix to translate object to correct position
+        renderableObject.modelMatrix[3][0] = x;
+        renderableObject.modelMatrix[3][1] = y;
+        
+        // Update physical object position
+        physicsProperties.setPosition (x, y);
+    }
+
+	/** Sets the 2D position of a GameObject in world coordinates and in the
+	physics world
+	*/
+	void setYPositionWithPhysics(GLfloat y)
 	{
-		Vector3D<GLfloat> transformation(x, y, 0.0);
+		// Update visual object position
+		renderableObject.position.y = y;
 
-		position += transformation;
+		// Modify model matrix to translate object to correct position
+		renderableObject.modelMatrix[3][1] = y;
 
-		physicsProperties.translateBy(x, y);
+		// Update physical object position
+		physicsProperties.setPosition(renderableObject.position.x, y);
+	}
+
+	/** Sets the 2D position of a GameObject in world coordinates and in the
+	physics world
+	*/
+	void setXPositionWithPhysics(GLfloat x)
+	{
+		// Update visual object position
+		renderableObject.position.x = x;
+
+		// Modify model matrix to translate object to correct position
+		renderableObject.modelMatrix[3][0] = x;
+
+		// Update physical object position
+		physicsProperties.setPosition(x, renderableObject.position.y);
 	}
 
     PhysicsProperties & getPhysicsProperties()
     {
         return physicsProperties;
     }
+    
+    // Audio to Action Mapping =================================================
     
     /** Maps an audio file to play when a specific action happens to this object
         in the physical game world.
@@ -141,49 +194,17 @@ public:
         else
             return nullptr;
     }
-    
-    // !FIX! Dont need this if the map stuff works
-    File getAudioFile()
+ 
+    // Animation ?? ============================================================
+
+	float getXVel()
     {
-        return audioFile;
-    }
-
-	void addAnimationTexture(File tex) {
-		animationTextureFiles.add(tex);
-	}
-
-	void setIdleTexture(File tex) {
-		idleTexture = tex;
-		
-	}
-
-	File getTextureAt(int index) {
-		if (index > animationTextureFiles.size()) {
-			return File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/default.png");
-		}
-		return animationTextureFiles[index];
-
-	}
-
-	int getNumTextures() {
-
-		return animationTextureFiles.size();
-
-	}
-    
-	String getName() {
-		return objName;
-	}
-	void setName(String name) {
-		objName = name;
-	}
-
-
-	float getXVel() {
 		return xVel;
 	}
+
 	
 	float getYVel() {
+
 		return yVel;
 	}
 	
@@ -200,19 +221,21 @@ public:
 	}
 
 
+
 	void setXVelocityCap(Speed moveSpeed) {
 		int newXVel = 0;
 		switch (moveSpeed) {
-		case High:
+		case FAST:
 			newXVel = 8;
 			break;
-		case Med:
+		case MED:
 			newXVel = 5;
 			break;
-		case Low:
+		case SLOW:
 			newXVel = 2;
 			break;
 		}
+
 		xVelocityCap = newXVel;
 		if (xVel > xVelocityCap) {
 			xVel = xVelocityCap;
@@ -224,13 +247,13 @@ public:
 	void setYVelocityCap(Speed Jumpspeed) {
 		int newYVel = 0;
 		switch (Jumpspeed) {
-		case High:
+		case FAST:
 			newYVel = 12;
 			break;
-		case Med:
+		case MED:
 			newYVel = 9;
 			break;
-		case Low:
+		case SLOW:
 			newYVel = 5;
 			break;
 		}
@@ -243,7 +266,8 @@ public:
 	}
 
 
-	void setXVel(float newXVel) {
+	void setXVel(float newXVel)
+    {
 		xVel = newXVel;
 		if (xVel > xVelocityCap) {
 			xVel = xVelocityCap;
@@ -257,45 +281,6 @@ public:
 		}
 	}
 
-
-	bool getIsAnimating() {
-		return isAnimating;
-	}
-
-	void setIsAnimating(bool isAnimating) {
-		this->isAnimating = isAnimating;
-		
-	}
-
-	void setLeftAnimation(bool isLeft) {
-		if (isLeft != leftAnimation) {
-			reverseTextureCoords();
-
-		}
-
-		this->leftAnimation = isLeft;
-		
-	}
-
-	bool getCanimate() {
-		return canimate;
-	}
-
-	void setCanimate(bool canimate) {
-		this->canimate = canimate;
-	}
-
-	void setAnimationStartTime(int64 animationStartTime) {
-		this->animationStartTime = animationStartTime;
-	}
-
-	void updateAnimationCurrentTime(int64 animationCurrentTime) {
-		this->animationCurrentTime = animationCurrentTime;
-	}
-
-	void setAnimationSpeed(AnimationSpeed animationSpeed) {
-		this->animationSpeed = animationSpeed;
-	}
 	void updateState(ObjectStateType state) {
 		switch (state) {
 		case STATIC:
@@ -306,158 +291,34 @@ public:
 			break;
 		}
 	}
-	AnimationSpeed getAnimationSpeed() {
-		return animationSpeed;
-	}
-
-	File getIdleTexture() {
-		return idleTexture;
-	}
-
-	File getAnimationTextureDirectory() {
-		return animationDirectory;
-	}
-
-	File getTexture() {
-
-		if (!canimate) {
-			return idleTexture;
-		}
-
-		if (!isAnimating) {
-			
-			return idleTexture;
-		}
-
-		if (animationTextureFiles.size() == 0) {
-			return File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/default.png");
-		}
-
-		int computedAnimSpeed = animationTotalTime;
-
-		switch (animationSpeed) {
-			case FAST:
-				computedAnimSpeed /= 2;
-				break;
-
-			case SLOW:
-				computedAnimSpeed *= 2;
-				break;
-		}
-
-		int size = animationTextureFiles.size();
-
-		double currentTime = (((animationCurrentTime - animationStartTime) % computedAnimSpeed)) / 1000.0;
-
-		int index = currentTime / ((computedAnimSpeed /1000.0) / (double)size);
-		
-		
-		return animationTextureFiles[index];
-	}
-
-
-	void reverseTextureCoords() {
-		
-		std::swap(vertices[0]->texCoord, vertices[3]->texCoord);
-		std::swap(vertices[1]->texCoord, vertices[2]->texCoord);
-
-	}
-
-	void setAnimationTextures(File directory) {
-		animationDirectory = directory;
-
-		animationTextureFiles.clear();
-
-		DirectoryIterator iter(animationDirectory, false, "*.jpg;*.JPG;*.jpeg;*.JPEG;*.PNG;*.png");
-		while (iter.next())
-		{
-			File theFileItFound(iter.getFile());
-			animationTextureFiles.add(theFileItFound);
-		}
-	}
-	
-
-	void setXPosition(float x) {
-		position.x = x;
-		translateTo(x, position.y);
-		DBG(getName());
-	}
-
-	void setYPosition(float y) {
-		position.y = y;
-		translateTo(position.x, y);
-	}
-	b2Vec2 getPosition() {
-		return b2Vec2(position.x, position.y);
-	}
-	
 
 protected:
 	GameObjectType objType;
 
 private:
-    
-    // Physical Position =======================================================
-	Vector3D<GLfloat> position;
 	
-	GLfloat xVel, yVel;
-	float xVelocityCap, yVelocityCap;
-	OwnedArray<Vertex> vertices;
-
-    //Matrix3D<GLfloat> transformations;
+    /** Name of object */
+    String name;
+    
+    /** Specifies wether or not the object will be rendered visually to the screen */
+    bool renderable;
+    
+    /** Renderable representation of this object.
+     */
+    RenderableObject renderableObject;
     
     /** Physical properties associated with the object */
     PhysicsProperties physicsProperties;
+
+	//Physics related accelerations and max velocities
+	/*EVENTUALLY should go in PhysicsProperties*/
+	GLfloat xVel, yVel;
+	float xVelocityCap, yVelocityCap;
     
     /** Map of in-game physics-based actions to specific audio files */
     std::map<PhysicalAction, File> actionToAudio;
     
-    File audioFile;
-    
 	String objName;
 
-	Array<File> animationTextureFiles;
-	File idleTexture;
-	File animationDirectory;
-
-	bool canimate;
-	bool isAnimating;
-	bool leftAnimation;
-
-	int64 animationStartTime;
-	int64 animationCurrentTime;
-	int64 animationTotalTime = 450;
-
-	AnimationSpeed animationSpeed;
-//    AudioFileList files;
-//    std::map<> actionToAudioMap;
-//    
-//    AnimationList animations;
-//    std::map<> actionToAnimationMap;
-    
-    // Someone setting up a peice of audio to be triggered by an action:
-    // actionToAudioMap.map(files[0], IN_RANGE_ACTION);
-    // actionToAudioMap.map(files[1], COLLISION_ACTION);
-    // actionToAudioMap.map(files[1], INTERACTION_ACTION);
-    //
-    // actionToAnimationMap.map (animations[0], IN_RANGE_ACTION);
-    //
-    // Then the corresponding audio is called in the actionTriggered calback in
-    //  this object:
-    //
-    //  void actionTriggered (actionId) {
-    //
-    //      playAudio (actionToAudioMap.get(actionId));
-    //      startAnimaction (actionToAnimationMap.get(actionId));
-    //      // etc for all other things to do when an action is triggered . . .
-    // }
-    
-    
-    
-    
-    //Vector3D<GLfloat> color;
-    
 	JUCE_LEAK_DETECTOR(GameObject)
-
-
 };

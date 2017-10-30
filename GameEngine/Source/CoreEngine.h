@@ -34,9 +34,8 @@ public:
     void releaseResources() override;
     void getNextAudioBlock (const AudioSourceChannelInfo &bufferToFill) override;
     
-    //accessors for the GameModel
+    //accessor for the GameModel
 	GameModel& getGameModel();
-	Level& getCurrentLevel();
 
     // Engine Thread Callback & Functions ======================================
     void run() override;
@@ -47,12 +46,18 @@ public:
 	void swapRenderFramesBetweenLogicAndRender();
 
 
-	/*Functions for Game Editor to modify GameModel*/
-
+	// Controller Functions for Game Editor to modify GameModel ================
 	void addBlock();
 	void addEnemy();
 	void toggleGamePause();
+    
+    void addLevel();
+    void removeLevel(int levelIndex);
+    void setCurrentLevel(int levelIndex);
+   
+
 	bool isPaused();
+
 
 private:
     //==========================================================================

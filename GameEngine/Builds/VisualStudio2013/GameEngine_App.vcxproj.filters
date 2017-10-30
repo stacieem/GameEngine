@@ -409,6 +409,9 @@
     <ClCompile Include="..\..\Source\GameAudio.cpp">
       <Filter>GameEngine\Source</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\Source\GameEditor.cpp">
+      <Filter>GameEngine\Source</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\Source\Main.cpp">
       <Filter>GameEngine\Source</Filter>
     </ClCompile>
@@ -2313,10 +2316,16 @@
     <ClInclude Include="..\..\Source\DrawableObject.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\EditorControl.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\GameAudio.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\GameCommand.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\GameEditor.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\GameHUD.h">
@@ -2340,6 +2349,21 @@
     <ClInclude Include="..\..\Source\InputManager.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\Inspector.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Level.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\LevelInspector.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ObjectBrowser.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ObjectInspector.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\Source\PhysicalAction.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
@@ -2350,6 +2374,15 @@
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\RenderSwapFrame.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\Resource.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TextureResource.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\TextureResourceManager.h">
       <Filter>GameEngine\Source</Filter>
     </ClInclude>
     <ClInclude Include="..\..\Source\Uniforms.h">

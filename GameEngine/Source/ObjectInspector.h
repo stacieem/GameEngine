@@ -8,6 +8,7 @@
 #include <string>   
 #include "ComboBoxPropertyComponent.h"
 #include "FilenamePropertyComponent.h"
+#include "Speed.h"
 
 class ObjectInspector : public Component, public InspectorUpdater, public TextPropertyComponent::Listener, public Value::Listener, FilenameComponentListener {
 public:
@@ -46,7 +47,6 @@ public:
 		propertyPanel.setBounds(getLocalBounds());
 	}
 	
-	
 	void textPropertyComponentChanged(TextPropertyComponent * component) override{
 
 		if (component->getName() == "Name:") {
@@ -62,7 +62,7 @@ public:
 			} else {
 				textureFile = File(component->getText());
 			}
-			selectedObj->setIdleTexture(textureFile);
+			selectedObj->getRenderableObject().animationProperties.setIdleTexture(textureFile);
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 
@@ -78,9 +78,9 @@ public:
 	void valueChanged(Value &value) {
 		if (value.refersToSameSourceAs(xPosition)) {
 			if (value.getValue().isDouble()) {
-
+				
 				float x = (float)value.getValue();
-				selectedObj->setXPosition(x);
+				selectedObj->setXPositionWithPhysics(x);
 				updateInspectorsChangeBroadcaster->sendChangeMessage();
 
 			}
@@ -89,13 +89,13 @@ public:
 		if (value.refersToSameSourceAs(objPhysicsXCap)) {
 			switch ((int)objPhysicsXCap.getValue()) {
 			case 1:
-				selectedObj->setXVelocityCap(GameObject::Low);
+				selectedObj->setXVelocityCap(Speed::SLOW);
 				break;
 			case 2:
-				selectedObj->setXVelocityCap(GameObject::Med);
+				selectedObj->setXVelocityCap(Speed::MED);
 				break;
 			case 3:
-				selectedObj->setXVelocityCap(GameObject::High);
+				selectedObj->setXVelocityCap(Speed::FAST);
 				break;
 			}
 
@@ -104,13 +104,13 @@ public:
 		if (value.refersToSameSourceAs(objPhysicsYCap)) {
 			switch ((int)objPhysicsYCap.getValue()) {
 			case 1:
-				selectedObj->setYVelocityCap(GameObject::Low);
+				selectedObj->setYVelocityCap(Speed::SLOW);
 				break;
 			case 2:
-				selectedObj->setYVelocityCap(GameObject::Med);
+				selectedObj->setYVelocityCap(Speed::MED);
 				break;
 			case 3:
-				selectedObj->setYVelocityCap(GameObject::High);
+				selectedObj->setYVelocityCap(Speed::FAST);
 				break;
 			}
 
@@ -121,7 +121,7 @@ public:
 				
 
 				float y = (float)value.getValue();
-				selectedObj->setYPosition(y);
+				selectedObj->setYPositionWithPhysics(y);
 				updateInspectorsChangeBroadcaster->sendChangeMessage();
 
 			}
@@ -132,13 +132,13 @@ public:
 			
 			switch ((int)comboValue.getValue()) {
 			case 1:
-				selectedObj->setAnimationSpeed(GameObject::SLOW);
+				selectedObj->getRenderableObject().animationProperties.setAnimationSpeed(Speed::SLOW);
 				break;
 			case 2:
-				selectedObj->setAnimationSpeed(GameObject::MED);
+				selectedObj->getRenderableObject().animationProperties.setAnimationSpeed(Speed::MED);
 				break;
 			case 3:
-				selectedObj->setAnimationSpeed(GameObject::FAST);
+				selectedObj->getRenderableObject().animationProperties.setAnimationSpeed(Speed::FAST);
 				break;
 			}
 		}
@@ -183,12 +183,12 @@ public:
 
 	void filenameComponentChanged(FilenameComponent *fileComponentThatHasChanged) {
 		if (fileComponentThatHasChanged->getName() == "Animation Directory") {
-			selectedObj->setAnimationTextures(fileComponentThatHasChanged->getCurrentFile());
+			selectedObj->getRenderableObject().animationProperties.setAnimationTextures(fileComponentThatHasChanged->getCurrentFile());
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 
 		if (fileComponentThatHasChanged->getName() == "Choose Idle Texture") {
-			selectedObj->setIdleTexture(fileComponentThatHasChanged->getCurrentFile());
+			selectedObj->getRenderableObject().animationProperties.setIdleTexture(fileComponentThatHasChanged->getCurrentFile());
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 		
@@ -206,17 +206,12 @@ private:
 		//create additional functions in desired objects to make it easier to retrieve information.
 		//add sections to physics menu
 		if (selectedObj != NULL) {
-			addGenericMovementProperties();
-			/*Add physics properties to object inspector
-			-Linear Velocity(x)
-			-Linear Velocity(y)
-			*/
-			//differentiate between types of objects ai, player, environment. . .
 			switch (selectedObj->getObjType()) {
 			case Generic:	//environment?
+				addGenericMovementProperties();
 				break;
 			case Player:	//player
-				//addGenericMovementProperties();
+				addGenericMovementProperties();
 				break;
 			case Enemy:	//ai, maybe differntiate between types of ai with this?
 				aiState.setValue(var((int)1));
@@ -227,6 +222,7 @@ private:
 				aiState.addListener(this);
 				objPhysicsProperties.add(combo);
 				break;
+
 			
 			}
 
@@ -239,10 +235,10 @@ private:
 
 		}
 
-		//add Object Texture
 		//add Object Audio
 
 	}
+
 
 	//base physics properties
 	void addGenericMovementProperties() {
@@ -304,7 +300,7 @@ private:
 		objBackgroundProperties.add(objNameText);
 
 		//This is going to require a specification of the axis for the game
-		xPosition.setValue(var((int)selectedObj->getPosition().x));
+		xPosition.setValue(var((int)selectedObj->getRenderableObject().position.x));
 		xPosition.addListener(this);
 		SliderPropertyComponent* slider = new SliderPropertyComponent(xPosition, "x-Position:", -10, 10, .25);
 
@@ -313,7 +309,7 @@ private:
 		objBackgroundProperties.add(slider);
 
 		//This is going to require a specification of the axis for the game
-		yPosition.setValue(var((int)selectedObj->getPosition().y));
+		yPosition.setValue(var((int)selectedObj->getRenderableObject().position.y));
 		SliderPropertyComponent* slider2 = new SliderPropertyComponent(yPosition, "y-Position:", -10, 10, .25);
 		yPosition.addListener(this);
 		objBackgroundProperties.add(slider2);
@@ -328,12 +324,12 @@ private:
 		comboValue.addListener(this);
 		objBackgroundProperties.add(combo);
 
-		FilenamePropertyComponent* filename = new FilenamePropertyComponent("Choose Idle Texture", selectedObj->getIdleTexture(), false, false, false, "", "", "Select a file");
+		FilenamePropertyComponent* filename = new FilenamePropertyComponent("Choose Idle Texture", selectedObj->getRenderableObject().animationProperties.getIdleTexture(), false, false, false, "", "", "Select a file");
 		filename->addListener(this);
 
 		objBackgroundProperties.add(filename);
 
-		FilenamePropertyComponent* animationDirectory = new FilenamePropertyComponent("Animation Directory", selectedObj->getAnimationTextureDirectory(), false, true, false, "", "", "Select a Dir");
+		FilenamePropertyComponent* animationDirectory = new FilenamePropertyComponent("Animation Directory", selectedObj->getRenderableObject().animationProperties.getAnimationTextureDirectory(), false, true, false, "", "", "Select a Dir");
 		animationDirectory->addListener(this);
 		objBackgroundProperties.add(animationDirectory);
 	}

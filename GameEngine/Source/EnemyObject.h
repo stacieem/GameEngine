@@ -12,8 +12,8 @@ public:
 		
 		objType = GameObjectType::Enemy;
 		aiState = CHASE;
-		setXVelocityCap(Speed::Low);
-		setYVelocityCap(Speed::Low);
+		setXVelocityCap(Speed::SLOW);
+		setYVelocityCap(Speed::SLOW);
 		detection_radius = 25;
 		getPhysicsProperties().setFriction(0.5f);
 		linearDamp = 0.5f;
@@ -35,10 +35,10 @@ public:
 
 			break;
 		case CHASE:
-			if ((getPosition() - player.getPosition()).Length() < 10)	//detected
+			if ((b2Vec2(getRenderableObject().position.x, getRenderableObject().position.y) - b2Vec2(player.getRenderableObject().position.x, player.getRenderableObject().position.y)).Length() < 7)	//detected
 			{
-				b2Vec2 myPos = getPosition();
-				b2Vec2 theirPos = player.getPosition();
+				b2Vec2 myPos = b2Vec2(getRenderableObject().position.x, getRenderableObject().position.y);
+				b2Vec2 theirPos = b2Vec2(player.getRenderableObject().position.x, player.getRenderableObject().position.y);
 				if (myPos.x < theirPos.x) {
 					moveRight();
 				}
@@ -56,10 +56,10 @@ public:
 			}
 			break;
 		case SCAREDAF:
-			if ((getPosition() - player.getPosition()).Length() < 10)	//detected
+			if ((b2Vec2(getRenderableObject().position.x, getRenderableObject().position.y) - b2Vec2(player.getRenderableObject().position.x, player.getRenderableObject().position.y)).Length() < 7)	//detected
 			{
-				b2Vec2 myPos = getPosition();
-				b2Vec2 theirPos = player.getPosition();
+				b2Vec2 myPos = b2Vec2(getRenderableObject().position.x, getRenderableObject().position.y);
+				b2Vec2 theirPos = b2Vec2(player.getRenderableObject().position.x, player.getRenderableObject().position.y);
 				if (myPos.x > theirPos.x) {
 					moveRight();
 				}
@@ -120,11 +120,7 @@ public:
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
-	void reset()
-	{
-		translateTo(origin.x, origin.y);
-		getPhysicsProperties().setLinearVelocity(0.0f, 0.0f);
-	}
+
 private:
 	GLfloat linearDamp;
 	b2Vec2 origin;

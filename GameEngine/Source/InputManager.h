@@ -82,3 +82,4 @@ private:
 
 	JUCE_LEAK_DETECTOR(InputManager)
 };
+
