@@ -11,9 +11,10 @@ struct Uniforms
 		projectionMatrix = createUniform(openGLContext, shaderProgram, "projectionMatrix");
 		viewMatrix = createUniform(openGLContext, shaderProgram, "viewMatrix");
         modelMatrix = createUniform(openGLContext, shaderProgram, "modelMatrix");
+		isLeftAnimation = createUniform(openGLContext, shaderProgram, "isLeftAnimation");
 	}
 
-	ScopedPointer<OpenGLShaderProgram::Uniform> projectionMatrix, viewMatrix, modelMatrix;
+	ScopedPointer<OpenGLShaderProgram::Uniform> projectionMatrix, viewMatrix, modelMatrix, isLeftAnimation;
 
 private:
 	static OpenGLShaderProgram::Uniform* createUniform(OpenGLContext& openGLContext,

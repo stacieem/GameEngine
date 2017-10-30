@@ -62,7 +62,6 @@ public:
 		gameObjects.add(gameObj);
 	}
 	void addNewEnemy() {
-		DBG("ImadeIT");
 		EnemyObject* enm = new EnemyObject(worldPhysics);
 		enm->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
 

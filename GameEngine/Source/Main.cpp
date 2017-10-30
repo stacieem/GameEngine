@@ -64,7 +64,7 @@ public:
         MainWindow (String name)  : DocumentWindow (name,
                                                     Desktop::getInstance().getDefaultLookAndFeel()
                                                                           .findColour (ResizableWindow::backgroundColourId),
-                                                    DocumentWindow::minimiseButton)
+                                                    DocumentWindow::allButtons)
         {
             //setUsingNativeTitleBar (true);
             setContentOwned (new GameEditor(), true);

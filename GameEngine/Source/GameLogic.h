@@ -133,7 +133,10 @@ private:
 				
 					case GameCommand::Player1MoveUp:
 						if (!isPaused()) {
-							currLevel->getPlayer(0)->moveUp();
+							if (!oldCommands.contains(GameCommand::Player1MoveUp)) {
+								currLevel->getPlayer(0)->moveUp();
+							}
+							
 						}
 
 						break;
