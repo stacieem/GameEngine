@@ -18,6 +18,8 @@ public:
 		getPhysicsProperties().setFriction(0.5f);
 		linearDamp = 0.5f;
 		origin = getPhysicsProperties().GetPosition();
+		patrolDistance = FAR;
+		
 	}
 	~EnemyObject() {}
 	enum AIType {
@@ -25,6 +27,11 @@ public:
 		CHASE,
 		SCAREDAF
 	};
+	enum Distance {
+		FAR,
+		NEAR
+	};
+
 	void changeAI(AIType type) {
 		aiState = type;
 	}
@@ -49,7 +56,7 @@ public:
 				if (myPos.y < theirPos.y) {
 					moveUp();
 				}
-				else if (myPos.y > theirPos.y)
+				else if (myPos.y > theirPos.y+3)
 				{
 					moveDown();
 				}
@@ -126,6 +133,7 @@ private:
 	b2Vec2 origin;
 	
 	AIType aiState;
+	Distance patrolDistance;
 	//bounds at which to patrol
 	float leftBound, rightBound;
 	float detection_radius;

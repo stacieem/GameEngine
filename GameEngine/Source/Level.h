@@ -71,6 +71,8 @@ public:
 
 
 		enm->getRenderableObject().animationProperties.setCanimate(true);
+		enm->setModel(modelsForRendering[0]);
+		enm->setScale(1.0f, 1.0f);
 		gameObjects.add(enm);
 	}
 	const OwnedArray<GameObject> & getGameObjects()
