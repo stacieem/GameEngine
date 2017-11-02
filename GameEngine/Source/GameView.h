@@ -278,18 +278,6 @@ private:
     void createShaders()
     {
 		vertexShader =
-        //        "#version 330 core\n"
-        //        "layout (location = 0) in vec2 position;\n"
-        //		"layout (location = 1) in vec2 textureCoordIn;\n"
-        //        "uniform mat4 projectionMatrix;\n"
-        //        "uniform mat4 viewMatrix;\n"
-        //		"out vec2 textureCoordOut;\n"
-        //        "\n"
-        //        "void main()\n"
-        //        "{\n"
-        //		"    textureCoordOut = textureCoordIn;\n"
-        //        "    gl_Position = projectionMatrix * viewMatrix * vec4(position, 0.0f, 1.0f);\n"
-        //        "}\n";
         "#version 330 core\n"
         "layout (location = 0) in vec3 position;\n"
         "layout (location = 1) in vec4 color;\n"
@@ -298,13 +286,12 @@ private:
         "uniform mat4 viewMatrix;\n"
         "uniform mat4 modelMatrix;\n"
         "uniform bool isLeftAnimation;\n"
-        "uniform bool isSelectedObject;\n"
         "out vec4 vertexColor;\n"
         "out vec2 textureCoordOut;\n"
         "\n"
         "void main()\n"
         "{\n"
-        "	if(isLeftAnimation) {\n"
+        "	if(isLeftAnimation) {"
         "		textureCoordOut = vec2(1.0 - textureCoordIn.s, textureCoordIn.t);\n"
         "   } else {\n"
         "		textureCoordOut = textureCoordIn;\n"
@@ -312,7 +299,6 @@ private:
         "    vertexColor = color;\n"
         "    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0f);\n"
         "}\n";
-        
         
         fragmentShader =
         "#version 330 core\n"
