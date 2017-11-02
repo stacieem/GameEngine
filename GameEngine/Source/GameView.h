@@ -372,7 +372,7 @@ private:
 			"\n"
 			"void main()\n"
 			"{\n"
-			"	if(isLeftAnimation == true) {"
+			"	if(isLeftAnimation) {"
 			"		textureCoordOut = vec2(1.0 - textureCoordIn.s, textureCoordIn.t);\n"
 			"   } else {\n"
 			"		textureCoordOut = textureCoordIn;\n"
