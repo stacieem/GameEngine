@@ -165,24 +165,12 @@ public:
 		body->SetTransform(b2Vec2(x,y), 0.0);
 	}
     
-    // BADDDD
-    // HARD CODED EXPECTING THAT VERTICES GO OUT TO MAX 0.5 in all directions
-    // IN FUTURE: Somehow use the model object to get the bounding box in model
-    // coordinates of the Model
     /** Updates the scaling of the physics body based on the scaling of the
         renderable Model
      */
-    void updateModelScale (Model * model, float x, float y)
+    void updateModelScale (Model * model, float xScale, float yScale)
     {
-        // Set the shape to fit the new form factor
-        dynamicBox.SetAsBox(0.5f * x, 0.5f * y);
-        
-        // Trystan, double check I did this right, I deleted the old fixture
-        // and created a new one from the modified shape
-        fixtureDef.shape = &dynamicBox;
-        body->DestroyFixture(myFixture);
-        this->myFixture = body->CreateFixture(&fixtureDef);
-        // I worry that this resets the position to the same position??
+		resizeCollisionBox(model->getWidth() * xScale, model->getHeight() * yScale);
     }
     
 	/**************************************************************************
@@ -293,13 +281,14 @@ public:
 	}
 
 	/// b2Shape properties
-	void resizeCollisionBox(GLfloat x, GLfloat y)
+	void resizeCollisionBox(GLfloat width, GLfloat height)
 	{
-		dynamicBox.SetAsBox(x, y);
+		dynamicBox.SetAsBox(width/2, height/2);
 		fixtureDef.shape = &dynamicBox;
 		body->DestroyFixture(this->myFixture);
 
 		this->myFixture = body->CreateFixture(&fixtureDef);
+
 	}
 
 	/// b2Shape properties

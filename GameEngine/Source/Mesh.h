@@ -175,6 +175,10 @@ public:
         //glActiveTexture(GL_TEXTURE0);
     }
 
+	const vector<Vertex>& getVertices() {
+		return vertices;
+	}
+
 private:
     
     // Mesh data
