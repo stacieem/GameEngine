@@ -19,16 +19,23 @@ public:
 		linearDamp = 0.5f;
 		origin = getPhysicsProperties().GetPosition();
 		
+		//patrolling information
+		patrolRange = NEAR;
+
 	}
 
 	~EnemyObject() {}
 
 	enum AIType {
-		Patrol,
+		PATROL,
 		CHASE,
-		SCAREDAF
+		SCAREDAF,
+		NONE
 	};
-
+	enum PatrolRange {
+		FAR,
+		NEAR
+	};
 	void changeAI(AIType type) {
 		aiState = type;
 	}
@@ -40,8 +47,8 @@ public:
 	void decision(PlayerObject& player) {
 
 		switch (aiState) {
-		case Patrol:
-
+		case PATROL:
+			
 			break;
 		case CHASE:
 			if ((b2Vec2(getRenderableObject().position.x, getRenderableObject().position.y) - b2Vec2(player.getRenderableObject().position.x, player.getRenderableObject().position.y)).Length() < 7)	//detected
@@ -58,7 +65,7 @@ public:
 				if (myPos.y < theirPos.y) {
 					moveUp();
 				}
-				else if (myPos.y > theirPos.y+3)
+				else if (myPos.y > theirPos.y)
 				{
 					moveDown();
 				}
@@ -69,19 +76,19 @@ public:
 			{
 				b2Vec2 myPos = b2Vec2(getRenderableObject().position.x, getRenderableObject().position.y);
 				b2Vec2 theirPos = b2Vec2(player.getRenderableObject().position.x, player.getRenderableObject().position.y);
-				if (myPos.x > theirPos.x) {
+				if (myPos.x >= theirPos.x) {
 					moveRight();
 				}
-				else
+				else if (myPos.x < theirPos.x)
 				{
 					moveLeft();
 				}
-				if (myPos.y > theirPos.y) {
-					moveDown();
-				}
-				else
-				{
+				if (myPos.y >= theirPos.y) {
 					moveUp();
+				}
+				else if (myPos.y < theirPos.y)
+				{
+					moveDown();
 				}
 			}
 			break;
@@ -132,7 +139,6 @@ public:
 
 private:
 	GLfloat linearDamp;
-	b2Vec2 origin;
 	
 	AIType aiState;
 	//bounds at which to patrol
@@ -141,6 +147,10 @@ private:
 	Vector3D<GLfloat> position;
 	OwnedArray<Vector3D<GLfloat>> vertices;	 // The vertices from the origin
 	ScopedPointer<GLfloat> glVertices;
+
+	//Patrol variables
+	PatrolRange patrolRange;
+	b2Vec2 origin;
 
 	JUCE_LEAK_DETECTOR(EnemyObject)
 

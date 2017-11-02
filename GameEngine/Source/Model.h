@@ -82,7 +82,28 @@ public:
             mesh.drawMeshToOpenGLContext(openGLContext);
         }
     }
-    
+	float getHeight() {
+		float maxY = 0, minY = 0;
+		for (Mesh &m : meshes) {
+			for (auto v : m.getVertices()) {
+				maxY = max(v.position.y,maxY);
+				minY = min(v.position.y, minY);
+			}
+		}
+
+		return maxY - minY;
+	}
+
+	float getWidth() {
+		float maxX = 0, minX = 0;
+		for (Mesh &m : meshes) {
+			for (auto v : m.getVertices()) {
+				maxX = max(v.position.x, maxX);
+				minX = min(v.position.x, minX);
+			}
+		}
+		return maxX - minX;
+	}
 private:
     
     /** Specifies whether or not the Model has been registered with an OpenGLContext */

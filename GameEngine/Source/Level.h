@@ -65,7 +65,6 @@ public:
 		EnemyObject* enm = new EnemyObject(worldPhysics);
 		enm->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
 
-
 		enm->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_stand.png"));
 
 
