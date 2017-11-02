@@ -12,44 +12,7 @@ public:
 		leftAnimation = false;
 		animationTotalTime = 450;
 	}
-
-	AnimationProperties(const AnimationProperties& obj) {
-		animationTextureFiles = obj.animationTextureFiles;
-		idleTexture = obj.idleTexture;
-	    animationDirectory = obj.animationDirectory;
-
-		canimate = obj.canimate;
-		isAnimating = obj.isAnimating;
-		leftAnimation = obj.leftAnimation;
-
-		animationStartTime = obj.animationStartTime;
-		animationCurrentTime = obj.animationCurrentTime;
-		animationTotalTime = obj.animationTotalTime;
-
-
-		animationSpeed;
-
-	}
-
-	AnimationProperties& operator=(const AnimationProperties& obj) {
-		animationTextureFiles = obj.animationTextureFiles;
-		idleTexture = obj.idleTexture;
-		animationDirectory = obj.animationDirectory;
-
-		canimate = obj.canimate;
-		isAnimating = obj.isAnimating;
-		leftAnimation = obj.leftAnimation;
-
-		animationStartTime = obj.animationStartTime;
-		animationCurrentTime = obj.animationCurrentTime;
-		animationTotalTime = obj.animationTotalTime;
-
-
-		animationSpeed;
-
-		return *this;
-	}
-
+    
 	~AnimationProperties() {
 
 	}

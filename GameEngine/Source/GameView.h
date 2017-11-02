@@ -87,12 +87,6 @@ public:
         // Setup Shaders
         createShaders();
 
-//		openGLContext.extensions.glGenBuffers(1, &vertexBuffer);
-//		openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-//
-//		openGLContext.extensions.glGenBuffers(1, &indexBuffer);
-//		openGLContext.extensions.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-
 		avgMilliseconds = 0.0;
 		currentTime = Time::currentTimeMillis();
 		checkTime = 0;
@@ -123,7 +117,6 @@ public:
     
     void renderOpenGL() override
     {
-
         jassert (OpenGLHelpers::isContextActive());
         
         // Wait for CoreEngine to signal() GameView
@@ -152,14 +145,6 @@ public:
 		// OpenGL methods to avoid displaying pixels behind front pixels
 		glEnable(GL_DEPTH_TEST);   // Enable the test
 		glDepthFunc(GL_LESS);      // Do not display back pixels
-								   // Using a texture to paint main OpenGL object (teapot)
-		
-        // This feels super jank to me??
-        //openGLContext.extensions.glActiveTexture(GL_TEXTURE0); // Using texture #0
-		//glEnable(GL_TEXTURE_2D);   // It's a 2-D image texture
-								   // Tell the GPU to use that texture
-		
-		/*END TEXTURE SAMPLE*/
         
         // Enable Alpha Blending
         glEnable (GL_BLEND);
@@ -183,9 +168,6 @@ public:
         // Draw all the game objects
         for (auto & renderableObject : renderSwapFrame->getRenderableObjects())
         {
-            // Set Texture
-            // IMPLEMENT
-            
             // Set Model Matrix
             if (uniforms->modelMatrix != nullptr)
             {
@@ -198,17 +180,12 @@ public:
                 renderableObject.model->registerWithOpenGLContext(openGLContext);
             }
 
+            // Set Texture Info
 			// Reverse texture coords if left animation
-			if (renderableObject.animationProperties.isLeftAnimation())
-			{
-				uniforms->isLeftAnimation->set(true);
-			}
-			else
-			{
-				uniforms->isLeftAnimation->set(false);
-			
-			}
+            uniforms->isLeftAnimation->set(renderableObject.animationProperties.isLeftAnimation());
+            uniforms->isSelectedObject->set(renderableObject.isSelected);
             
+            // Set Texture
 			OpenGLTexture* tex = texResourceManager.loadTexture(renderableObject.animationProperties.getTexture());
 			
 			if (tex != nullptr) {	
@@ -218,57 +195,11 @@ public:
             // Draw Model
             renderableObject.model->drawModelToOpenGLContext(openGLContext);
 
+            // Unbind texture
 			if (tex != nullptr) {
 				tex->unbind();
 			}
         }
-        
-        
-//        for (auto & drawableObject : renderSwapFrame->getDrawableObjects())
-//        {
-//			OpenGLTexture* tex = texResourceManager.loadTexture(drawableObject->getTexture());
-//
-//			if (tex != nullptr) {
-//				tex->bind();
-//			}
-//			
-//			// OpenGL method to specify how the image is horizontally tiled
-//			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-//			// OpenGL method to specify how the image is vertically tiled
-//			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-//
-//			Array<Vertex> verts = drawableObject->getVertices();
-//
-//			openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-//			openGLContext.extensions.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-//
-//			openGLContext.extensions.glBufferData(GL_ARRAY_BUFFER,
-//				static_cast<GLsizeiptr> (static_cast<size_t> (verts.size()) * sizeof(Vertex)),
-//				verts.getRawDataPointer(), GL_STREAM_DRAW);
-//
-//			// Define Which Vertex Indexes Make the Square
-//			GLuint indices[] = {  // Note that we start from 0!
-//				0, 1, 3,   // First Triangle
-//				1, 2, 3    // Second Triangle
-//			};
-//
-//			openGLContext.extensions.glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-//				static_cast<GLsizeiptr> (static_cast<size_t> (6) * sizeof(GLuint)),
-//				indices, GL_STREAM_DRAW);
-//
-//			
-//
-//			attributes->enable(openGLContext);
-//            //glDrawArrays (GL_TRIANGLES, 0, gameObject->getNumVertices()); // For just VBO's (Vertex Buffer Objects)
-//			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-//			attributes->disable(openGLContext);
-//            
-//
-//			if (tex != nullptr) {
-//				tex->unbind();
-//			}
-//            
-//        }
         
         // THIS IS DONE BY THE DRAW METHODS OF RENDERABLE OBJS
         // Reset the element buffers so child Components draw correctly
@@ -347,39 +278,40 @@ private:
     void createShaders()
     {
 		vertexShader =
-			//        "#version 330 core\n"
-			//        "layout (location = 0) in vec2 position;\n"
-			//		"layout (location = 1) in vec2 textureCoordIn;\n"
-			//        "uniform mat4 projectionMatrix;\n"
-			//        "uniform mat4 viewMatrix;\n"
-			//		"out vec2 textureCoordOut;\n"
-			//        "\n"
-			//        "void main()\n"
-			//        "{\n"
-			//		"    textureCoordOut = textureCoordIn;\n"
-			//        "    gl_Position = projectionMatrix * viewMatrix * vec4(position, 0.0f, 1.0f);\n"
-			//        "}\n";
-			"#version 330 core\n"
-			"layout (location = 0) in vec3 position;\n"
-			"layout (location = 1) in vec4 color;\n"
-			"layout (location = 2) in vec2 textureCoordIn;\n"
-			"uniform mat4 projectionMatrix;\n"
-			"uniform mat4 viewMatrix;\n"
-			"uniform mat4 modelMatrix;\n"
-			"uniform bool isLeftAnimation;\n"
-			"out vec4 vertexColor;\n"
-			"out vec2 textureCoordOut;\n"
-			"\n"
-			"void main()\n"
-			"{\n"
-			"	if(isLeftAnimation == true) {"
-			"		textureCoordOut = vec2(1.0 - textureCoordIn.s, textureCoordIn.t);\n"
-			"   } else {\n"
-			"		textureCoordOut = textureCoordIn;\n"
-			"	}\n"
-			"    vertexColor = color;\n"
-			"    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0f);\n"
-			"}\n";
+        //        "#version 330 core\n"
+        //        "layout (location = 0) in vec2 position;\n"
+        //		"layout (location = 1) in vec2 textureCoordIn;\n"
+        //        "uniform mat4 projectionMatrix;\n"
+        //        "uniform mat4 viewMatrix;\n"
+        //		"out vec2 textureCoordOut;\n"
+        //        "\n"
+        //        "void main()\n"
+        //        "{\n"
+        //		"    textureCoordOut = textureCoordIn;\n"
+        //        "    gl_Position = projectionMatrix * viewMatrix * vec4(position, 0.0f, 1.0f);\n"
+        //        "}\n";
+        "#version 330 core\n"
+        "layout (location = 0) in vec3 position;\n"
+        "layout (location = 1) in vec4 color;\n"
+        "layout (location = 2) in vec2 textureCoordIn;\n"
+        "uniform mat4 projectionMatrix;\n"
+        "uniform mat4 viewMatrix;\n"
+        "uniform mat4 modelMatrix;\n"
+        "uniform bool isLeftAnimation;\n"
+        "uniform bool isSelectedObject;\n"
+        "out vec4 vertexColor;\n"
+        "out vec2 textureCoordOut;\n"
+        "\n"
+        "void main()\n"
+        "{\n"
+        "	if(isLeftAnimation) {\n"
+        "		textureCoordOut = vec2(1.0 - textureCoordIn.s, textureCoordIn.t);\n"
+        "   } else {\n"
+        "		textureCoordOut = textureCoordIn;\n"
+        "	}\n"
+        "    vertexColor = color;\n"
+        "    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0f);\n"
+        "}\n";
         
         
         fragmentShader =
@@ -388,10 +320,14 @@ private:
         "in vec2 textureCoordOut;\n"
         "out vec4 color;\n"
 		"uniform sampler2D uniformTexture;\n"
+        "uniform bool isSelectedObject;\n"
         "void main()\n"
         "{\n"
-		//"   color = vertexColor;\n"
-        "   color = texture(uniformTexture, textureCoordOut);\n"
+		"   if(isSelectedObject) {\n"
+        "       color = (texture(uniformTexture, textureCoordOut)) * 0.5f + vertexColor * 0.5f;\n"
+        "   } else {\n"
+        "       color = texture(uniformTexture, textureCoordOut);\n"
+        "   }\n"
         "}\n";
         
         ScopedPointer<OpenGLShaderProgram> newShader (new OpenGLShaderProgram (openGLContext));

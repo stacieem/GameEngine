@@ -23,24 +23,10 @@ struct RenderableObject
         
         // Default model matrix
         modelMatrix = glm::mat4(1.0);
+        
+        // Default should not be selected for rendering
+        isSelected = false;
     }
-
-	RenderableObject(const RenderableObject& obj) {
-		model = obj.model;
-		modelMatrix = obj.modelMatrix;
-		position = obj.position;
-		animationProperties = obj.animationProperties;
-	}
-
-	RenderableObject& operator=(const RenderableObject& obj) {
-		model = obj.model;
-		modelMatrix = obj.modelMatrix;
-		position = obj.position;
-		animationProperties = obj.animationProperties;
-
-		return *this;
-	}
-
     
     /** Visual representation of an object. Points to a model resource since
      multiple RenderableObjects may reference the same Model.
@@ -58,6 +44,9 @@ struct RenderableObject
 	AnimationProperties animationProperties;
 
 	File renderTexture;
-	
+
+    /** Specifies whether this renderable object is selected in the rendered GameView */
+    bool isSelected;
+    
 };
 

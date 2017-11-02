@@ -43,8 +43,6 @@ public:
 		xVel = 0;
 		yVel = 0;
 
-
-
     }
 
 	virtual ~GameObject() {
@@ -72,6 +70,15 @@ public:
     bool isRenderable()
     {
         return renderable;
+    }
+    
+    /** Sets if the renderable object should be rendered as being "Selected"
+        in the GameView. This renders the object as highlighted in the
+        GameView.
+     */
+    void setRenderableIsSelected(bool isSelected)
+    {
+        renderableObject.isSelected = isSelected;
     }
     
     /** Gets the renderable object for reading and copying.
@@ -195,8 +202,12 @@ public:
             return nullptr;
     }
  
+    
+    
     // Animation ?? ============================================================
 
+    
+    
 	float getXVel()
     {
 		return xVel;

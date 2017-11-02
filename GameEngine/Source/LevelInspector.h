@@ -35,7 +35,7 @@ public:
 	void comboBoxChanged(ComboBox *comboBoxThatHasChanged) override;
 
 
-	void valueChanged(Value &value);
+	void valueChanged(Value &value) override;
 
 	void setChildrenEnabled(bool shouldBeEnabled);
 
@@ -43,11 +43,12 @@ public:
 	GameObject* getSelectedGameObject();
 private:
     
+    const Colour SELECTED_ROW_COLOUR;
+    
     Label levelLabel;
     ComboBox levelComboBox;
     TextButton addLevelButton;
     TextButton removeLevelButton;
-    int currentLevelIndex;
     
 	CoreEngine* coreEngine;
 	ToggleButton playButton;
@@ -56,8 +57,10 @@ private:
 	Value selectedObjectValue, gravity;
 	Array<GameObject*> gameObjects;
 
+    // Selections
 	GameObject* selectedObject;
 	Level* selectedLevel;
+    int selectedLevelIndex;
 
 	Array<PropertyComponent *> levelObjGraphProperties;
 	Array<PropertyComponent *> levelPhysicsProperties;

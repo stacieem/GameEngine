@@ -59,12 +59,12 @@ public:
         // Create default vertices
         Vertex v;
         v.position = glm::vec3 (0.5f, 0.5f, 0.0f);
-        v.color = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+        v.color = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
         v.texCoord = glm::vec2 (1, 1);
         vertices.push_back(v);
         
         v.position = glm::vec3 (0.5f, -0.5f, 0.0f);
-        v.color = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+        v.color = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
         v.texCoord = glm::vec2 (1, 0);
         vertices.push_back(v);
         
@@ -74,7 +74,7 @@ public:
         vertices.push_back(v);
         
         v.position = glm::vec3 (-0.5f, 0.5f, 0.0f);
-        v.color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+        v.color = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
         v.texCoord = glm::vec2 (0, 1);
         vertices.push_back(v);
         
