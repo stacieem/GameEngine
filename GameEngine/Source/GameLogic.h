@@ -262,16 +262,21 @@ private:
                 obviously going to be out of view, do not put it in a render
                 frame.
              */
-            // For now, we simply add all objects as renderable
-            
             vector<RenderableObject> renderableObjects;
-            
             for (auto gameObject : currLevel->getGameObjects())
 			{
                 if (gameObject->isRenderable())
+                {
                     renderableObjects.push_back(gameObject->getRenderableObject());
+                    
+                    // If the game is playing, make sure no object is selected
+                    if (!isPaused())
+                    {
+                        renderableObjects.back().isSelected = false;
+                    }
+                }
 
-			}        
+			}
             renderSwapFrame->setRenderableObjects(renderableObjects);
  
 
