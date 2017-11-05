@@ -1917,6 +1917,7 @@
     <ClInclude Include="..\..\Source\Inspector.h" />
     <ClInclude Include="..\..\Source\Level.h" />
     <ClInclude Include="..\..\Source\LevelInspector.h" />
+    <ClInclude Include="..\..\Source\ListenerClass.h" />
     <ClInclude Include="..\..\Source\Mesh.h" />
     <ClInclude Include="..\..\Source\Model.h" />
     <ClInclude Include="..\..\Source\ObjectBrowser.h" />

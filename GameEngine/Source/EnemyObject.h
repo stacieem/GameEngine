@@ -9,33 +9,28 @@ class EnemyObject : public GameObject {
 public:
 	EnemyObject(WorldPhysics & worldPhysics) : GameObject(worldPhysics)
 	{
-		
+
 		objType = GameObjectType::Enemy;
-		aiState = CHASE;
+		aiState = GROUNDPATROL;
 		setXVelocityCap(Speed::SLOW);
 		setYVelocityCap(Speed::SLOW);
-		detection_radius = 25;
+		detection_radius = 10;
 		getPhysicsProperties().setFriction(0.5f);
-		linearDamp = 0.5f;
-		origin = getPhysicsProperties().GetPosition();
-
+		//linearDamp = 0.5f;
+		setBodyInfo();
 		setName("Enemy");
-		//patrolling information
-		patrolRange = NEAR;
-
+		direction = 1;
+		timeToSwap = 10;
 	}
 
 	~EnemyObject() {}
 
 	enum AIType {
-		PATROL,
+		GROUNDPATROL,
+		JUMPPATROL,
 		CHASE,
 		SCAREDAF,
 		NONE
-	};
-	enum PatrolRange {
-		FAR,
-		NEAR
 	};
 	void changeAI(AIType type) {
 		aiState = type;
@@ -45,11 +40,27 @@ public:
 		return aiState;
 	}
 
-	void decision(PlayerObject& player) {
-
+	void decision(PlayerObject& player, double elapsed) {
 		switch (aiState) {
-		case PATROL:
-			
+		case GROUNDPATROL:
+			DBG("PATROL" << elapsed << "-----" << timeToSwap);
+			if (timeElapsed >= timeToSwap) {
+				timeElapsed = 0;
+				direction *= -1;
+				DBG("swap direction");
+			}
+			else
+			{
+				timeElapsed += elapsed;
+			}
+			moveLateral();
+			break;
+		case JUMPPATROL:
+			if (timeElapsed == timeToSwap) {
+				timeElapsed = 0;
+				direction *= -1;
+			}
+			moveLateral();
 			break;
 		case CHASE:
 			if ((b2Vec2(getRenderableObject().position.x, getRenderableObject().position.y) - b2Vec2(player.getRenderableObject().position.x, player.getRenderableObject().position.y)).Length() < 7)	//detected
@@ -59,7 +70,7 @@ public:
 				if (myPos.x < theirPos.x) {
 					moveRight();
 				}
-				else if(myPos.x > theirPos.x)
+				else if (myPos.x > theirPos.x)
 				{
 					moveLeft();
 				}
@@ -98,7 +109,7 @@ public:
 	void moveUp()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y += getYVel()/4;
+		store.y += getYVel() / 4;
 		if (store.y > getYVelocityCap()) {
 			store.y = getYVelocityCap();
 		}
@@ -108,7 +119,7 @@ public:
 	void moveDown()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y -= getYVel()/4;
+		store.y -= getYVel() / 4;
 		if (store.y < -getYVelocityCap()) {
 			store.y = -getYVelocityCap();
 		}
@@ -120,7 +131,7 @@ public:
 	{
 
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x -= getXVel()/4;
+		store.x -= getXVel() / 4;
 		if (store.x < -getXVelocityCap()) {
 			store.x = -getXVelocityCap();
 		}
@@ -130,28 +141,33 @@ public:
 	void moveRight()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x += getXVel()/4;
+		store.x += getXVel() / 4;
 		if (store.x > getXVelocityCap()) {
 			store.x = getXVelocityCap();
 		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
-
+	void moveLateral() {
+		b2Vec2 store = getPhysicsProperties().getLinearVel();
+		store.x += (getXVel() / 4) * direction;
+		if (store.x > getXVelocityCap()) {
+			store.x = getXVelocityCap();
+		}
+		getPhysicsProperties().setLinearVelocity(store.x, store.y);
+	}
 private:
-	GLfloat linearDamp;
-	
+	float linearDamp;
+	double timeToSwap,timeElapsed;
+	int direction;
 	AIType aiState;
 	//bounds at which to patrol
-	float leftBound, rightBound;
+
 	float detection_radius;
 	Vector3D<GLfloat> position;
 	OwnedArray<Vector3D<GLfloat>> vertices;	 // The vertices from the origin
 	ScopedPointer<GLfloat> glVertices;
 
-	//Patrol variables
-	PatrolRange patrolRange;
-	b2Vec2 origin;
 
 	JUCE_LEAK_DETECTOR(EnemyObject)
 

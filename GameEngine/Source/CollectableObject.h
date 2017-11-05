@@ -11,18 +11,18 @@ public:
 		objType = GameObjectType::Collectable;
 		setName("Collectable");
 		updateState(GameObject::STATIC);
-		origin = getPhysicsProperties().GetPosition();
 		radius = 1.5;
 		isActive = true;
+		setBodyInfo();
 	}
 	~CollectableObject() {}
 
 	bool collision(PlayerObject& player) {
 		bool collected = false;
 		if (isActive) {
-			b2Vec2 dist = (player.getPosition() - origin);
+			b2Vec2 dist = (player.getPosition() - getPhysicsProperties().GetPosition());
 			float leng = sqrt(dist.x * dist.x + dist.y*dist.y);
-			DBG(leng);
+			//DBG(leng);
 			if (leng < radius) {
 				// go to next level
 				collected = true;
@@ -39,7 +39,6 @@ public:
 	}
 private:
 	GLfloat linearDamp;
-	b2Vec2 origin;
 	bool isActive;
 	float32 radius;
 	Vector3D<GLfloat> position;

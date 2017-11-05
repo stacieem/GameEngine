@@ -6,13 +6,12 @@
 #include "Level.h"
 #include "RenderableObject.h"
 
-
 /** A singleton class which represents the data model for a game. This includes
     all Levels, Scenes, GameObjects, etc that describe a game. The GameModel
     data is manipulated by the GameLogic class, and data is copied into
     renderable frames for the GameView to render.
  */
-class GameModel {
+class GameModel{
 
 public:
 
@@ -69,4 +68,5 @@ public:
 private:
 	OwnedArray<Level> levels;
 	int currentLevel;
+	
 };

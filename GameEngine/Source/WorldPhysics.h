@@ -51,6 +51,7 @@ public:
 		groundBody = world.CreateBody(&bodyDef);
 		//groundBody->CreateFixture(&wallBox, 0.0f);
 		bodyDef.position.Set(8.7f, 0.0f);
+		world.SetAllowSleeping(false);
 		groundBody = world.CreateBody(&bodyDef);
 		//groundBody->CreateFixture(&wallBox, 0.0f);
 	}
