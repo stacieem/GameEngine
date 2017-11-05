@@ -222,6 +222,11 @@ void CoreEngine::addEnemy()
 	gameModelCurrentFrame->getCurrentLevel()->addNewEnemy();
 
 }
+void CoreEngine::addCollectable()
+{
+	gameModelCurrentFrame->getCurrentLevel()->addNewCollectable();
+
+}
 void CoreEngine::toggleGamePause()
 {
 	

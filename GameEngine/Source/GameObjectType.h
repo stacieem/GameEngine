@@ -1,5 +1,5 @@
 #pragma once
 
 enum GameObjectType {
-	Generic, Player, Enemy 
+	Generic, Player, Enemy , Collectable , Checkpoint
 };

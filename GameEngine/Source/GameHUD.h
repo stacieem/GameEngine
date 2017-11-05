@@ -31,7 +31,6 @@ public:
         
     }
     
-    
     // JUCE Callbacks ==========================================================
     
     void paint (Graphics &g) override

@@ -98,7 +98,6 @@ private:
 		// Main Logic loop
 		while (!threadShouldExit())
         {
-
 			// Wait for CoreEngine to signal() this loop
 			logicWaitable->wait();
             
@@ -184,12 +183,8 @@ private:
 						}
 						break;
 				}
-				
-				
-				
 			}
 
-            
             // Determine if player is not moving, if so, it should not be animating
 			if ((oldCommands.contains(GameCommand::Player1MoveRight) && !newCommands.contains(GameCommand::Player1MoveRight)) ||
 				(oldCommands.contains(GameCommand::Player1MoveLeft) && !newCommands.contains(GameCommand::Player1MoveLeft)) ||
@@ -201,8 +196,6 @@ private:
 					currLevel->getPlayer(0)->getRenderableObject().animationProperties.setIsAnimating(false);
 
 				}
-
-
 			}
 
 			oldCommands = newCommands;
@@ -284,7 +277,29 @@ private:
 			}
             // Add the renderables to the swap frame to send to GameView
             renderSwapFrame->setRenderableObjects(renderableObjects);
-
+ 
+			//ai motions
+			for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
+				switch (obj->getObjType()) {
+				case Enemy:
+					((EnemyObject*)(obj))->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0));
+					break;
+				case Collectable:
+					if (((CollectableObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
+						gameModelCurrentFrame->getCurrentLevel()->addToScore(gameModelCurrentFrame->getCurrentLevel()->getCollectablePoints());
+					}
+					break;
+				case Checkpoint:
+					if (((GoalPointObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
+						if (gameModelCurrentFrame->getCurrentLevelIndex() < gameModelCurrentFrame->getNumLevels() - 1) {
+							currLevel = &gameModelCurrentFrame->getLevel(gameModelCurrentFrame->getCurrentLevelIndex() + 1);
+							//signal update of inspectors and reload levels/gui
+						}
+					}
+					break;
+				}
+			}
+            
 			// Notify CoreEngine logic is done
 			coreEngineWaitable->signal();
 		}

@@ -18,7 +18,8 @@ public:
 		getPhysicsProperties().setFriction(0.5f);
 		linearDamp = 0.5f;
 		origin = getPhysicsProperties().GetPosition();
-		
+
+		setName("Enemy");
 		//patrolling information
 		patrolRange = NEAR;
 
@@ -97,7 +98,7 @@ public:
 	void moveUp()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y += getYVel()/2;
+		store.y += getYVel()/4;
 		if (store.y > getYVelocityCap()) {
 			store.y = getYVelocityCap();
 		}
@@ -107,7 +108,7 @@ public:
 	void moveDown()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y -= getYVel()/2;
+		store.y -= getYVel()/4;
 		if (store.y < -getYVelocityCap()) {
 			store.y = -getYVelocityCap();
 		}
@@ -119,7 +120,7 @@ public:
 	{
 
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x -= getXVel()/2;
+		store.x -= getXVel()/4;
 		if (store.x < -getXVelocityCap()) {
 			store.x = -getXVelocityCap();
 		}
@@ -129,7 +130,7 @@ public:
 	void moveRight()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x += getXVel()/2;
+		store.x += getXVel()/4;
 		if (store.x > getXVelocityCap()) {
 			store.x = getXVelocityCap();
 		}

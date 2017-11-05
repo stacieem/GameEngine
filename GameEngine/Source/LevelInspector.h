@@ -13,11 +13,10 @@
 
 class LevelInspector : public Component, public InspectorUpdater,
                        public Button::Listener, public ComboBox::Listener, 
-					   public TextPropertyComponent::Listener, public Value::Listener
+					   public TextPropertyComponent::Listener, public Value::Listener						
 {
 public:
 	LevelInspector(WorldNavigator & worldNavigator);
-
 
 	~LevelInspector();
 
@@ -30,6 +29,7 @@ public:
 	void textPropertyComponentChanged(TextPropertyComponent * component) override;
 
 	void resized() override;
+
 
 	void buttonClicked(Button * button) override;
     
@@ -53,7 +53,10 @@ private:
 	ToggleButton playButton;
 	OwnedArray<TextButton> buttons;
 	PropertyPanel propertyPanel;
-	Value selectedObjectValue, gravity;
+	Value selectedObjectValue, gravity, endCheckPoint, hasScore;
+	Value hasTimer, timer;
+	Value hasCheckPoint;
+	Value enemyScore, collectableScore;
 	Array<GameObject*> gameObjects;
 
     // Level selection
@@ -66,4 +69,5 @@ private:
 	Array<PropertyComponent *> levelPhysicsProperties;
 	Array<PropertyComponent *> levelAudioProperties;
 	Array<PropertyComponent *> levelBackgroundProperties;
+	Array<PropertyComponent *> levelObjConditionalProperties;
 };

@@ -3,7 +3,9 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PlayerObject.h"
 #include "EnemyObject.h"
+#include "GoalPointObject.h"
 #include "GameObject.h"
+#include "CollectableObject.h"
 #include "Camera.h"
 
 class Level {
@@ -34,6 +36,13 @@ public:
 
         player->setModel(modelsForRendering[0]);
 
+		Score = 0;
+		enemyPoints = 0;
+		collectablePoints = 0;
+		timerSpeed = 0;
+		hasTimer = false;
+		hasScore = false;
+		hasCheckpoint = false;
 	}
     
 	~Level()
@@ -79,6 +88,40 @@ public:
 		gameObjects.add(enm);
 	}
     
+	void addNewCollectable()
+    {
+		CollectableObject* collectable = new CollectableObject(worldPhysics);
+
+		collectable->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/coin.png"));
+
+		collectable->setModel(modelsForRendering[0]);
+		collectable->setScale(1.0f, 1.0f);
+		gameObjects.add(collectable);
+	}
+    
+	void addCheckpoint()
+    {
+		checkpoint = new GoalPointObject(worldPhysics);
+
+		checkpoint->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/checkpoint.png"));
+
+		checkpoint->setModel(modelsForRendering[0]);
+		checkpoint->setScale(1.0f, 1.0f);
+		gameObjects.add(checkpoint);
+	}
+
+	void removeCheckpoint()
+    {
+		int i = 0;
+		for (auto obj : gameObjects) {
+			
+			if (obj->getObjType() == Checkpoint) {
+				gameObjects.remove(i, true);
+			}
+			i++;
+		}
+	}
+
 	const OwnedArray<GameObject> & getGameObjects()
 	{
 		return gameObjects;
@@ -125,7 +168,6 @@ public:
         return camera;
     }
     
-    
     /** Gets the game object at the position in world space.
         (This essentially casts a ray into the scene and determines what object
         it collides with, but since this is just 2D it is a bit simpler than that,
@@ -144,7 +186,67 @@ public:
         
         return nullptr;
     }
-    
+	
+	//clean this up
+	void setScoreEnabled() {
+		hasScore = !hasScore;
+	}
+	bool isScoreEnabled() {
+		return hasScore;
+	}
+	int getScore() {
+		return Score;
+	}
+	void setScore(int baseScore) {
+		Score = baseScore;
+	}
+	int getEnemyPoints() {
+		return enemyPoints;
+	}
+	void setEnemyPoints(int points) {
+		enemyPoints = points;
+	}
+	int getCollectablePoints() {
+		return collectablePoints;
+	}
+	void setCollectablePoints(int points) {
+		collectablePoints = points;
+	}
+	void addToScore(int points) {
+		Score += points;
+	}
+	bool isTimerEnabled() {
+		return hasTimer;
+	}
+	void setTimerEnabled() {
+		hasTimer = !hasTimer;
+	}
+	int getTimer() {
+		return Time;
+	}
+	void setTimer(float baseTimer) {
+		Score = baseTimer;
+	}
+	void setTimerSpeed(float timeSpeed) {
+		timerSpeed = timeSpeed;
+	}
+	void decrementTimer(float decrement) {
+		Time -= decrement;
+	}
+	bool isCheckpointEnabled() {
+		return hasCheckpoint;
+	}
+	void setCheckpointEnabled() {
+		hasCheckpoint = !hasCheckpoint;
+		if (hasCheckpoint) {
+			addCheckpoint();
+		}
+		else
+		{
+			removeCheckpoint();
+		}
+	}
+
 private:
     
     /** Updates positions from all objects from the Physics updates
@@ -160,10 +262,13 @@ private:
     
     /** Name of level */
     String levelName;
-    
-    /** Camera view of the current level */
+	int Score, enemyPoints, collectablePoints;
+	float Time, timerSpeed;
+	bool hasScore, hasTimer, hasCheckpoint;
+   
+	/** Camera view of the current level */
     Camera camera;
-    
+	GoalPointObject* checkpoint;
     /** Physics for the level */
     WorldPhysics worldPhysics;
     

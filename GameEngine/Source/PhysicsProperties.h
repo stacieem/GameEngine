@@ -325,7 +325,9 @@ public:
         
         return hasNewCollisions;
     }
-    
+	void removeCollisionBox() {
+		body->DestroyFixture(this->myFixture);
+	}
 	b2Body* getBody() {
 		return body;
 	}

@@ -2,7 +2,6 @@
 
 		Lists the properties of the currently selected unit
 */
-
 #pragma once
 
 #include "CoreEngine.h"
@@ -13,12 +12,15 @@
 #include "FilenamePropertyComponent.h"
 #include "Speed.h"
 
-class ObjectInspector : public Component, public InspectorUpdater, public TextPropertyComponent::Listener, public Value::Listener, FilenameComponentListener {
+class ObjectInspector : public Component, public InspectorUpdater, 
+						public TextPropertyComponent::Listener, 
+						public Value::Listener, FilenameComponentListener, public Button::Listener {
 public:
 	ObjectInspector() {
 		//addAndMakeVisible(scrollBar);
 		//scrollBar.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
 		addAndMakeVisible(propertyPanel);
+		playerHasHealth.addListener(this);
 		selectedObj = NULL;
 	}
 	~ObjectInspector() {
@@ -85,7 +87,6 @@ public:
 				float x = (float)value.getValue();
 				selectedObj->setXPositionWithPhysics(x);
 				updateInspectorsChangeBroadcaster->sendChangeMessage();
-
 			}
 
 		}
@@ -182,6 +183,16 @@ public:
 			selectedObj->getPhysicsProperties().setRestitution(rest);
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
+		if (value.refersToSameSourceAs(playerHasHealth)) {
+			selectedObj->setHealthEnabled();
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateObj();
+		}
+
+		if (value.refersToSameSourceAs(playerHealth)) {
+			selectedObj->setHealth(value.getValue());
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
 	}
 
 	void filenameComponentChanged(FilenameComponent *fileComponentThatHasChanged) {
@@ -197,6 +208,9 @@ public:
 		
 	}
 
+	void buttonClicked(Button *button) {
+		
+	}
 private:
 
 	void updateObj() {
@@ -204,17 +218,20 @@ private:
 		objPhysicsProperties.clear();
 		objAudioProperties.clear();
 		objBackgroundProperties.clear();
+		objHudProperties.clear();
 
 		//add Level Physics
 		//create additional functions in desired objects to make it easier to retrieve information.
 		//add sections to physics menu
 		if (selectedObj != NULL) {
+			
 			switch (selectedObj->getObjType()) {
 			case Generic:	//environment?
 				addGenericMovementProperties();
 				break;
 			case Player:	//player
 				addGenericMovementProperties();
+				addHudProperties();
 				break;
 			case Enemy:	//ai, maybe differntiate between types of ai with this?
 				aiState.setValue(var( ( (EnemyObject*)selectedObj)->getAIState()));
@@ -294,10 +311,26 @@ private:
 
 	}
 
+	//base HUD properties
+	void addHudProperties() {
+		playerHasHealth.removeListener(this);
+		playerHasHealth.setValue(var((selectedObj)->isHealthEnabled()));
+		BooleanPropertyComponent* healthFlag = new BooleanPropertyComponent(playerHasHealth, "HealthBar:", "use HealthBar");
+		
+		objHudProperties.add(healthFlag);
+
+		if (selectedObj->isHealthEnabled()) {
+			playerHealth.setValue(var(selectedObj->getHealth()));
+			SliderPropertyComponent* playerHealthValue = new SliderPropertyComponent(playerHealth, "Health:", 0, 100, 1);
+			playerHealth.addListener(this);
+			objHudProperties.add(playerHealthValue);
+		}
+		playerHasHealth.addListener(this);
+		//Add HUD properties to panel
+		propertyPanel.addSection("HUD Properties", objHudProperties);
+	}
 	//base Graphical properties
 	void addGenericGraphicProperties() {
-
-
 
 		//Set objName to be the name of the selected object, and create its TextPropertyComponent
 		objName.setValue(var(selectedObj->getName()));
@@ -350,11 +383,12 @@ private:
 	Array<PropertyComponent *> objPhysicsProperties;
 	Array<PropertyComponent *> objAudioProperties;
 	Array<PropertyComponent *> objBackgroundProperties;
+	Array<PropertyComponent *> objHudProperties;
 
 	Value objTexture, objName, xPosition, yPosition,
 		  objPhysicsX, objPhysicsY, objPhysicsXCap, objPhysicsYCap,
 		  objPhysicsFriction, objPhysicsRestitution, objPhysicsDensity,
-	      comboValue, stateComboValue, aiState;
+	      comboValue, stateComboValue, aiState, playerHealth, playerHasHealth;
 
 	ScopedPointer<FilenameComponent> chooseFile;
 

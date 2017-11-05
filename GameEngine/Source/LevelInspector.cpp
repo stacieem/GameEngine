@@ -24,6 +24,10 @@ LevelInspector::LevelInspector(WorldNavigator & worldNavigator) :
     addLevelButton.addListener(this);
     removeLevelButton.addListener(this);
     levelComboBox.addListener(this);
+	hasTimer.addListener(this);
+	hasScore.addListener(this);
+    gravity.addListener(this);
+	hasCheckPoint.addListener(this);
 }
 LevelInspector::~LevelInspector() {
 
@@ -36,8 +40,10 @@ void LevelInspector::setCoreEngine(CoreEngine* engine) {
 void LevelInspector::paint(Graphics& g) {
     //g.fillAll(Colours::indigo);
 }
-void LevelInspector::updateInspector(GameModel & gameModel, GameObject * selectedObject) {
-    
+
+
+void LevelInspector::updateInspector(GameModel & gameModel, GameObject * selectedObject)
+{
     // Update Selected Level Index
     selectedLevelIndex = gameModel.getCurrentLevelIndex();
 
@@ -52,14 +58,15 @@ void LevelInspector::updateInspector(GameModel & gameModel, GameObject * selecte
     levelPhysicsProperties.clear();
     levelAudioProperties.clear();
     levelBackgroundProperties.clear();
-    levelComboBox.clear();
+	levelObjConditionalProperties.clear();
+    levelComboBox.clear(NotificationType::dontSendNotification);
 
     
     // Add all the Levels to the Level Inspector's comboBox selector
     for (int i = 0; i < gameModel.getNumLevels(); ++i)
     {
         levelComboBox.addItem(String(i + 1), i + 1);
-
+		
         // If the current index is the level, make it the selected level
         if (i == selectedLevelIndex)
         {
@@ -104,7 +111,6 @@ void LevelInspector::updateInspector(GameModel & gameModel, GameObject * selecte
     combo->addItem("High gravity", 3);
     combo->addItem("Anti Gravity", 2);
     combo->addItem("Normal", 1);
-    gravity.addListener(this);
     levelPhysicsProperties.add(combo);
 
     propertyPanel.addSection("World Physics", levelPhysicsProperties);
@@ -115,16 +121,53 @@ void LevelInspector::updateInspector(GameModel & gameModel, GameObject * selecte
 
     //add Level Background
 
+	//add Level Conditions(change the name)
+	hasScore.removeListener(this);
+	hasScore.setValue(var(selectedLevel->isScoreEnabled()));
+	BooleanPropertyComponent* scoreFlag = new BooleanPropertyComponent(hasScore, "Scores:", "Use Scoring System");
+	
+	levelObjConditionalProperties.add(scoreFlag);
 
+	if (selectedLevel->isScoreEnabled()) {
+		enemyScore.setValue(var(selectedLevel->getEnemyPoints()));
+		SliderPropertyComponent* enemyPointValue = new SliderPropertyComponent(enemyScore, "Enemy Point Value:", 0, 100, 1);
+		enemyScore.addListener(this);
+		levelObjConditionalProperties.add(enemyPointValue);
+
+		collectableScore.setValue(var(selectedLevel->getCollectablePoints()));
+		SliderPropertyComponent* collectablePointValue = new SliderPropertyComponent(collectableScore, "Collectable Point Value:", 0, 100, 1);
+		collectableScore.addListener(this);
+		levelObjConditionalProperties.add(collectablePointValue);
+	}
+	hasScore.addListener(this);
+	hasTimer.removeListener(this);
+	hasTimer.setValue(var(selectedLevel->isTimerEnabled()));
+	BooleanPropertyComponent* timerFlag = new BooleanPropertyComponent(hasTimer, "Timer:", "Use Timer");
+	levelObjConditionalProperties.add(timerFlag);
+	
+	if (selectedLevel->isTimerEnabled()) {
+		timer.setValue(var(selectedLevel->getTimer()));
+		SliderPropertyComponent* timerValue = new SliderPropertyComponent(timer, "Time(seconds):", 0, 500, 1);
+		timer.addListener(this);
+		levelObjConditionalProperties.add(timerValue);
+	}
+	hasTimer.addListener(this);
+
+
+	hasCheckPoint.removeListener(this);
+	hasCheckPoint.setValue(var(selectedLevel->isTimerEnabled()));
+	BooleanPropertyComponent* checkpointFlag = new BooleanPropertyComponent(hasCheckPoint, "Goal Point:", "target distance");
+	levelObjConditionalProperties.add(checkpointFlag);
+
+	hasCheckPoint.addListener(this);
+	propertyPanel.addSection("Conditions", levelObjConditionalProperties);
     propertyPanel.refreshAll();
-
 }
 
 void LevelInspector::textPropertyComponentChanged(TextPropertyComponent * component) {
-
-    if (component->getName() == "Object Name:") {
-        updateInspectorsChangeBroadcaster->sendChangeMessage();
-    }
+		if (component->getName() == "Object Name:") {
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
 }
 void LevelInspector::resized()
 {
@@ -152,27 +195,26 @@ void LevelInspector::resized()
 
 void LevelInspector::buttonClicked(Button * button) {
 
-    if (button == &playButton)
-    {
-        coreEngine->toggleGamePause();
-        updateInspectorsChangeBroadcaster->sendChangeMessage();
-    }
-    else if (button == &addLevelButton)
-    {
-        // Add level and update inspectors
-        coreEngine->addLevel();
-        updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
-    }
-    else if (button == &removeLevelButton)
-    {
-        coreEngine->removeLevel(selectedLevelIndex);
-        updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
-    }
+		if (button == &playButton)
+		{
+			coreEngine->toggleGamePause();
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
+		else if (button == &addLevelButton)
+		{
+			// Add level and update inspectors
+			coreEngine->addLevel();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
+		}
+		else if (button == &removeLevelButton)
+		{
+			coreEngine->removeLevel(selectedLevelIndex);
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
+		}
 }
 
-
-void LevelInspector::valueChanged(Value &value) {
-
+void LevelInspector::valueChanged(Value &value)
+{
     
     if (value.refersToSameSourceAs(gravity)) {
 
@@ -194,11 +236,36 @@ void LevelInspector::valueChanged(Value &value) {
         // Update navigator of selected object
         worldNavigator.setSelectedObject (gameObjects[(int)value.getValue()]);
     }
+    else if (value.refersToSameSourceAs(hasScore)) {
+        selectedLevel->setScoreEnabled();
+        updateInspectorsChangeBroadcaster->sendChangeMessage();
+    }
+    else if (value.refersToSameSourceAs(collectableScore)) {
+        selectedLevel->setCollectablePoints(value.getValue());
+    }
+    else if (value.refersToSameSourceAs(enemyScore)) {
+        selectedLevel->setEnemyPoints(value.getValue());
+    }
+    else if (value.refersToSameSourceAs(hasTimer)) {
+        selectedLevel->setTimerEnabled();
+        updateInspectorsChangeBroadcaster->sendChangeMessage();
+    }
+    else if (value.refersToSameSourceAs(timer)) {
+        selectedLevel->setTimer(value.getValue());
+    } 
+    else if (value.refersToSameSourceAs(hasCheckPoint)) {
+        selectedLevel->setCheckpointEnabled();
+        updateInspectorsChangeBroadcaster->sendChangeMessage();
+    }
 }
 
 void LevelInspector::setChildrenEnabled(bool shouldBeEnabled)
 {
-    propertyPanel.setEnabled(shouldBeEnabled);
+	propertyPanel.setEnabled(shouldBeEnabled);
+	levelComboBox.setEnabled(shouldBeEnabled);
+	addLevelButton.setEnabled(shouldBeEnabled);
+	removeLevelButton.setEnabled(shouldBeEnabled);
+	levelLabel.setEnabled(shouldBeEnabled);
 }
 
 void LevelInspector::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
@@ -208,8 +275,7 @@ void LevelInspector::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
         // Select Level
         // Update Inspector
         coreEngine->setCurrentLevel(comboBoxThatHasChanged->getSelectedItemIndex());
-        
         //FIX: Removing this stopped an infinite loop from occurring
-        //updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
+        updateInspectorsChangeBroadcaster->sendChangeMessage();
     }
 }
