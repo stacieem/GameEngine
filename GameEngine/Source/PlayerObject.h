@@ -16,13 +16,10 @@ public:
 		getPhysicsProperties().setFriction(0.5f);
 		linearDamp = 0.5f;
 		setBodyInfo();
-
-
 	}
 	~PlayerObject(){}
 	void moveUp()
 	{
-		
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
 		store.y += getYVel();
 		if (store.y > getYVelocityCap()) {

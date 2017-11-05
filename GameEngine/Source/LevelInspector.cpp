@@ -44,7 +44,7 @@ void LevelInspector::paint(Graphics& g) {
 }
 
 
-void LevelInspector::updateInspector(GameModel & gameModel, GameObject * selectedObject)
+void LevelInspector::updateInspector(GameModel & gameModel)
 {
     // Update Selected Level Index
     selectedLevelIndex = gameModel.getCurrentLevelIndex();
@@ -52,17 +52,6 @@ void LevelInspector::updateInspector(GameModel & gameModel, GameObject * selecte
     // Update Selected Level and Select first Game Object
 	if (gameModel.getCurrentLevel() != selectedLevel) {
 		selectedLevel = gameModel.getCurrentLevel();
-
-		// Deselect old renderable object
-		if (selectedObject != nullptr) {
-			selectedObject->setRenderableIsSelected(false);
-		}
-
-		// Select new object
-		selectedObject = selectedLevel->getGameObjects().getFirst();
-		if (selectedObject != nullptr) {
-			selectedObject->setRenderableIsSelected(true);
-		}
     }
     
     // Clear data to reload with new data

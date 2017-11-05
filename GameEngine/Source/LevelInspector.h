@@ -23,7 +23,7 @@ public:
 	void setCoreEngine(CoreEngine* engine);
 	// JUCE GUI Callbacks ======================================================
 
-	void updateInspector(GameModel & gameModel, GameObject * selectedObject);
+	void updateInspector(GameModel & gameModel);
 	void paint(Graphics& g) override;
 
 	void textPropertyComponentChanged(TextPropertyComponent * component) override;

@@ -32,13 +32,6 @@ GameEditor::GameEditor() : levelInspector(worldNavigator) {
 	objBrowser.setChangeBroadcasterForUpdate(&updateInspectorsChangeBroadcaster);
     worldNavigator.setChangeBroadcasterForUpdate(&updateInspectorsChangeBroadcaster);
 
-
-	//what does this do -- this was originally my work around for an issue that arose, good now
-	//while (gameEngine.getGameModel().getCurrentLevel().getNumGameObjects() < 1) {}
-	
-	//addAndMakeVisible(EditorController);
-	//gameEngine.setBoundsToFit(getWidth() *.2, 0, getWidth() * .5, getHeight()*.6, Justification::centredTop, true);
-
     gameEngine.setWantsKeyboardFocus(true);
 
 	updateInspectors();
@@ -86,7 +79,7 @@ void GameEditor::updateInspectors()
     GameModel & gameModel = gameEngine.getGameModel();
     
     // Update Inspectors
-	levelInspector.updateInspector (gameModel, worldNavigator.getSelectedObject());
+	levelInspector.updateInspector (gameModel);
    	objInspector.setSelectedObj (worldNavigator.getSelectedObject());
     
     // Update Navigator
