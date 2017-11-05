@@ -38,11 +38,16 @@ public:
 
 		objType = GameObjectType::Generic;
 		Health = 0;
-		yVelocityCap = 0;
-		xVelocityCap = 0;
-		xVel = 0;
-		yVel = 0;
+		yVelocityCap = 0, xVelocityCap = 0;
+		xVel = 0, yVel = 0;
+		maxJumps = 2, currJumps = 0;
+		hasLanded = false;
 		hasHealth = false;
+		updateOrigin();
+
+
+		//setBodyInfo();
+		//contacting = true;
     }
 
 	virtual ~GameObject() {
@@ -65,7 +70,9 @@ public:
 		DYNAMIC,
 		STATIC
 	};
-
+	void setBodyInfo() {
+		getPhysicsProperties().getBody()->SetUserData(this);
+	}
 
     bool isRenderable()
     {
@@ -88,7 +95,7 @@ public:
      */
     void setRenderableIsSelected(bool isSelected)
     {
-        renderableObject.isSelected = isSelected;
+		renderableObject.isSelected = isSelected;
     }
     
     /** Gets the renderable object for reading and copying.
@@ -153,6 +160,7 @@ public:
         
         // Update physical object position
         physicsProperties.setPosition (x, y);
+		updateOrigin();
     }
 
 	/** Sets the 2D position of a GameObject in world coordinates and in the
@@ -168,6 +176,7 @@ public:
 
 		// Update physical object position
 		physicsProperties.setPosition(renderableObject.position.x, y);
+		updateOrigin();
 	}
 
 	/** Sets the 2D position of a GameObject in world coordinates and in the
@@ -183,6 +192,8 @@ public:
 
 		// Update physical object position
 		physicsProperties.setPosition(x, renderableObject.position.y);
+
+		updateOrigin();
 	}
 
     PhysicsProperties & getPhysicsProperties()
@@ -190,7 +201,13 @@ public:
         return physicsProperties;
     }
     
-    // Audio to Action Mapping =================================================
+	void updateOrigin() {
+		origin = getPhysicsProperties().GetPosition();
+	}
+	b2Vec2 getOrigin() {
+		return origin;
+	}
+	// Audio to Action Mapping =================================================
     
     /** Maps an audio file to play when a specific action happens to this object
         in the physical game world.
@@ -255,13 +272,13 @@ public:
 		int newXVel = 0;
 		switch (moveSpeed) {
 		case FAST:
-			newXVel = 8;
+			newXVel = 10;
 			break;
 		case MED:
-			newXVel = 5;
+			newXVel = 8;
 			break;
 		case SLOW:
-			newXVel = 2;
+			newXVel = 5;
 			break;
 		}
 
@@ -321,6 +338,9 @@ public:
 		}
 	}
 
+	//testing box2d collision implementation
+	void startContact() { contacting = true; }
+	void endContact() { contacting = false; }
 protected:
 	GameObjectType objType;
 
@@ -328,10 +348,15 @@ private:
 	
     /** Name of object */
     String name;
+	//object statistics
 	int Health;
+	int maxJumps, currJumps;
+	b2Vec2 origin;
     /** Specifies wether or not the object will be rendered visually to the screen */
     bool renderable;
-	bool hasHealth;
+	//state checks
+	bool hasHealth, hasLanded;
+	bool contacting;
     /** Renderable representation of this object.
      */
     RenderableObject renderableObject;

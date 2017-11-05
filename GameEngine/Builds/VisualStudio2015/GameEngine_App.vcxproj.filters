@@ -400,6 +400,9 @@
     <Filter Include="Juce Library Code">
       <UniqueIdentifier>{8B4D1BAA-6DB4-CAEC-A0FA-271F354D5C61}</UniqueIdentifier>
     </Filter>
+    <Filter Include="GameEngine\Source\ContactListener">
+      <UniqueIdentifier>{b120ed96-cab4-4678-8d77-255050d2e4c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\Source\CoreEngine.cpp">
@@ -4309,6 +4312,9 @@
     </ClInclude>
     <ClInclude Include="..\..\Source\CollectableObject.h">
       <Filter>GameEngine\Source</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Source\ListenerClass.h">
+      <Filter>GameEngine\Source\ContactListener</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -12,19 +12,23 @@ LevelInspector::LevelInspector() : SELECTED_ROW_COLOUR(0xFF4091F5) {
     addAndMakeVisible(levelComboBox);
     addAndMakeVisible(addLevelButton);
     addAndMakeVisible(removeLevelButton);
+	addAndMakeVisible(resetLevelButton);
 
     addLevelButton.setButtonText("+");
     removeLevelButton.setButtonText("-");
-
     levelLabel.setJustificationType(Justification::centred);
 
+	resetLevelButton.setButtonText("Reset Current Level");
     addLevelButton.addListener(this);
     removeLevelButton.addListener(this);
+	resetLevelButton.addListener(this);
     levelComboBox.addListener(this);
 	hasTimer.addListener(this);
 	hasScore.addListener(this);
     gravity.addListener(this);
 	hasCheckPoint.addListener(this);
+	selectedObject = nullptr;
+
 }
 LevelInspector::~LevelInspector() {
 
@@ -44,16 +48,19 @@ void LevelInspector::updateInspector(GameModel & gameModel) {
     selectedLevelIndex = gameModel.getCurrentLevelIndex();
 
     // Update Selected Level and Select first Game Object
-    if (gameModel.getCurrentLevel() != selectedLevel) {
-        selectedLevel = gameModel.getCurrentLevel();
-        
-        // Deselect old renderable object
-        if (selectedObject != nullptr)
-            selectedObject->setRenderableIsSelected(false);
+	if (gameModel.getCurrentLevel() != selectedLevel) {
+		selectedLevel = gameModel.getCurrentLevel();
 
-        // Select new object
-        selectedObject = selectedLevel->getGameObjects().getFirst();
-        selectedObject->setRenderableIsSelected(true);
+		// Deselect old renderable object
+		if (selectedObject != nullptr) {
+			selectedObject->setRenderableIsSelected(false);
+		}
+
+		// Select new object
+		selectedObject = selectedLevel->getGameObjects().getFirst();
+		if (selectedObject != nullptr) {
+			selectedObject->setRenderableIsSelected(true);
+		}
     }
     
     // Clear data to reload with new data
@@ -159,7 +166,7 @@ void LevelInspector::updateInspector(GameModel & gameModel) {
 
 
 	hasCheckPoint.removeListener(this);
-	hasCheckPoint.setValue(var(selectedLevel->isTimerEnabled()));
+	hasCheckPoint.setValue(var(selectedLevel->isCheckpointEnabled()));
 	BooleanPropertyComponent* checkpointFlag = new BooleanPropertyComponent(hasCheckPoint, "Goal Point:", "target distance");
 	levelObjConditionalProperties.add(checkpointFlag);
 
@@ -181,6 +188,7 @@ void LevelInspector::resized()
     // Play/Pause Button
     playButton.setBounds(bounds.removeFromTop(lineHeight));
 
+	resetLevelButton.setBounds(bounds.removeFromTop(lineHeight));
     // Level Selection
     juce::Rectangle<int> levelSelectRow = bounds.removeFromTop(lineHeight);
 
@@ -191,7 +199,6 @@ void LevelInspector::resized()
     levelComboBox.setBounds(levelSelectRow.removeFromLeft(levelSelectRow.getWidth() * 2 / 3));
     addLevelButton.setBounds(levelSelectRow.removeFromTop(levelSelectRow.getHeight() / 2));
     removeLevelButton.setBounds(levelSelectRow);
-
 
     // Property Panels
     propertyPanel.setBounds(bounds);
@@ -214,6 +221,10 @@ void LevelInspector::buttonClicked(Button * button) {
 		{
 			coreEngine->removeLevel(selectedLevelIndex);
 			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
+		}
+		else if (button == &resetLevelButton)
+		{
+			selectedLevel->resetLevel();
 		}
 }
 
@@ -241,6 +252,8 @@ void LevelInspector::valueChanged(Value &value) {
 
 			// Save new selected object and set it to being rendered as selected
 			selectedObject = gameObjects[(int)value.getValue()];
+
+			if (selectedObject != nullptr)
 			selectedObject->setRenderableIsSelected(true);
 
 			// Update this and other inspectors

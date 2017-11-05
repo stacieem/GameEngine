@@ -15,13 +15,14 @@ public:
 
 		getPhysicsProperties().setFriction(0.5f);
 		linearDamp = 0.5f;
+		setBodyInfo();
 
-		//origin = getPhysicsProperties().GetPosition();
 
 	}
 	~PlayerObject(){}
 	void moveUp()
 	{
+		
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
 		store.y += getYVel();
 		if (store.y > getYVelocityCap()) {
@@ -72,7 +73,6 @@ public:
 //	}
 private:
 	GLfloat linearDamp;
-	//b2Vec2 origin;
 
 	Vector3D<GLfloat> position;
 	OwnedArray<Vector3D<GLfloat>> vertices;	 // The vertices from the origin

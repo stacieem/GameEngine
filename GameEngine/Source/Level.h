@@ -7,15 +7,15 @@
 #include "GameObject.h"
 #include "CollectableObject.h"
 #include "Camera.h"
-
+#include "ListenerClass.h"
 class Level {
 public:
 	Level(String levelName) {
         
         // Add a default model
         modelsForRendering.add(new Model());
-        
 		this->levelName = levelName;
+		worldPhysics.getWorld().SetContactListener(&myContactListenerInstance);
 		// Trystan's Multiplayer Test
 		PlayerObject* player = new PlayerObject(worldPhysics);
 
@@ -145,6 +145,17 @@ public:
         updateObjectsPositionsFromPhysics();
 	}
     
+	//reset the current level to an original state
+	void resetLevel() {
+		DBG("resetLevel");
+		for (auto  obj : gameObjects) {
+			DBG("obj origin: " << obj->getOrigin().x << " " << obj->getOrigin().y);
+			DBG("obj position: " << obj->getPhysicsProperties().GetPosition().x << " " << obj->getPhysicsProperties().GetPosition().y);
+			
+			obj->setPositionWithPhysics(obj->getOrigin().x, obj->getOrigin().y);
+			obj->getPhysicsProperties().setLinearVelocity(0, 0);
+		}
+	}
     
 	//Return the WorldPhysics for this level
 	WorldPhysics & getWorldPhysics()
@@ -158,6 +169,7 @@ public:
     }
 	
 	//clean this up
+	//Score properties
 	void setScoreEnabled() {
 		hasScore = !hasScore;
 	}
@@ -167,17 +179,17 @@ public:
 	int getScore() {
 		return Score;
 	}
-	void setScore(int baseScore) {
-		Score = baseScore;
-	}
 	int getEnemyPoints() {
 		return enemyPoints;
 	}
-	void setEnemyPoints(int points) {
-		enemyPoints = points;
-	}
 	int getCollectablePoints() {
 		return collectablePoints;
+	}
+	void setScore(int baseScore) {
+		Score = baseScore;
+	}
+	void setEnemyPoints(int points) {
+		enemyPoints = points;
 	}
 	void setCollectablePoints(int points) {
 		collectablePoints = points;
@@ -185,6 +197,8 @@ public:
 	void addToScore(int points) {
 		Score += points;
 	}
+	
+	//timer properties
 	bool isTimerEnabled() {
 		return hasTimer;
 	}
@@ -203,6 +217,8 @@ public:
 	void decrementTimer(float decrement) {
 		Time -= decrement;
 	}
+	
+	//checkpoint properties
 	bool isCheckpointEnabled() {
 		return hasCheckpoint;
 	}
@@ -241,7 +257,8 @@ private:
 	GoalPointObject* checkpoint;
     /** Physics for the level */
     WorldPhysics worldPhysics;
-    
+	ListenerClass myContactListenerInstance;
+
     /** GameObjects in the level */
 	OwnedArray<GameObject> gameObjects;
     

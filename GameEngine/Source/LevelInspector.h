@@ -49,6 +49,7 @@ private:
     ComboBox levelComboBox;
     TextButton addLevelButton;
     TextButton removeLevelButton;
+	TextButton resetLevelButton;
     
 	CoreEngine* coreEngine;
 	ToggleButton playButton;
