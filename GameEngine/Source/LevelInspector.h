@@ -47,6 +47,7 @@ private:
     ComboBox levelComboBox;
     TextButton addLevelButton;
     TextButton removeLevelButton;
+	TextButton saveLevelButton;
     int currentLevelIndex;
     
 	CoreEngine* coreEngine;

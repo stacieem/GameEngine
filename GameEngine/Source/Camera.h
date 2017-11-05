@@ -68,6 +68,44 @@ public:
         viewMatrix[1][1] = scale;
         viewMatrix[2][2] = scale;
     }
+
+	ValueTree serializeToValueTree() {
+
+		//Create the root ValueTree to serialize the game
+		ValueTree cameraSerialization = ValueTree("Camera");
+
+		ValueTree viewMatrixValueTree = ValueTree("ViewMatrix");
+
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+
+				ValueTree matrixElement = ValueTree("MatrixElement");
+
+				matrixElement.setProperty(Identifier("value"), var((double)viewMatrix[i][j]), nullptr);
+				viewMatrixValueTree.addChild(matrixElement, -1, nullptr);
+
+			}
+		}
+
+		cameraSerialization.addChild(viewMatrixValueTree, -1, nullptr);
+
+
+		return cameraSerialization;
+	}
+
+	void parseCameraFrom(ValueTree cameraLevelTree) {
+		ValueTree viewMatrixValueTree = cameraLevelTree.getChildWithName(Identifier("ViewMatrix"));
+
+		Array<double> vals;
+		
+		for (ValueTree vt : viewMatrixValueTree) {
+			double val = vt.getProperty(Identifier("value"));
+			vals.add(val);
+		}
+
+		viewMatrix = glm::mat4(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7], vals[8], vals[9], vals[10], vals[11], vals[12], vals[13], vals[14], vals[15]);
+
+	}
     
 private:
     glm::mat4 viewMatrix;

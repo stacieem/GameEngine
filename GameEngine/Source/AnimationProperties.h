@@ -11,9 +11,10 @@ public:
 		isAnimating = false;
 		leftAnimation = false;
 		animationTotalTime = 450;
+		animationSpeed = MED;
 	}
 
-	AnimationProperties(const AnimationProperties& obj) {
+	/*AnimationProperties(const AnimationProperties& obj) {
 		animationTextureFiles = obj.animationTextureFiles;
 		idleTexture = obj.idleTexture;
 	    animationDirectory = obj.animationDirectory;
@@ -48,7 +49,7 @@ public:
 		animationSpeed;
 
 		return *this;
-	}
+	}*/
 
 	~AnimationProperties() {
 
@@ -183,12 +184,107 @@ public:
 
 	}
 
-	/*void reverseTextureCoords() {
+	ValueTree serializeToValueTree() {
 
-		std::swap(vertices[0]->texCoord, vertices[3]->texCoord);
-		std::swap(vertices[1]->texCoord, vertices[2]->texCoord);
+		//Create the root ValueTree to serialize the animation properties
+		ValueTree animationPropertiesSerialization = ValueTree("AnimationProperties");
 
-	}*/
+		//Serialize canimate
+		ValueTree canimateValueTree = ValueTree("Canimate");
+		canimateValueTree.setProperty(Identifier("value"), var(canimate), nullptr);
+		animationPropertiesSerialization.addChild(canimateValueTree, -1, nullptr);
+
+		//Serialize isAnimating
+		ValueTree isAnimatingValueTree = ValueTree("IsAnimating");
+		isAnimatingValueTree.setProperty(Identifier("value"), var(isAnimating), nullptr);
+		animationPropertiesSerialization.addChild(isAnimatingValueTree, -1, nullptr);
+
+		//Serialize leftAnimation
+		ValueTree leftAnimationValueTree = ValueTree("LeftAnimation");
+		leftAnimationValueTree.setProperty(Identifier("value"), var(leftAnimation), nullptr);
+		animationPropertiesSerialization.addChild(leftAnimationValueTree, -1, nullptr);
+
+		//Serialize animationTotalTime
+		ValueTree animationTotalTimeValueTree = ValueTree("AnimationTotalTime");
+		animationTotalTimeValueTree.setProperty(Identifier("value"), var(animationTotalTime), nullptr);
+		animationPropertiesSerialization.addChild(animationTotalTimeValueTree, -1, nullptr);
+
+
+		int animationSpeedInt;
+
+		switch (animationSpeed) {
+		case SLOW:
+			animationSpeedInt = 0;
+			break;
+		case MED:
+			animationSpeedInt = 1;
+			break;
+		case FAST:
+			animationSpeedInt = 2;
+			break;
+		}
+
+		ValueTree animationSpeedValueTree = ValueTree("AnimationSpeed");
+		animationSpeedValueTree.setProperty(Identifier("value"), var(animationSpeedInt), nullptr);
+		animationPropertiesSerialization.addChild(animationSpeedValueTree, -1, nullptr);
+
+		ValueTree idleTextureValueTree = ValueTree("IdleTexture");
+		idleTextureValueTree.setProperty(Identifier("value"), var(idleTexture.getRelativePathFrom(File::getCurrentWorkingDirectory())), nullptr);
+		animationPropertiesSerialization.addChild(idleTextureValueTree, -1, nullptr);
+
+		ValueTree animationDirectoryValueTree = ValueTree("AnimationDirectory");
+		animationDirectoryValueTree.setProperty(Identifier("value"), var(animationDirectory.getRelativePathFrom(File::getCurrentWorkingDirectory())), nullptr);
+		animationPropertiesSerialization.addChild(animationDirectoryValueTree, -1, nullptr);
+
+		return animationPropertiesSerialization;
+	}
+
+	void parseFrom(ValueTree valueTree) {
+
+		ValueTree canimateTree = valueTree.getChildWithName(Identifier("Canimate"));
+
+		canimate = canimateTree.getProperty(Identifier("value"));
+
+		ValueTree isAnimatingValueTree = valueTree.getChildWithName(Identifier("IsAnimating"));
+
+		isAnimating = isAnimatingValueTree.getProperty(Identifier("value"));
+
+		ValueTree leftAnimationTree = valueTree.getChildWithName(Identifier("LeftAnimation"));
+
+		leftAnimation = leftAnimationTree.getProperty(Identifier("value"));
+
+		ValueTree animationTimeTree = valueTree.getChildWithName(Identifier("AnimationTotalTime"));
+
+		animationTotalTime = animationTimeTree.getProperty(Identifier("value"));
+
+		DBG(animationTotalTime);
+
+		ValueTree speedTree = valueTree.getChildWithName(Identifier("AnimationSpeed"));
+
+		int animationSpeedInt = speedTree.getProperty(Identifier("value"));
+
+		switch (animationSpeedInt) {
+		case 0:
+			animationSpeed = SLOW;
+			break;
+		case 1:
+			animationSpeed = MED;
+			break;
+		case 2:
+			animationSpeed = FAST;
+			break;
+		}
+
+		ValueTree animationDirectoryTree = valueTree.getChildWithName(Identifier("AnimationDirectory"));
+
+		animationDirectory = File(File::getCurrentWorkingDirectory().getFullPathName() + "/" + animationDirectoryTree.getProperty(Identifier("value")));
+
+		ValueTree idleTextureTree = valueTree.getChildWithName(Identifier("IdleTexture"));
+
+		idleTexture = File(File::getCurrentWorkingDirectory().getFullPathName() + "/" + idleTextureTree.getProperty(Identifier("value")));
+
+		setAnimationTextures(animationDirectory);
+	}
 
 private:
 

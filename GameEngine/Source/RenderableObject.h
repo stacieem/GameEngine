@@ -25,7 +25,7 @@ struct RenderableObject
         modelMatrix = glm::mat4(1.0);
     }
 
-	RenderableObject(const RenderableObject& obj) {
+	/*RenderableObject(const RenderableObject& obj) {
 		model = obj.model;
 		modelMatrix = obj.modelMatrix;
 		position = obj.position;
@@ -39,7 +39,7 @@ struct RenderableObject
 		animationProperties = obj.animationProperties;
 
 		return *this;
-	}
+	}*/
 
     
     /** Visual representation of an object. Points to a model resource since
@@ -59,5 +59,80 @@ struct RenderableObject
 
 	File renderTexture;
 	
+
+	ValueTree serializeToValueTree() {
+
+		//Create the root ValueTree to serialize the renderable object
+		ValueTree renderableObjectSerialization = ValueTree("RenderableObject");
+
+		//Serialize position
+		ValueTree positionMatrixValueTree = ValueTree("Position");
+
+		for (int i = 0; i < 4; i++) {
+			
+
+			ValueTree positionElement = ValueTree("PositionElement");
+
+			positionElement.setProperty(Identifier("value"), var((double)position[i]), nullptr);
+			positionMatrixValueTree.addChild(positionElement, -1, nullptr);
+
+		
+		}
+
+		renderableObjectSerialization.addChild(positionMatrixValueTree, -1, nullptr);
+
+		//Serialize model matrix
+		ValueTree modelMatrixValueTree = ValueTree("ModelMatrix");
+
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 4; j++) {
+
+				ValueTree matrixElement = ValueTree("MatrixElement");
+
+				matrixElement.setProperty(Identifier("value"), var((double)modelMatrix[i][j]), nullptr);
+				modelMatrixValueTree.addChild(matrixElement, -1, nullptr);
+
+			}
+		}
+
+		renderableObjectSerialization.addChild(modelMatrixValueTree, -1, nullptr);
+
+		//Serialize animation properties
+		renderableObjectSerialization.addChild(animationProperties.serializeToValueTree(), -1, nullptr);
+
+		return renderableObjectSerialization;
+	}
+
+	void parseFrom(ValueTree valueTree) {
+
+		ValueTree viewMatrixValueTree = valueTree.getChildWithName(Identifier("ModelMatrix"));
+
+		Array<double> vals;
+
+		for (ValueTree vt : viewMatrixValueTree) {
+			double val = vt.getProperty(Identifier("value"));
+			vals.add(val);
+		}
+
+		modelMatrix = glm::mat4(vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7], vals[8], vals[9], vals[10], vals[11], vals[12], vals[13], vals[14], vals[15]);
+
+
+		ValueTree positionValueTree = valueTree.getChildWithName(Identifier("Position"));
+
+		Array<double> pos;
+
+		for (ValueTree vt : positionValueTree) {
+			double val = vt.getProperty(Identifier("value"));
+			pos.add(val);
+		}
+
+		position = glm::vec4(pos[0], pos[1], pos[2], pos[3]);
+
+		//Animation properties
+		animationProperties.parseFrom(valueTree.getChildWithName(Identifier("AnimationProperties")));
+
+
+	}
+
 };
 

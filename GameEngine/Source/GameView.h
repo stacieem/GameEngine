@@ -139,7 +139,7 @@ public:
 		// For every second, update the calculated frame rate
 		if (checkTime > 1000) {
 			checkTime = 0;
-			DBG((int)(1.0 / avgMilliseconds));
+			//DBG((int)(1.0 / avgMilliseconds));
 		}
         
         // Setup Viewport

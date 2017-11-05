@@ -47,6 +47,20 @@ public:
 
     }
 
+	GameObject(WorldPhysics & worldPhysics, ValueTree gameObjectValueTree) : physicsProperties(worldPhysics.getWorld())
+	{
+
+		yVelocityCap = 0;
+		xVelocityCap = 0;
+		xVel = 0;
+		yVel = 0;
+
+		parseFrom(gameObjectValueTree);
+
+
+
+	}
+
 	virtual ~GameObject() {
 
 	}
@@ -107,9 +121,7 @@ public:
     }
     
     /** Scales the rendered Model.
-        PROBLEM: Physics still only knows the original vertices, not the scaled
-        vertices, we must give the physics world an update about the scale of
-        this object
+       (Stored vertices in physics and same mesh)
      */
     void setScale (float x, float y)
     {
@@ -119,6 +131,11 @@ public:
         // Update physics so it knows about the visual change in vertices
         physicsProperties.updateModelScale(renderableObject.model, x, y);
     }
+
+	glm::vec2 getScale() 
+	{
+		return glm::vec2(renderableObject.modelMatrix[0][0], renderableObject.modelMatrix[1][1]);
+	}
 
     
     /** Sets the 2D position of a GameObject in world coordinates and in the
@@ -290,6 +307,99 @@ public:
 			physicsProperties.toDynamic();
 			break;
 		}
+	}
+
+	void parseFrom(ValueTree valueTree) {
+
+		name = valueTree.getProperty(Identifier("name"));
+		int objectTypeInt = valueTree.getProperty(Identifier("type"));
+		
+		switch (objectTypeInt) {
+
+		case 0:
+			objType = Generic;
+			break;
+		case 1:
+			objType = Player;
+			break;
+		case 2:
+			objType = Enemy;
+			break;
+		}
+
+		ValueTree renderableTree = valueTree.getChildWithName(Identifier("Renderable"));
+
+		renderable = renderableTree.getProperty(Identifier("value"));
+
+		renderableObject.parseFrom(valueTree.getChildWithName(Identifier("RenderableObject")));
+
+
+		physicsProperties.parseFrom(valueTree.getChildWithName(Identifier("PhysicsProperties")));
+
+	}
+
+	ValueTree serializeToValueTree() {
+
+		//Create the root ValueTree to serialize the game
+		ValueTree gameObjectSerialization = ValueTree("GameObject");
+
+		gameObjectSerialization.setProperty(Identifier("name"), var(this->getName()), nullptr);
+
+		//Serialize game object type
+		int objectTypeInt;
+
+		switch (objType) {
+
+		case Generic:
+			objectTypeInt = 0;
+			break;
+		case Player:
+			objectTypeInt = 1;
+			break;
+		case Enemy:
+			objectTypeInt = 2;
+			break;
+		}
+
+		gameObjectSerialization.setProperty(Identifier("type"), var(objectTypeInt), nullptr);
+
+		//Serialize Renderable bool
+		ValueTree isRenderableValueTree = ValueTree("Renderable");
+
+		isRenderableValueTree.setProperty(Identifier("value"), var(renderable), nullptr);
+
+		gameObjectSerialization.addChild(isRenderableValueTree, -1, nullptr);
+
+		//Serialize Renderable Object
+		gameObjectSerialization.addChild(renderableObject.serializeToValueTree(), -1, nullptr);
+
+		gameObjectSerialization.addChild(physicsProperties.serializeToValueTree(), -1, nullptr);
+
+		ValueTree xvelTree = ValueTree("XVel");
+
+		xvelTree.setProperty(Identifier("value"), var(xVel), nullptr);
+
+		gameObjectSerialization.addChild(xvelTree, -1, nullptr);
+
+		ValueTree yvelTree = ValueTree("YVel");
+
+		yvelTree.setProperty(Identifier("value"), var(yVel), nullptr);
+
+		gameObjectSerialization.addChild(yvelTree, -1, nullptr);
+
+		ValueTree xvelTreeCap = ValueTree("XVelCap");
+
+		xvelTreeCap.setProperty(Identifier("value"), var(xVelocityCap), nullptr);
+
+		gameObjectSerialization.addChild(xvelTreeCap, -1, nullptr);
+
+		ValueTree yvelTreeCap = ValueTree("YVelCap");
+
+		yvelTreeCap.setProperty(Identifier("value"), var(yVelocityCap), nullptr);
+
+		gameObjectSerialization.addChild(yvelTreeCap, -1, nullptr);
+
+		return gameObjectSerialization;
 	}
 
 protected:

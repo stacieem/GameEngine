@@ -55,6 +55,7 @@ public:
     void removeLevel(int levelIndex);
     void setCurrentLevel(int levelIndex);
    
+	void saveGame();
 
 	bool isPaused();
 

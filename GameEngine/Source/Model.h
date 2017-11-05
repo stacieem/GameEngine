@@ -104,6 +104,7 @@ public:
 		}
 		return maxX - minX;
 	}
+
 private:
     
     /** Specifies whether or not the Model has been registered with an OpenGLContext */

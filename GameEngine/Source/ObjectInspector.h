@@ -179,6 +179,20 @@ public:
 			selectedObj->getPhysicsProperties().setRestitution(rest);
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
+
+		if (value.refersToSameSourceAs(xScale)) {
+
+			float scale = (float)value.getValue();
+			selectedObj->setScale(scale, selectedObj->getScale().y);
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
+
+		if (value.refersToSameSourceAs(yScale)) {
+
+			float scale = (float)value.getValue();
+			selectedObj->setScale(selectedObj->getScale().x,scale);
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
 	}
 
 	void filenameComponentChanged(FilenameComponent *fileComponentThatHasChanged) {
@@ -227,7 +241,25 @@ private:
 			
 			}
 
+			
+
 			addGenericGraphicProperties();
+
+
+			
+			xScale.setValue(var((float)selectedObj->getScale().x));
+			xScale.addListener(this);
+			SliderPropertyComponent* slider = new SliderPropertyComponent(xScale, "x-scale:", 1, 10, .1);
+
+
+			objPhysicsProperties.add(slider);
+
+			//This is going to require a specification of the axis for the game
+			yScale.setValue(var((float)selectedObj->getScale().y));
+			SliderPropertyComponent* slider2 = new SliderPropertyComponent(yScale, "y-scale:", 1, 10, .1);
+			yScale.addListener(this);
+			objPhysicsProperties.add(slider2);
+
 			//add to panel
 			propertyPanel.addSection("Object Physics", objPhysicsProperties);
 
@@ -351,7 +383,7 @@ private:
 	Value objTexture, objName, xPosition, yPosition,
 		  objPhysicsX, objPhysicsY, objPhysicsXCap, objPhysicsYCap,
 		  objPhysicsFriction, objPhysicsRestitution, objPhysicsDensity,
-	      comboValue, stateComboValue, aiState;
+	      comboValue, stateComboValue, aiState, xScale, yScale;
 
 	ScopedPointer<FilenameComponent> chooseFile;
 

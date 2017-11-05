@@ -6,12 +6,16 @@
 		playButton.setButtonText("Start/Stop Game");
 		playButton.addListener(this);
 		selectedObjectValue.addListener(this);
-
+		gravity.addListener(this);
 
 		addAndMakeVisible(levelLabel);
 		addAndMakeVisible(levelComboBox);
 		addAndMakeVisible(addLevelButton);
 		addAndMakeVisible(removeLevelButton);
+		addAndMakeVisible(saveLevelButton);
+
+		saveLevelButton.setButtonText("Save Level");
+		saveLevelButton.addListener(this);
 
 		addLevelButton.setButtonText("+");
 		removeLevelButton.setButtonText("-");
@@ -35,7 +39,6 @@
 	}
 	void LevelInspector::updateInspector(GameModel & gameModel) {
 
-
 		Level * currentLevel = gameModel.getCurrentLevel();
 		currentLevelIndex = gameModel.getCurrentLevelIndex();
 
@@ -51,14 +54,11 @@
 		levelPhysicsProperties.clear();
 		levelAudioProperties.clear();
 		levelBackgroundProperties.clear();
-
-
 		
-		levelComboBox.clear();
+		levelComboBox.clear(NotificationType::dontSendNotification);
 
 		// Set the current level text
 		levelLabel.setText("Level: ", NotificationType::dontSendNotification);
-		DBG(gameModel.getNumLevels());
 
 		int numLevels = gameModel.getNumLevels();
 
@@ -96,7 +96,7 @@
 		combo->addItem("High gravity", 3);
 		combo->addItem("Anti Gravity", 2);
 		combo->addItem("Normal", 1);
-		gravity.addListener(this);
+		
 		levelPhysicsProperties.add(combo);
 
 		propertyPanel.addSection("World Physics", levelPhysicsProperties);
@@ -132,6 +132,7 @@
 
 		// Play/Pause Button
 		playButton.setBounds(bounds.removeFromTop(lineHeight));
+		saveLevelButton.setBounds(bounds.removeFromTop(lineHeight));
 
 		// Level Selection
 		juce::Rectangle<int> levelSelectRow = bounds.removeFromTop(lineHeight);
@@ -166,12 +167,16 @@
 		{
 			coreEngine->removeLevel(currentLevelIndex);
 			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
+		} else if (button == &saveLevelButton) {
+
+			coreEngine->saveGame();
+
 		}
 	}
 
 
 	void LevelInspector::valueChanged(Value &value) {
-
+		
 		
 		if (value.refersToSameSourceAs(gravity)) {
 
@@ -187,7 +192,8 @@
 				break;
 			}
 		}
-		else
+		
+		if (value.refersToSameSourceAs(selectedObjectValue))
 		{
 			selectedObject = gameObjects[(int)value.getValue()];
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
@@ -212,6 +218,6 @@
 			coreEngine->setCurrentLevel(comboBoxThatHasChanged->getSelectedItemIndex());
 			
 			//FIX: Removing this stopped an infinite loop from occurring
-			//updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
 	}

@@ -17,8 +17,24 @@ public:
 		detection_radius = 25;
 		getPhysicsProperties().setFriction(0.5f);
 		linearDamp = 0.5f;
-		origin = getPhysicsProperties().GetPosition();
 		
+		//patrolling information
+		patrolRange = NEAR;
+
+	}
+
+	EnemyObject(WorldPhysics & worldPhysics, ValueTree valueTree) : GameObject(worldPhysics)
+	{
+		GameObject::parseFrom(valueTree);
+
+		objType = GameObjectType::Enemy;
+		aiState = CHASE;
+		setXVelocityCap(Speed::SLOW);
+		setYVelocityCap(Speed::SLOW);
+		detection_radius = 25;
+		getPhysicsProperties().setFriction(0.5f);
+		linearDamp = 0.5f;
+
 		//patrolling information
 		patrolRange = NEAR;
 
@@ -137,6 +153,18 @@ public:
 		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
 
+
+	ValueTree serializeToValueTree() {
+
+		ValueTree playerSerialization = GameObject::serializeToValueTree();
+
+
+
+
+
+		return playerSerialization;
+	}
+
 private:
 	GLfloat linearDamp;
 	
@@ -144,13 +172,11 @@ private:
 	//bounds at which to patrol
 	float leftBound, rightBound;
 	float detection_radius;
-	Vector3D<GLfloat> position;
-	OwnedArray<Vector3D<GLfloat>> vertices;	 // The vertices from the origin
-	ScopedPointer<GLfloat> glVertices;
+
 
 	//Patrol variables
 	PatrolRange patrolRange;
-	b2Vec2 origin;
+
 
 	JUCE_LEAK_DETECTOR(EnemyObject)
 

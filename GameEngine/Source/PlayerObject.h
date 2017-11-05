@@ -18,6 +18,21 @@ public:
 		//origin = getPhysicsProperties().GetPosition();
 
 	}
+
+	PlayerObject(WorldPhysics & worldPhysics, ValueTree valueTree) : GameObject(worldPhysics)
+	{
+		GameObject::parseFrom(valueTree);
+		/*objType = GameObjectType::Player;
+		setXVelocityCap(Speed::SLOW);
+		setYVelocityCap(Speed::SLOW);
+		*/
+		getPhysicsProperties().setFriction(0.5f);
+		linearDamp = 0.5f;
+
+		//origin = getPhysicsProperties().GetPosition();
+
+	}
+
 	~PlayerObject(){}
 	void moveUp()
 	{
@@ -61,6 +76,17 @@ public:
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
+
+	ValueTree serializeToValueTree() {
+
+		ValueTree playerSerialization = GameObject::serializeToValueTree();
+
+
+
+	
+
+		return playerSerialization;
+	}
     
 //	void reset()
 //	{
@@ -70,10 +96,6 @@ public:
 private:
 	GLfloat linearDamp;
 	//b2Vec2 origin;
-
-	Vector3D<GLfloat> position;
-	OwnedArray<Vector3D<GLfloat>> vertices;	 // The vertices from the origin
-	ScopedPointer<GLfloat> glVertices;
 
 	JUCE_LEAK_DETECTOR(PlayerObject)
 

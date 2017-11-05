@@ -12,6 +12,11 @@
 //==============================================================================
 CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
 {
+
+
+
+
+
     // Setup JUCE Components & Windowing
     addAndMakeVisible (gameView);
     
@@ -22,7 +27,28 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
 	inputManager = new InputManager();
 
     // Create GameModel & Render Frames in memory
-    gameModelCurrentFrame = new GameModel();
+	File saveDirectory = File(File::getCurrentWorkingDirectory().getFullPathName() + "/SaveGame");
+
+
+	if (saveDirectory.isDirectory() == false)
+	{
+		saveDirectory.createDirectory();
+		gameModelCurrentFrame = new GameModel();
+	}
+	else {
+		File saveFile = File(saveDirectory.getFullPathName() + "/savefile.xml");
+
+		if (saveFile.exists() == true) {
+			//gameModelCurrentFrame = new GameModel();
+			gameModelCurrentFrame = new GameModel(saveFile);
+		}
+		else {
+			gameModelCurrentFrame = new GameModel();
+		}
+
+		
+	}
+    
 	renderSwapFrameA = new RenderSwapFrame();
 	renderSwapFrameB = new RenderSwapFrame();
     
@@ -250,4 +276,16 @@ bool CoreEngine::isPaused()
 {
 	return gameLogic.isPaused();
 
+}
+
+void CoreEngine::saveGame() {
+	File saveDirectory = File(File::getCurrentWorkingDirectory().getFullPathName() + "/SaveGame");
+
+
+	ValueTree v = gameModelCurrentFrame->serializeToValueTree();
+	XmlElement* element = v.createXml();
+
+	element->writeToFile(File(saveDirectory.getFullPathName() + "/savefile.xml"), "");
+
+	delete element;
 }

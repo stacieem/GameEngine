@@ -61,9 +61,9 @@ public:
 	}
 
 	enum gravityLevel {
-		Normal,
-		AntiGrav,
-		HighGrav
+		Normal = 0,
+		AntiGrav = 1,
+		HighGrav = 2
 	};
 
 	/**************************************************************************
@@ -181,6 +181,60 @@ public:
 
 	float getGravity() {
 		return world.GetGravity().y;
+	}
+
+	ValueTree serializeToValueTree() {
+
+		//Create the root ValueTree to serialize the game
+		ValueTree worldPhysicsSerialization = ValueTree("WorldPhysics");
+
+		ValueTree gravitySerialization = ValueTree("Gravity");
+
+
+		int gravityInt;
+
+		switch (gravityLev) {
+		case Normal:
+			gravityInt = 0;
+			break;
+		case AntiGrav:
+			gravityInt = 1;
+			break;
+		case HighGrav:
+			gravityInt = 2;
+			break;
+		}
+
+		gravitySerialization.setProperty(Identifier("value"), var(gravityInt), nullptr);
+
+		worldPhysicsSerialization.addChild(gravitySerialization, -1, nullptr);
+		
+
+		return worldPhysicsSerialization;
+	}
+
+	void parseWorldPhysics(ValueTree levelTree) {
+
+	
+
+		ValueTree worldPhysics = levelTree.getChildWithName(Identifier("Gravity"));
+
+		int gravityLevelInt = worldPhysics.getProperty(Identifier("value"));
+
+		
+
+		switch (gravityLevelInt) {
+		case 0:
+			setGravity(Normal);
+			break;
+		case 1:
+			setGravity(AntiGrav);
+			break;
+		case 2:
+			setGravity(HighGrav);
+			break;
+		}
+
 	}
 	
 private:

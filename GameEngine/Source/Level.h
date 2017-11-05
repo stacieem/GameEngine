@@ -17,25 +17,24 @@ public:
 		// Trystan's Multiplayer Test
 		PlayerObject* player = new PlayerObject(worldPhysics);
 
-		//player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/alienBlue_stand.png"));
 		player->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
 		
-
 		player->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_stand.png"));
 
-
 		player->getRenderableObject().animationProperties.setCanimate(true);
-		//player->setIsAnimating(true);
-		//player->setAnimationStartTime(Time::currentTimeMillis());
 
 		gameObjects.add(player);
 		players.add(player);
 
-
         player->setModel(modelsForRendering[0]);
 
+	}
 
+	Level(ValueTree levelValueTree) {
 
+		modelsForRendering.add(new Model());
+
+		parseLevel(levelValueTree);
 	}
     
 	~Level()
@@ -63,9 +62,9 @@ public:
 	}
 	void addNewEnemy() {
 		EnemyObject* enm = new EnemyObject(worldPhysics);
-		enm->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
+		enm->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/blue_alien/walk_p2/"));
 
-		enm->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_stand.png"));
+		enm->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/blue_alien/p2_stand.png"));
 
 
 		enm->getRenderableObject().animationProperties.setCanimate(true);
@@ -118,6 +117,99 @@ public:
     {
         return camera;
     }
+
+	String getName() {
+		return levelName;
+	}
+
+
+	ValueTree serializeToValueTree() {
+
+		//Create the root ValueTree to serialize the game
+		ValueTree levelSerialization = ValueTree("Level");
+
+		levelSerialization.setProperty(Identifier("name"), var(levelName), nullptr);
+
+		//Serialize camera position
+		levelSerialization.addChild(camera.serializeToValueTree(), -1, nullptr);
+
+		//Serialize world physics
+		levelSerialization.addChild(worldPhysics.serializeToValueTree(), -1, nullptr);
+
+		//Serialize models
+		//Just kidding. we only have one default model, no need to serialize
+
+		//Get the player index in the game model while we are serializing game objects
+		ValueTree playerValueTree = ValueTree("Player");
+
+		ValueTree gameObjectsValueTree = ValueTree("GameObjects");
+
+		//For each level, serialize and add to Levels child element
+		for (GameObject* gameObject : gameObjects) {
+			
+			//If this is the player, set the player index to be this index
+			if (gameObject == players[0]) {
+				playerValueTree.setProperty(Identifier("index"), var(gameObjects.indexOf(gameObject)), nullptr);
+				gameObjectsValueTree.addChild(((PlayerObject*)gameObject)->serializeToValueTree(), -1, nullptr);
+			} 			else if (gameObject->getObjType() == Enemy)	{
+				gameObjectsValueTree.addChild(((EnemyObject*)gameObject)->serializeToValueTree(), -1, nullptr);
+			}
+			else {
+				gameObjectsValueTree.addChild(gameObject->serializeToValueTree(), -1, nullptr);
+			}
+		}
+
+		levelSerialization.addChild(gameObjectsValueTree, -1, nullptr);
+
+		levelSerialization.addChild(playerValueTree, -1, nullptr);
+
+		return levelSerialization;
+	}
+
+	void parseLevel(ValueTree levelTree) {
+
+		camera.parseCameraFrom(levelTree.getChildWithName(Identifier("Camera")));
+
+		ValueTree gameObjectsValueTree = levelTree.getChildWithName(Identifier("GameObjects"));
+
+		ValueTree worldPhysicsValueTree = levelTree.getChildWithName(Identifier("WorldPhysics"));
+
+		worldPhysics.parseWorldPhysics(worldPhysicsValueTree);
+
+		for (ValueTree gameObjectValueTree : gameObjectsValueTree) {
+
+			int objTypeInt = gameObjectValueTree.getProperty(Identifier("type"));
+
+			switch (objTypeInt) {
+
+			case 0: {
+				GameObject* genericObj = new GameObject(worldPhysics, gameObjectValueTree);
+				genericObj->setModel(modelsForRendering[0]);
+				genericObj->setScale(1.0f, 1.0f);
+				gameObjects.add(genericObj);
+			}
+				break;
+			case 1: {
+				PlayerObject* player = new PlayerObject(worldPhysics, gameObjectValueTree);
+				player->setModel(modelsForRendering[0]);
+				gameObjects.add(player);
+				players.add(player);
+				
+			}
+					break;
+			case 2: {
+				EnemyObject* enm = new EnemyObject(worldPhysics, gameObjectValueTree);
+				enm->setModel(modelsForRendering[0]);
+				enm->setScale(1.0f, 1.0f);
+				gameObjects.add(enm);
+			}
+				break;
+			}
+
+		
+		}
+	}
+
     
 private:
     

@@ -172,6 +172,8 @@ public:
     {
 		resizeCollisionBox(model->getWidth() * xScale, model->getHeight() * yScale);
     }
+
+
     
 	/**************************************************************************
 	*
@@ -286,9 +288,8 @@ public:
 		dynamicBox.SetAsBox(width/2, height/2);
 		fixtureDef.shape = &dynamicBox;
 		body->DestroyFixture(this->myFixture);
-
+		
 		this->myFixture = body->CreateFixture(&fixtureDef);
-
 	}
 
 	/// b2Shape properties
@@ -336,6 +337,47 @@ public:
 		body->SetType(b2_dynamicBody);
 
 	}
+
+	ValueTree serializeToValueTree() {
+
+		ValueTree physicsTree = ValueTree("PhysicsProperties");
+
+		ValueTree typeTree = ValueTree("Type");
+		int typeInt;
+
+		switch (body->GetType()) {
+		case b2_dynamicBody:
+			typeInt = 0;
+			break;
+		case b2_staticBody:
+			typeInt = 1;
+			break;
+
+		}
+
+		typeTree.setProperty(Identifier("value"), var(typeInt), nullptr);
+		physicsTree.addChild(typeTree, -1, nullptr);
+
+		return physicsTree;
+	}
+
+	void parseFrom(ValueTree valueTree) {
+
+		ValueTree typeTree = valueTree.getChildWithName(Identifier("Type"));
+
+		int typeInt = typeTree.getProperty(Identifier("value"));
+
+		switch (typeInt) {
+		case 0:
+			toDynamic();
+			break;
+		case 1:
+			toStatic();
+			break;
+
+		}
+	}
+
 private:
 	const float RADTODEG = 57.29577951308f;
 	const float DEGTORAD = 0.017453292519f;
