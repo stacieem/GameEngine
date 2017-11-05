@@ -3,8 +3,9 @@
 		Lists the properties of the currently selected unit
 */
 #pragma once
+
 #include "CoreEngine.h"
-#include "Inspector.h"
+#include "InspectorUpdater.h"
 #include "GameObjectType.h"
 #include <string>   
 #include "ComboBoxPropertyComponent.h"

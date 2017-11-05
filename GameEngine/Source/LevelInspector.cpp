@@ -1,6 +1,9 @@
 #include "LevelInspector.h" 
 
-LevelInspector::LevelInspector() : SELECTED_ROW_COLOUR(0xFF4091F5) {
+LevelInspector::LevelInspector(WorldNavigator & worldNavigator) :
+        SELECTED_ROW_COLOUR(0xFF4091F5),
+        worldNavigator(worldNavigator) {
+    
     addAndMakeVisible(propertyPanel);
     addAndMakeVisible(playButton);
     playButton.setButtonText("Start/Stop Game");
@@ -37,23 +40,16 @@ void LevelInspector::setCoreEngine(CoreEngine* engine) {
 void LevelInspector::paint(Graphics& g) {
     //g.fillAll(Colours::indigo);
 }
-void LevelInspector::updateInspector(GameModel & gameModel) {
 
-	DBG("value_changed");
+
+void LevelInspector::updateInspector(GameModel & gameModel, GameObject * selectedObject)
+{
     // Update Selected Level Index
     selectedLevelIndex = gameModel.getCurrentLevelIndex();
 
     // Update Selected Level and Select first Game Object
     if (gameModel.getCurrentLevel() != selectedLevel) {
         selectedLevel = gameModel.getCurrentLevel();
-        
-        // Deselect old renderable object
-        if (selectedObject != nullptr)
-            selectedObject->setRenderableIsSelected(false);
-
-        // Select new object
-        selectedObject = selectedLevel->getGameObjects().getFirst();
-        selectedObject->setRenderableIsSelected(true);
     }
     
     // Clear data to reload with new data
@@ -95,7 +91,7 @@ void LevelInspector::updateInspector(GameModel & gameModel) {
                                                     false);
        
         // If row of selected object, set its colour to be highlighted
-        if (gameObj == selectedObject)
+        if (gameObj == worldNavigator.getSelectedObject())
         {
             objectRow->setColour(PropertyComponent::ColourIds::backgroundColourId,
                                  SELECTED_ROW_COLOUR);
@@ -217,56 +213,50 @@ void LevelInspector::buttonClicked(Button * button) {
 		}
 }
 
-void LevelInspector::valueChanged(Value &value) {
-		if (value.refersToSameSourceAs(gravity)) {
+void LevelInspector::valueChanged(Value &value)
+{
+    
+    if (value.refersToSameSourceAs(gravity)) {
 
-			switch ((int)gravity.getValue()) {
-			case 1:
-				selectedLevel->getWorldPhysics().setGravity(WorldPhysics::Normal);
-				break;
-			case 2:
-				selectedLevel->getWorldPhysics().setGravity(WorldPhysics::AntiGrav);
-				break;
-			case 3:
-				selectedLevel->getWorldPhysics().setGravity(WorldPhysics::HighGrav);
-				break;
-			}
-		}
-		// Object Selection Button
-		else if (value.refersToSameSourceAs(selectedObjectValue))
-		{
-			// Deselect old renderable object
-			if (selectedObject != nullptr)
-				selectedObject->setRenderableIsSelected(false);
-
-			// Save new selected object and set it to being rendered as selected
-			selectedObject = gameObjects[(int)value.getValue()];
-			selectedObject->setRenderableIsSelected(true);
-
-			// Update this and other inspectors
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
-		}
-		else if (value.refersToSameSourceAs(hasScore)) {
-			selectedLevel->setScoreEnabled();
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
-		}
-		else if (value.refersToSameSourceAs(collectableScore)) {
-			selectedLevel->setCollectablePoints(value.getValue());
-		}
-		else if (value.refersToSameSourceAs(enemyScore)) {
-			selectedLevel->setEnemyPoints(value.getValue());
-		}
-		else if (value.refersToSameSourceAs(hasTimer)) {
-			selectedLevel->setTimerEnabled();
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
-		}
-		else if (value.refersToSameSourceAs(timer)) {
-			selectedLevel->setTimer(value.getValue());
-		} 
-		else if (value.refersToSameSourceAs(hasCheckPoint)) {
-			selectedLevel->setCheckpointEnabled();
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
-		}
+        switch ((int)gravity.getValue()) {
+        case 1:
+            selectedLevel->getWorldPhysics().setGravity(WorldPhysics::Normal);
+            break;
+        case 2:
+            selectedLevel->getWorldPhysics().setGravity(WorldPhysics::AntiGrav);
+            break;
+        case 3:
+            selectedLevel->getWorldPhysics().setGravity(WorldPhysics::HighGrav);
+            break;
+        }
+    }
+    // Object Selection Button
+    else if (value.refersToSameSourceAs(selectedObjectValue))
+    {
+        // Update navigator of selected object
+        worldNavigator.setSelectedObject (gameObjects[(int)value.getValue()]);
+    }
+    else if (value.refersToSameSourceAs(hasScore)) {
+        selectedLevel->setScoreEnabled();
+        updateInspectorsChangeBroadcaster->sendChangeMessage();
+    }
+    else if (value.refersToSameSourceAs(collectableScore)) {
+        selectedLevel->setCollectablePoints(value.getValue());
+    }
+    else if (value.refersToSameSourceAs(enemyScore)) {
+        selectedLevel->setEnemyPoints(value.getValue());
+    }
+    else if (value.refersToSameSourceAs(hasTimer)) {
+        selectedLevel->setTimerEnabled();
+        updateInspectorsChangeBroadcaster->sendChangeMessage();
+    }
+    else if (value.refersToSameSourceAs(timer)) {
+        selectedLevel->setTimer(value.getValue());
+    } 
+    else if (value.refersToSameSourceAs(hasCheckPoint)) {
+        selectedLevel->setCheckpointEnabled();
+        updateInspectorsChangeBroadcaster->sendChangeMessage();
+    }
 }
 
 void LevelInspector::setChildrenEnabled(bool shouldBeEnabled)
@@ -276,10 +266,6 @@ void LevelInspector::setChildrenEnabled(bool shouldBeEnabled)
 	addLevelButton.setEnabled(shouldBeEnabled);
 	removeLevelButton.setEnabled(shouldBeEnabled);
 	levelLabel.setEnabled(shouldBeEnabled);
-}
-
-GameObject* LevelInspector::getSelectedGameObject() {
-    return selectedObject;
 }
 
 void LevelInspector::comboBoxChanged(ComboBox *comboBoxThatHasChanged)

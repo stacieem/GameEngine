@@ -98,9 +98,6 @@ private:
 		// Main Logic loop
 		while (!threadShouldExit())
         {
-
-
-
 			// Wait for CoreEngine to signal() this loop
 			logicWaitable->wait();
             
@@ -186,12 +183,8 @@ private:
 						}
 						break;
 				}
-				
-				
-				
 			}
 
-            
             // Determine if player is not moving, if so, it should not be animating
 			if ((oldCommands.contains(GameCommand::Player1MoveRight) && !newCommands.contains(GameCommand::Player1MoveRight)) ||
 				(oldCommands.contains(GameCommand::Player1MoveLeft) && !newCommands.contains(GameCommand::Player1MoveLeft)) ||
@@ -203,14 +196,26 @@ private:
 					currLevel->getPlayer(0)->getRenderableObject().animationProperties.setIsAnimating(false);
 
 				}
-
-
 			}
 
 			oldCommands = newCommands;
+            
+            
+            // Update gameplay data ============================================
+        
+            // Grab the camera for the level
+            Camera & levelCamera = currLevel->getCamera();
 			
-            //Only do these things if the game is not paused
+            // Only do these things while the game is playing
 			if (!gamePaused) {
+                
+                // Process AI (this should be a function)
+                for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
+                    if (obj->getObjType() == GameObjectType::Enemy) {
+                        EnemyObject* objEnemy = dynamic_cast<EnemyObject*>(obj);
+                        objEnemy->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0));
+                    }
+                }
                 
 				// Process Physics - processes physics and updates objects positions
 				currLevel->processWorldPhysics(deltaTime);
@@ -234,24 +239,24 @@ private:
                         {
                             gameAudio.playAudioFile(*audioFile, false);
                         }
-
 					}
 				}
+                
+                // Update camera position based on the position of player 1
+                // The player1 object will be unmoving, while the world moves around it
+                //levelCamera.setXPosition(-currLevel->getPlayer(0)->getRenderableObject().position.x);
+                levelCamera.setPositionXY(-currLevel->getPlayer(0)->getRenderableObject().position.x, 0.0f);
 			}
             
-            // Update camera position based on the position of player 1
-            // The player1 object will be unmoving, while the world moves around it
-            Camera & camera = currLevel->getCamera();
-            camera.setXPosition(-currLevel->getPlayer(0)->getRenderableObject().position.x);
             
-            
-            // Update render frame =============================================
+            // Update render data ==============================================
+            /** Always render, regardless of pause/play */
             
             // Set camera view matrix
-            renderSwapFrame->setViewMatrix(camera.getViewMatrix());
+            renderSwapFrame->setViewMatrix(levelCamera.getViewMatrix());
             
             // Create array of potentially renderable objects in view
-            /** DEV NOTE:
+            /** FUTURE EFFICIENCY FEATURE:
                 Add in some pre-render visiblity checking. If an object is
                 obviously going to be out of view, do not put it in a render
                 frame.
@@ -269,8 +274,8 @@ private:
                         renderableObjects.back().isSelected = false;
                     }
                 }
-
 			}
+            // Add the renderables to the swap frame to send to GameView
             renderSwapFrame->setRenderableObjects(renderableObjects);
  
 			//ai motions
@@ -294,6 +299,7 @@ private:
 					break;
 				}
 			}
+            
 			// Notify CoreEngine logic is done
 			coreEngineWaitable->signal();
 		}
