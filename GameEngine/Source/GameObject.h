@@ -44,6 +44,18 @@ public:
 		yVel = 0;
 
     }
+    
+    GameObject (const GameObject & objectToCopy, WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld())
+    {
+        this->name = objectToCopy.name;
+        this->renderable = objectToCopy.renderable;
+        this->renderableObject = objectToCopy.renderableObject;
+        this->xVel = objectToCopy.xVel;
+        this->yVel = objectToCopy.yVel;
+        this->xVelocityCap = objectToCopy.xVelocityCap;
+        this->yVelocityCap = objectToCopy.yVelocityCap;
+        this->actionToAudio = objectToCopy.actionToAudio;
+    }
 
 	virtual ~GameObject() {
 
@@ -178,6 +190,30 @@ public:
     PhysicsProperties & getPhysicsProperties()
     {
         return physicsProperties;
+    }
+    
+    /** Specifies whether or not the GameObject is at a given position in the
+        world.
+     */
+    bool isAtPosition(glm::vec2 position)
+    {
+        // Get half width and half height of object
+        float halfWidth = renderableObject.model->getWidth() / 2.0f;
+        float halfHeight = renderableObject.model->getHeight() / 2.0f;
+        
+        // If the position is within the bounds of the RenderableObject, the
+        // object is at that position
+        if (renderableObject.position.x - halfWidth <= position.x &&
+            position.x <= renderableObject.position.x + halfWidth &&
+            renderableObject.position.y - halfHeight <= position.y &&
+            position.y <= renderableObject.position.y + halfHeight)
+        {
+            return true;
+        }
+
+        
+        // Otherwise return false
+        return false;
     }
     
     // Audio to Action Mapping =================================================
@@ -328,8 +364,6 @@ private:
     
     /** Map of in-game physics-based actions to specific audio files */
     std::map<PhysicalAction, File> actionToAudio;
-    
-	String objName;
 
 	JUCE_LEAK_DETECTOR(GameObject)
 };

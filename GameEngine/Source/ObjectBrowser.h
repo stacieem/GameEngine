@@ -5,7 +5,11 @@
 	Objects mostly
 */
 
+#pragma once
+
 #include "CoreEngine.h"
+#include "InspectorUpdater.h"
+
 class ObjectBrowser : public Component, public Button::Listener, public InspectorUpdater {
 public:
 	ObjectBrowser() {

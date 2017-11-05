@@ -34,8 +34,6 @@ public:
 
         player->setModel(modelsForRendering[0]);
 
-
-
 	}
     
 	~Level()
@@ -61,6 +59,13 @@ public:
         gameObj->setScale(1.0f, 1.0f);
 		gameObjects.add(gameObj);
 	}
+    
+    GameObject * copyObject(GameObject * objectToCopy) {
+        GameObject * newObject = new GameObject(*objectToCopy, worldPhysics);
+        gameObjects.add(newObject);
+        return newObject;
+    }
+    
 	void addNewEnemy() {
 		EnemyObject* enm = new EnemyObject(worldPhysics);
 		enm->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
@@ -73,6 +78,7 @@ public:
 		enm->setScale(1.0f, 1.0f);
 		gameObjects.add(enm);
 	}
+    
 	const OwnedArray<GameObject> & getGameObjects()
 	{
 		return gameObjects;
@@ -117,6 +123,26 @@ public:
     Camera & getCamera()
     {
         return camera;
+    }
+    
+    
+    /** Gets the game object at the position in world space.
+        (This essentially casts a ray into the scene and determines what object
+        it collides with, but since this is just 2D it is a bit simpler than that,
+        just the 2D position is evaluated)
+     
+        @return GameObject at the given position or nullptr if no object found
+     */
+    GameObject * getObjectAtPosition(glm::vec2 position)
+    {
+        // Iterate through GameObjects and find one that fits posiion
+        for (GameObject * gameObject : gameObjects)
+        {
+            if (gameObject->isAtPosition(position))
+                return gameObject;
+        }
+        
+        return nullptr;
     }
     
 private:

@@ -6,16 +6,17 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Level.h"
 #include "CoreEngine.h"
-#include "Inspector.h"
+#include "InspectorUpdater.h"
 #include "SelectObjectButtonPropertyComponent.h"
 #include "ComboBoxPropertyComponent.h"
+#include "WorldNavigator.h"
 
 class LevelInspector : public Component, public InspectorUpdater,
                        public Button::Listener, public ComboBox::Listener, 
 					   public TextPropertyComponent::Listener, public Value::Listener
 {
 public:
-	LevelInspector();
+	LevelInspector(WorldNavigator & worldNavigator);
 
 
 	~LevelInspector();
@@ -23,7 +24,7 @@ public:
 	void setCoreEngine(CoreEngine* engine);
 	// JUCE GUI Callbacks ======================================================
 
-	void updateInspector(GameModel & gameModel);
+	void updateInspector(GameModel & gameModel, GameObject * selectedObject);
 	void paint(Graphics& g) override;
 
 	void textPropertyComponentChanged(TextPropertyComponent * component) override;
@@ -39,8 +40,6 @@ public:
 
 	void setChildrenEnabled(bool shouldBeEnabled);
 
-
-	GameObject* getSelectedGameObject();
 private:
     
     const Colour SELECTED_ROW_COLOUR;
@@ -57,10 +56,11 @@ private:
 	Value selectedObjectValue, gravity;
 	Array<GameObject*> gameObjects;
 
-    // Selections
-	GameObject* selectedObject;
+    // Level selection
 	Level* selectedLevel;
     int selectedLevelIndex;
+    
+    WorldNavigator & worldNavigator;
 
 	Array<PropertyComponent *> levelObjGraphProperties;
 	Array<PropertyComponent *> levelPhysicsProperties;

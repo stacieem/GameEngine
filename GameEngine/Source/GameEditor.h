@@ -5,6 +5,7 @@
 #include "ObjectBrowser.h"
 #include "LevelInspector.h"
 #include "CoreEngine.h"
+#include "WorldNavigator.h"
 
 class GameEditor : public Component, public ChangeListener {
 public:
@@ -38,6 +39,9 @@ private:
 	CoreEngine gameEngine;
 
     // Game Editing GUI Panels =================================================
+    
+    /** Invisible overlay of the GameEngine that allows mouse navigation */
+    WorldNavigator worldNavigator;
 
     /** Inspects the current Level and allows user to switch levels */
     LevelInspector levelInspector;
@@ -46,7 +50,6 @@ private:
     ObjectInspector objInspector;
     
     /** Library of default GameObjects for user to pick from and use in game */
-
 	ObjectBrowser objBrowser;
     
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GameEditor)

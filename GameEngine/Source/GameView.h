@@ -39,6 +39,9 @@ public:
         openGLContext.setRenderer(this);
         openGLContext.attachTo(*this);
         
+        // Default to no camera
+        camera = nullptr;
+        
         // Setup GUI Overlay Label: Status of Shaders, compiler errors, etc.
         addAndMakeVisible (statusLabel);
         statusLabel.setJustificationType (Justification::topLeft);
@@ -156,7 +159,10 @@ public:
         // Set Projection Matrix
 		if (uniforms->projectionMatrix != nullptr)
         {
-            uniforms->projectionMatrix->setMatrix4(&projectionMatrix[0][0], 1, false);
+            if (camera != nullptr)
+            {
+                uniforms->projectionMatrix->setMatrix4(&camera->getProjectionMatrix()[0][0], 1, false);
+            }
 		}
         
         // Set View Matrix
@@ -225,13 +231,14 @@ public:
         gameHUD.setBounds(getLocalBounds());
         statusLabel.setBounds (getLocalBounds().reduced (4).removeFromTop (75));
         
-        // Setup OpenGL projection matrix to render accurate aspect ratio of
-        // objects regardless of aspect ratio of the OpenGLRenderer component
-        const float w = 10.0f;
-        const float h = w * getLocalBounds().toFloat().getAspectRatio (false);
-        // Creates an orthographic (CAD-style) projection that views world space
-        // coordinates from (left edge, right edge, top, bottom)
-        projectionMatrix = glm::ortho(-w, w, -h, h);
+        if (camera != nullptr)
+        {
+            // Setup OpenGL projection matrix to render accurate aspect ratio of
+            // objects regardless of aspect ratio of the OpenGLRenderer component
+            const float w = 10.0f;
+            const float h = w * getLocalBounds().toFloat().getAspectRatio (false);
+            camera->setProjectionWH(w, h);
+        }
     }
 
     // Custom Functions ========================================================
@@ -266,6 +273,19 @@ public:
     {
         renderWaitable = waitable;
         
+    }
+    
+    /** Sets the Camera to update when the size of this Component is updated.
+     */
+    void setCameraToHandle (Camera * camera)
+    {
+        this->camera = camera;
+        resized();
+    }
+    
+    void removeCameraToHandle()
+    {
+        this->camera = nullptr;
     }
     
 private:
@@ -348,12 +368,13 @@ private:
     OpenGLContext openGLContext;
     ScopedPointer<OpenGLShaderProgram> shader;
     ScopedPointer<Uniforms> uniforms;
-    glm::mat4 projectionMatrix; // We must use a local projection matrix because
-                                // is must be updated when the window is resized
-                                // Therefore, we will not store this in the Camera class,
-                                // although it would make more sense to be a member of Camera
+    
+    // Rendering information
     RenderSwapFrame* renderSwapFrame;
     TextureResourceManager texResourceManager;
+    
+    // Camera to update with aspect ratio information
+    Camera * camera;
     
     // Shaders
     const char* vertexShader;

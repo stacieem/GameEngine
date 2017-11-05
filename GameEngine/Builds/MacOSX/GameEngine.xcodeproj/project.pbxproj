@@ -91,7 +91,7 @@
 		574490B01FABB19B004DBC31 /* GoalPointObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GoalPointObject.h; path = ../../Source/GoalPointObject.h; sourceTree = "<group>"; };
 		574490B11FABB19B004DBC31 /* HealthBar.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = HealthBar.h; path = ../../Source/HealthBar.h; sourceTree = "<group>"; };
 		574490B21FABB19B004DBC31 /* InputManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InputManager.h; path = ../../Source/InputManager.h; sourceTree = "<group>"; };
-		574490B31FABB19B004DBC31 /* Inspector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Inspector.h; path = ../../Source/Inspector.h; sourceTree = "<group>"; };
+		574490B31FABB19B004DBC31 /* InspectorUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InspectorUpdater.h; path = ../../Source/InspectorUpdater.h; sourceTree = "<group>"; };
 		574490B41FABB19B004DBC31 /* Level.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Level.h; path = ../../Source/Level.h; sourceTree = "<group>"; };
 		574490B51FABB19B004DBC31 /* LevelInspector.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = LevelInspector.cpp; path = ../../Source/LevelInspector.cpp; sourceTree = "<group>"; };
 		574490B61FABB19B004DBC31 /* LevelInspector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LevelInspector.h; path = ../../Source/LevelInspector.h; sourceTree = "<group>"; };
@@ -116,6 +116,7 @@
 		574490C91FABB19B004DBC31 /* Vertex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vertex.h; path = ../../Source/Vertex.h; sourceTree = "<group>"; };
 		574490CA1FABB19B004DBC31 /* VertexBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VertexBuffer.h; path = ../../Source/VertexBuffer.h; sourceTree = "<group>"; };
 		574490CB1FABB19B004DBC31 /* WorldPhysics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WorldPhysics.h; path = ../../Source/WorldPhysics.h; sourceTree = "<group>"; };
+		574490D51FACF677004DBC31 /* WorldNavigator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WorldNavigator.h; path = ../../Source/WorldNavigator.h; sourceTree = "<group>"; };
 		57F5598FD8F3E97531BC5EB5 /* include_juce_audio_utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_utils.mm; path = ../../JuceLibraryCode/include_juce_audio_utils.mm; sourceTree = SOURCE_ROOT; };
 		5BA064D2FF4E47F6DF098CA3 /* juce_graphics */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_graphics; path = ../../../JUCE/modules/juce_graphics; sourceTree = SOURCE_ROOT; };
 		5D1FC676694048DAC21CAA6A /* include_juce_audio_formats.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_formats.mm; path = ../../JuceLibraryCode/include_juce_audio_formats.mm; sourceTree = SOURCE_ROOT; };
@@ -207,6 +208,7 @@
 				574490A81FABB19B004DBC31 /* GameEditor.h */,
 				574490A91FABB19B004DBC31 /* GameHUD.h */,
 				574490AA1FABB19B004DBC31 /* GameLogic.h */,
+				574490D51FACF677004DBC31 /* WorldNavigator.h */,
 				574490AB1FABB19B004DBC31 /* GameModel.h */,
 				574490AC1FABB19B004DBC31 /* GameObject.h */,
 				574490AD1FABB19B004DBC31 /* GameObjectType.h */,
@@ -215,7 +217,7 @@
 				574490B01FABB19B004DBC31 /* GoalPointObject.h */,
 				574490B11FABB19B004DBC31 /* HealthBar.h */,
 				574490B21FABB19B004DBC31 /* InputManager.h */,
-				574490B31FABB19B004DBC31 /* Inspector.h */,
+				574490B31FABB19B004DBC31 /* InspectorUpdater.h */,
 				574490B41FABB19B004DBC31 /* Level.h */,
 				574490B51FABB19B004DBC31 /* LevelInspector.cpp */,
 				574490B61FABB19B004DBC31 /* LevelInspector.h */,
