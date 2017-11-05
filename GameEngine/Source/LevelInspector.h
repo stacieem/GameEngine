@@ -51,7 +51,7 @@ private:
 	TextButton resetLevelButton;
     
 	CoreEngine* coreEngine;
-	ToggleButton playButton;
+	TextButton playButton;
 	OwnedArray<TextButton> buttons;
 	PropertyPanel propertyPanel;
 	Value selectedObjectValue, gravity, endCheckPoint, hasScore;

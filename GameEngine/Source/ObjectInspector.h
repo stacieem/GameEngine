@@ -14,7 +14,7 @@
 
 class ObjectInspector : public Component, public InspectorUpdater, 
 						public TextPropertyComponent::Listener, 
-						public Value::Listener, FilenameComponentListener, public Button::Listener {
+						public Value::Listener, FilenameComponentListener {
 public:
 	ObjectInspector() {
 		//addAndMakeVisible(scrollBar);
@@ -52,8 +52,8 @@ public:
 		propertyPanel.setBounds(getLocalBounds());
 	}
 	
-	void textPropertyComponentChanged(TextPropertyComponent * component) override{
-
+	void textPropertyComponentChanged(TextPropertyComponent * component) override
+    {
 		if (component->getName() == "Name:") {
 			selectedObj->setName(component->getText());
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
@@ -80,7 +80,8 @@ public:
 
 	}
 
-	void valueChanged(Value &value) {
+	void valueChanged(Value &value) override
+    {
 		if (value.refersToSameSourceAs(xPosition)) {
 			if (value.getValue().isDouble()) {
 				
@@ -151,10 +152,10 @@ public:
 
 			switch ((int)stateComboValue.getValue()) {
 			case 1:
-				selectedObj->updateState(GameObject::STATIC);
+                selectedObj->getPhysicsProperties().setIsStatic(true);
 				break;
 			case 2:
-				selectedObj->updateState(GameObject::DYNAMIC);
+                selectedObj->getPhysicsProperties().setIsStatic(false);
 				break;
 			}
 		}
@@ -205,15 +206,18 @@ public:
 			selectedObj->getRenderableObject().animationProperties.setIdleTexture(fileComponentThatHasChanged->getCurrentFile());
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
+        
+        if (fileComponentThatHasChanged->getName() == "Choose Collision Audio") {
+            selectedObj->mapAudioFileToPhysicalAction(fileComponentThatHasChanged->getCurrentFile(), PhysicalAction::collsion);
+            updateInspectorsChangeBroadcaster->sendChangeMessage();
+        }
 		
 	}
 
-	void buttonClicked(Button *button) {
-		
-	}
 private:
 
-	void updateObj() {
+	void updateObj()
+    {
 		propertyPanel.clear();
 		objPhysicsProperties.clear();
 		objAudioProperties.clear();
@@ -223,9 +227,10 @@ private:
 		//add Level Physics
 		//create additional functions in desired objects to make it easier to retrieve information.
 		//add sections to physics menu
-		if (selectedObj != NULL) {
-			
-			switch (selectedObj->getObjType()) {
+		if (selectedObj != NULL)
+        {
+			switch (selectedObj->getObjType())
+            {
 			case Generic:	//environment?
 				addGenericMovementProperties();
 				break;
@@ -242,18 +247,21 @@ private:
 				combo->setSelectedId(((EnemyObject*)selectedObj)->getAIState(), dontSendNotification);
 				aiState.addListener(this);
 				objPhysicsProperties.add(combo);
-				break;
-
-			
+                break;
 			}
 
 			addGenericGraphicProperties();
+            
+            addAudioProperties();
+            
 			//add to panel
 			propertyPanel.addSection("Object Physics", objPhysicsProperties);
 
 			//Add misc properties to panel
 			propertyPanel.addSection("Misc. Properties", objBackgroundProperties);
-
+            
+            // Add Object Audio
+            propertyPanel.addSection("Audio", objAudioProperties);
 		}
 
 		//add Object Audio
@@ -297,9 +305,9 @@ private:
 		stateComboValue.setValue(var((int)1));
 		combo = new ComboBoxPropertyComponent(stateComboValue, "State:");
 		combo->setTextWhenNothingSelected("Choose State");
-		combo->addItem("Dynamic", 2);
-		combo->addItem("Static", 1);
-		combo->setSelectedId(1, dontSendNotification);
+        combo->addItem("Static", 1);
+        combo->addItem("Dynamic", 2);
+        combo->setSelectedId(selectedObj->getPhysicsProperties().getIsStatic() ? 1 : 2, NotificationType::dontSendNotification);
 		stateComboValue.addListener(this);
 		objPhysicsProperties.add(combo);
 
@@ -312,7 +320,8 @@ private:
 	}
 
 	//base HUD properties
-	void addHudProperties() {
+	void addHudProperties()
+    {
 		playerHasHealth.removeListener(this);
 		playerHasHealth.setValue(var((selectedObj)->isHealthEnabled()));
 		BooleanPropertyComponent* healthFlag = new BooleanPropertyComponent(playerHasHealth, "HealthBar:", "use HealthBar");
@@ -329,9 +338,11 @@ private:
 		//Add HUD properties to panel
 		propertyPanel.addSection("HUD Properties", objHudProperties);
 	}
+                            
+                            
 	//base Graphical properties
-	void addGenericGraphicProperties() {
-
+	void addGenericGraphicProperties()
+    {
 		//Set objName to be the name of the selected object, and create its TextPropertyComponent
 		objName.setValue(var(selectedObj->getName()));
 		TextPropertyComponent* objNameText = new TextPropertyComponent(objName, "Name:", 40, false);
@@ -374,6 +385,17 @@ private:
 		animationDirectory->addListener(this);
 		objBackgroundProperties.add(animationDirectory);
 	}
+
+                            
+    void addAudioProperties()
+    {
+        // Get file already associated with selected object
+        File * collisionAudioFile = selectedObj->getAudioFileForAction(PhysicalAction::collsion);
+        
+        FilenamePropertyComponent* collisionAudio = new FilenamePropertyComponent("Choose Collision Audio", (collisionAudioFile == nullptr) ? File() : *collisionAudioFile, false, false, false, "", "", "Select a file");
+        collisionAudio->addListener(this);
+        objAudioProperties.add(collisionAudio);
+    }
 
 	CoreEngine* coreEngine;
 	GameObject* selectedObj;

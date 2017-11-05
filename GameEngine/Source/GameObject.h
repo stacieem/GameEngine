@@ -50,6 +50,8 @@ public:
         hasLanded = false;
         hasHealth = false;
         
+        physicsProperties.setIsStatic(true);
+        
         // This seems odd? We want to set origin to wherever an object is placed
         // in edit mode.
         updateOrigin();
@@ -58,7 +60,7 @@ public:
     /** Copy Constructor - Used to easily make a copy of an existing GameObject
         (this is directly used by the WorldNavigator when alt-dragging)
      */
-    GameObject (const GameObject & objectToCopy, WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld())
+    GameObject (GameObject & objectToCopy, WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld())
     {
         this->name = objectToCopy.name;
         this->renderable = objectToCopy.renderable;
@@ -74,6 +76,8 @@ public:
         this->currJumps = objectToCopy.currJumps;
         this->hasLanded = objectToCopy.hasLanded;
         this->hasHealth = objectToCopy.hasHealth;
+        
+        this->physicsProperties.setIsStatic((objectToCopy.getPhysicsProperties().getIsStatic()));
         
         // This seems odd? We want to set origin to wherever an object is placed
         // in edit mode.
@@ -95,11 +99,7 @@ public:
     }
     
     // Rendering Data ==========================================================
-   
-	enum ObjectStateType {
-		DYNAMIC,
-		STATIC
-	};
+
 	void setBodyInfo() {
 		getPhysicsProperties().getBody()->SetUserData(this);
 	}
@@ -387,17 +387,6 @@ public:
 		yVel = newYVel;
 		if (yVel > yVelocityCap) {
 			yVel = yVelocityCap;
-		}
-	}
-
-	void updateState(ObjectStateType state) {
-		switch (state) {
-		case STATIC:
-			physicsProperties.toStatic();
-			break;
-		case DYNAMIC:
-			physicsProperties.toDynamic();
-			break;
 		}
 	}
 

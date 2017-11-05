@@ -10,7 +10,7 @@ public:
 	{
 		objType = GameObjectType::Collectable;
 		setName("Collectable");
-		updateState(GameObject::STATIC);
+        getPhysicsProperties().setIsStatic(true);
 		radius = 1.5;
 		isActive = true;
 		setBodyInfo();

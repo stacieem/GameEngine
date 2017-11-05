@@ -11,7 +11,7 @@ public:
 		origin = b2Vec2(0, 0);
 		radius = 1.5;
 		objType = GameObjectType::Checkpoint;
-		updateState(GameObject::STATIC);
+        getPhysicsProperties().setIsStatic(true);
 		setBodyInfo();
 	}
 	bool collision(PlayerObject& player) {

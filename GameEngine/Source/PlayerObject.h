@@ -13,6 +13,7 @@ public:
 		setXVelocityCap(Speed::SLOW);
 		setYVelocityCap(Speed::SLOW);
 
+        getPhysicsProperties().setIsStatic(false);
 		getPhysicsProperties().setFriction(0.5f);
 		linearDamp = 0.5f;
 		setBodyInfo();

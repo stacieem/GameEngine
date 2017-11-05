@@ -22,12 +22,9 @@ class PhysicsProperties
 public:
 	PhysicsProperties(b2World& world) 
 	{
-
         // FIX
         // Default should be no physics properties, these are added as a Model
         // is added to a GameObject
-
-	
 		
 		//bodies position within the world
 
@@ -48,6 +45,10 @@ public:
 		this->myFixture = body->CreateFixture(&fixtureDef);
 		//body->GetContactList()->contact();
 		//b2ContactEdge test;
+        
+        
+        // Default to a static object
+        setIsStatic(true);
 	}
 	
 	PhysicsProperties(b2World& world, float originx, float originy,float width,float height) 
@@ -331,18 +332,44 @@ public:
 	b2Body* getBody() {
 		return body;
 	}
-	void toStatic() {
-		body->SetType(b2_staticBody);
-	}
-	void toDynamic() {
-		body->SetType(b2_dynamicBody);
-
-	}
+    
+    /** Specifies whether or not an object is static (unmoving) or is instead
+        dynamic (affected by physics).
+     
+        @return true if the object is unaffected by physics, falst if affected
+                by physics
+     */
+    bool getIsStatic()
+    {
+        return isStatic;
+    }
+    
+    /** Sets whether or not the object is static or dynamic.
+        True - static
+        False - dynamic
+     */
+    void setIsStatic (bool isStatic)
+    {
+        this->isStatic = isStatic;
+        
+        if (isStatic)
+        {
+            body->SetType(b2_staticBody);
+        }
+        else
+        {
+            body->SetType(b2_dynamicBody);
+        }
+    }
+    
 private:
 	const float RADTODEG = 57.29577951308f;
 	const float DEGTORAD = 0.017453292519f;
 	const float PI = 3.14159f;
  
+    /** Specifies whether or not the object is affected by physics, or is unmoveable (static) */
+    bool isStatic;
+    
     /** The number of collisions that were last checked. */
     int lastNumCollsions = 0;
     

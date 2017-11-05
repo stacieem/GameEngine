@@ -21,6 +21,8 @@ public:
 		setName("Enemy");
 		direction = 1;
 		timeToSwap = 10;
+        
+        getPhysicsProperties().setIsStatic(false);
 	}
 
 	~EnemyObject() {}

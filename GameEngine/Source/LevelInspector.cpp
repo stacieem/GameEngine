@@ -6,7 +6,7 @@ LevelInspector::LevelInspector(WorldNavigator & worldNavigator) :
     
     addAndMakeVisible(propertyPanel);
     addAndMakeVisible(playButton);
-    playButton.setButtonText("Start/Stop Game");
+    playButton.setButtonText("Start Game");
     playButton.addListener(this);
     selectedObjectValue.addListener(this);
 
@@ -199,6 +199,18 @@ void LevelInspector::buttonClicked(Button * button) {
 
 		if (button == &playButton)
 		{
+            if (button->getToggleState())
+            {
+                button->setButtonText("Start Game");
+                button->setToggleState(false, NotificationType::dontSendNotification);
+            }
+            else
+            {
+                button->setButtonText("Stop Game");
+                button->setToggleState(true, NotificationType::dontSendNotification);
+
+            }
+            
 			coreEngine->toggleGamePause();
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
