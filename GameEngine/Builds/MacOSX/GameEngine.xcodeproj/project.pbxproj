@@ -64,6 +64,7 @@
 		531C74EC80235CE6E5248C52 /* juce_audio_utils */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_audio_utils; path = ../../../JUCE/modules/juce_audio_utils; sourceTree = SOURCE_ROOT; };
 		533B115F4775174DA09ECE6B /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		53F17A5323E54F88FFD36AE0 /* AVKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVKit.framework; path = System/Library/Frameworks/AVKit.framework; sourceTree = SDKROOT; };
+		571AA4EA1FAF96FB005A8613 /* SelfDeletingPositionalAudioSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SelfDeletingPositionalAudioSource.h; path = ../../Source/SelfDeletingPositionalAudioSource.h; sourceTree = "<group>"; };
 		574490981FABB19B004DBC31 /* AnimationProperties.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AnimationProperties.h; path = ../../Source/AnimationProperties.h; sourceTree = "<group>"; };
 		574490991FABB19B004DBC31 /* Attributes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Attributes.h; path = ../../Source/Attributes.h; sourceTree = "<group>"; };
 		5744909A1FABB19B004DBC31 /* Camera.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Camera.h; path = ../../Source/Camera.h; sourceTree = "<group>"; };
@@ -189,6 +190,7 @@
 		1FC73B7FD3BD8137D94E09A8 /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				571AA4EA1FAF96FB005A8613 /* SelfDeletingPositionalAudioSource.h */,
 				574490981FABB19B004DBC31 /* AnimationProperties.h */,
 				574490991FABB19B004DBC31 /* Attributes.h */,
 				5744909A1FABB19B004DBC31 /* Camera.h */,

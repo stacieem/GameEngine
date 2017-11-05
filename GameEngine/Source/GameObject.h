@@ -42,7 +42,6 @@ public:
 		xVelocityCap = 0;
 		xVel = 0;
 		yVel = 0;
-
     }
     
     GameObject (const GameObject & objectToCopy, WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld())
