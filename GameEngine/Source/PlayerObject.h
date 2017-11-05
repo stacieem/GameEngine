@@ -8,6 +8,7 @@ class PlayerObject : public GameObject{
 public:
 	PlayerObject(WorldPhysics & worldPhysics) : GameObject(worldPhysics)
 	{
+		setName("Player");
 		objType = GameObjectType::Player;
 		setXVelocityCap(Speed::SLOW);
 		setYVelocityCap(Speed::SLOW);
@@ -61,7 +62,9 @@ public:
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
-    
+	b2Vec2 getPosition() {
+		return getPhysicsProperties().GetPosition();
+	}
 //	void reset()
 //	{
 //		translateTo(origin.x, origin.y);

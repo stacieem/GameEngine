@@ -37,12 +37,12 @@ public:
         renderable = false;
 
 		objType = GameObjectType::Generic;
-
+		Health = 0;
 		yVelocityCap = 0;
 		xVelocityCap = 0;
 		xVel = 0;
 		yVel = 0;
-
+		hasHealth = false;
     }
 
 	virtual ~GameObject() {
@@ -71,7 +71,17 @@ public:
     {
         return renderable;
     }
+
+	bool isHealthEnabled()
+	{
+		return hasHealth;
+	}
     
+	void setHealthEnabled()
+	{
+		hasHealth = !hasHealth;
+	}
+
     /** Sets if the renderable object should be rendered as being "Selected"
         in the GameView. This renders the object as highlighted in the
         GameView.
@@ -227,6 +237,14 @@ public:
 		return yVelocityCap;
 	}
 	
+	int getHealth() {
+		return Health;
+	}
+
+	void setHealth(int newHealth) {
+		Health = newHealth;
+	}
+	
 	GameObjectType getObjType() {
 		return objType;
 	}
@@ -310,10 +328,10 @@ private:
 	
     /** Name of object */
     String name;
-    
+	int Health;
     /** Specifies wether or not the object will be rendered visually to the screen */
     bool renderable;
-    
+	bool hasHealth;
     /** Renderable representation of this object.
      */
     RenderableObject renderableObject;

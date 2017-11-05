@@ -99,13 +99,7 @@ private:
 		while (!threadShouldExit())
         {
 
-			//ai motions
-			for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
-				if (obj->getObjType() == GameObjectType::Enemy) {
-					EnemyObject* objEnemy = dynamic_cast<EnemyObject*>(obj);
-					objEnemy->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0));
-				}
-			}
+
 
 			// Wait for CoreEngine to signal() this loop
 			logicWaitable->wait();
@@ -279,7 +273,27 @@ private:
 			}
             renderSwapFrame->setRenderableObjects(renderableObjects);
  
-
+			//ai motions
+			for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
+				switch (obj->getObjType()) {
+				case Enemy:
+					((EnemyObject*)(obj))->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0));
+					break;
+				case Collectable:
+					if (((CollectableObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
+						gameModelCurrentFrame->getCurrentLevel()->addToScore(gameModelCurrentFrame->getCurrentLevel()->getCollectablePoints());
+					}
+					break;
+				case Checkpoint:
+					if (((GoalPointObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
+						if (gameModelCurrentFrame->getCurrentLevelIndex() < gameModelCurrentFrame->getNumLevels() - 1) {
+							currLevel = &gameModelCurrentFrame->getLevel(gameModelCurrentFrame->getCurrentLevelIndex() + 1);
+							//signal update of inspectors and reload levels/gui
+						}
+					}
+					break;
+				}
+			}
 			// Notify CoreEngine logic is done
 			coreEngineWaitable->signal();
 		}

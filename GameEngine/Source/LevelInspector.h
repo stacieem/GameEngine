@@ -12,11 +12,10 @@
 
 class LevelInspector : public Component, public InspectorUpdater,
                        public Button::Listener, public ComboBox::Listener, 
-					   public TextPropertyComponent::Listener, public Value::Listener
+					   public TextPropertyComponent::Listener, public Value::Listener						
 {
 public:
 	LevelInspector();
-
 
 	~LevelInspector();
 
@@ -30,6 +29,7 @@ public:
 
 	void resized() override;
 
+
 	void buttonClicked(Button * button) override;
     
 	void comboBoxChanged(ComboBox *comboBoxThatHasChanged) override;
@@ -39,8 +39,8 @@ public:
 
 	void setChildrenEnabled(bool shouldBeEnabled);
 
-
 	GameObject* getSelectedGameObject();
+
 private:
     
     const Colour SELECTED_ROW_COLOUR;
@@ -54,7 +54,10 @@ private:
 	ToggleButton playButton;
 	OwnedArray<TextButton> buttons;
 	PropertyPanel propertyPanel;
-	Value selectedObjectValue, gravity;
+	Value selectedObjectValue, gravity, endCheckPoint, hasScore;
+	Value hasTimer, timer;
+	Value hasCheckPoint;
+	Value enemyScore, collectableScore;
 	Array<GameObject*> gameObjects;
 
     // Selections
@@ -66,4 +69,5 @@ private:
 	Array<PropertyComponent *> levelPhysicsProperties;
 	Array<PropertyComponent *> levelAudioProperties;
 	Array<PropertyComponent *> levelBackgroundProperties;
+	Array<PropertyComponent *> levelObjConditionalProperties;
 };

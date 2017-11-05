@@ -11,11 +11,14 @@ public:
 	ObjectBrowser() {
 		addAndMakeVisible(enemy);
 		addAndMakeVisible(block);
+		addAndMakeVisible(collectable);
 
 		enemy.setButtonText("Enemy Character");
 		block.setButtonText("Block");
+		collectable.setButtonText("Collectable");
 		block.addListener(this);
 		enemy.addListener(this);
+		collectable.addListener(this);
 		//addAndMakeVisible(scrollBar);
 		//scrollBar.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
 
@@ -39,6 +42,7 @@ public:
 		
 		enemy.setBounds(r.getX(), 0, getWidth(), BUTTON_HEIGHT);
 		block.setBounds(r.getX(), BUTTON_HEIGHT, getWidth(), BUTTON_HEIGHT);
+		collectable.setBounds(r.getX(), BUTTON_HEIGHT*2, getWidth(), BUTTON_HEIGHT);
 		//scrollBar.setBounds(getLocalBounds());
 	}
 
@@ -54,12 +58,18 @@ public:
 			coreEngine->addEnemy();
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
+		if (button == &collectable)
+		{
+			coreEngine->addCollectable();
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
 	}
 
 private:
 	const int NUM_VISIBLE_BUTTONS = 5;
 	CoreEngine* coreEngine;
 	TextButton enemy;
+	TextButton collectable;
 	TextButton block;
 	//Slider scrollBar;
 };
