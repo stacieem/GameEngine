@@ -4316,6 +4316,9 @@
     <ClInclude Include="..\..\Source\ListenerClass.h">
       <Filter>GameEngine\Source\ContactListener</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\Source\WorldNavigator.h">
+      <Filter>GameEngine\Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\JUCE\modules\juce_audio_formats\codecs\flac\Flac Licence.txt">

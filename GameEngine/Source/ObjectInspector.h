@@ -71,18 +71,18 @@ public:
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 
-
+		/*
 		if (component->getName() == "Density:") {
 			float dens = component->getText().getFloatValue()/100;
 			selectedObj->getPhysicsProperties().setDensity(dens);
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
-
+		*/
 	}
 
 	void valueChanged(Value &value) override
     {
-		if (value.refersToSameSourceAs(xPosition)) {
+		/*if (value.refersToSameSourceAs(xPosition)) {
 			if (value.getValue().isDouble()) {
 				
 				float x = (float)value.getValue();
@@ -90,7 +90,7 @@ public:
 				updateInspectorsChangeBroadcaster->sendChangeMessage();
 			}
 
-		}
+		}*/
 		if (value.refersToSameSourceAs(objPhysicsXCap)) {
 			switch ((int)objPhysicsXCap.getValue()) {
 			case 1:
@@ -120,7 +120,7 @@ public:
 			}
 
 		}
-
+		/*
 		if (value.refersToSameSourceAs(yPosition)) {
 			if (value.getValue().isDouble()) {
 				
@@ -132,7 +132,7 @@ public:
 			}
 
 		}
-
+		*/
 		if (value.refersToSameSourceAs(comboValue)) {
 			
 			switch ((int)comboValue.getValue()) {
@@ -180,7 +180,7 @@ public:
 				break;
 			}
 		}
-
+		/*
 		if (value.refersToSameSourceAs(objPhysicsFriction)) {
 			float fric = (float)value.getValue();
 			selectedObj->getPhysicsProperties().setFriction(fric);
@@ -193,6 +193,7 @@ public:
 			selectedObj->getPhysicsProperties().setRestitution(rest);
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
+		*/
 		if (value.refersToSameSourceAs(playerHasHealth)) {
 			selectedObj->setHealthEnabled();
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
@@ -245,7 +246,7 @@ private:
 				break;
 			case Player:	//player
 				addGenericMovementProperties();
-				//addHudProperties();
+				addHudProperties();
 
 				//add to panel
 				propertyPanel.addSection("Object Physics", objPhysicsProperties);
@@ -308,17 +309,17 @@ private:
 		combo->setSelectedId(1, dontSendNotification);
 		objPhysicsYCap.addListener(this);
 		objPhysicsProperties.add(combo);
-
+		/*
 		objPhysicsFriction.setValue(var(selectedObj->getPhysicsProperties().getFriction()));
 		SliderPropertyComponent* objFrictionText = new SliderPropertyComponent(objPhysicsFriction, "Friction:", 0, 1.0, 0.1);
 		objPhysicsFriction.addListener(this);
-		//objPhysicsProperties.add(objFrictionText);
+		objPhysicsProperties.add(objFrictionText);
 
 		objPhysicsRestitution.setValue(var(selectedObj->getPhysicsProperties().getRestitution()));
 		SliderPropertyComponent* objRestitutionText = new SliderPropertyComponent(objPhysicsRestitution, "Bounciness:", 0, 10.0, 0.1);
 		objPhysicsRestitution.addListener(this);
-		//objPhysicsProperties.add(objRestitutionText);
-
+		objPhysicsProperties.add(objRestitutionText);
+		*/
 		stateComboValue.setValue(var((int)1));
 		combo = new ComboBoxPropertyComponent(stateComboValue, "Physics:");
 		combo->setTextWhenNothingSelected("Choose if active");
@@ -366,7 +367,7 @@ private:
 		objNameText->addListener(this);
 
 		objBackgroundProperties.add(objNameText);
-
+		/*
 		//This is going to require a specification of the axis for the game
 		xPosition.setValue(var((int)selectedObj->getRenderableObject().position.x));
 		xPosition.addListener(this);
@@ -381,7 +382,7 @@ private:
 		SliderPropertyComponent* slider2 = new SliderPropertyComponent(yPosition, "y-Position:", -10, 10, .25);
 		yPosition.addListener(this);
 		//objBackgroundProperties.add(slider2);
-
+		*/
 		//Note that this is the custom ComboBoxPropertyComponent JUCE docs
 		comboValue.setValue(var((int)2));
 		ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(comboValue, "Animation Speed:");
@@ -395,7 +396,6 @@ private:
 
 		FilenamePropertyComponent* filename = new FilenamePropertyComponent("Choose Idle Texture", selectedObj->getRenderableObject().animationProperties.getIdleTexture(), false, false, false, "", "", "Select a file");
 		filename->addListener(this);
-
 		objBackgroundProperties.add(filename);
 
 		FilenamePropertyComponent* animationDirectory = new FilenamePropertyComponent("Animation Directory", selectedObj->getRenderableObject().animationProperties.getAnimationTextureDirectory(), false, true, false, "", "", "Select a Dir");
@@ -424,10 +424,9 @@ private:
 	Array<PropertyComponent *> objBackgroundProperties;
 	Array<PropertyComponent *> objHudProperties;
 
-	Value objTexture, objName, xPosition, yPosition,
-		  objPhysicsX, objPhysicsY, objPhysicsXCap, objPhysicsYCap,
-		  objPhysicsFriction, objPhysicsRestitution, objPhysicsDensity,
-	      comboValue, stateComboValue, aiState, playerHealth, playerHasHealth;
+	Value objName, objPhysicsX, objPhysicsY, objPhysicsXCap, objPhysicsYCap,
+		   objPhysicsDensity, comboValue, stateComboValue, aiState,
+			playerHealth, playerHasHealth;
 
 	ScopedPointer<FilenameComponent> chooseFile;
 

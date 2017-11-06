@@ -1936,6 +1936,7 @@
     <ClInclude Include="..\..\Source\Uniforms.h" />
     <ClInclude Include="..\..\Source\Vertex.h" />
     <ClInclude Include="..\..\Source\VertexBuffer.h" />
+    <ClInclude Include="..\..\Source\WorldNavigator.h" />
     <ClInclude Include="..\..\Source\WorldPhysics.h" />
     <ClInclude Include="..\..\..\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h" />
     <ClInclude Include="..\..\..\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.h" />
