@@ -129,7 +129,7 @@ void LevelInspector::updateInspector(GameModel & gameModel)
 	hasScore.setValue(var(selectedLevel->isScoreEnabled()));
 	BooleanPropertyComponent* scoreFlag = new BooleanPropertyComponent(hasScore, "Scores:", "Use Scoring System");
 	
-	levelObjConditionalProperties.add(scoreFlag);
+	//levelObjConditionalProperties.add(scoreFlag);
 
 	if (selectedLevel->isScoreEnabled()) {
 		enemyScore.setValue(var(selectedLevel->getEnemyPoints()));
@@ -146,7 +146,7 @@ void LevelInspector::updateInspector(GameModel & gameModel)
 	hasTimer.removeListener(this);
 	hasTimer.setValue(var(selectedLevel->isTimerEnabled()));
 	BooleanPropertyComponent* timerFlag = new BooleanPropertyComponent(hasTimer, "Timer:", "Use Timer");
-	levelObjConditionalProperties.add(timerFlag);
+	//levelObjConditionalProperties.add(timerFlag);
 	
 	if (selectedLevel->isTimerEnabled()) {
 		timer.setValue(var(selectedLevel->getTimer()));
@@ -159,7 +159,7 @@ void LevelInspector::updateInspector(GameModel & gameModel)
 
 	hasCheckPoint.removeListener(this);
 	hasCheckPoint.setValue(var(selectedLevel->isCheckpointEnabled()));
-	BooleanPropertyComponent* checkpointFlag = new BooleanPropertyComponent(hasCheckPoint, "Goal Point:", "target distance");
+	BooleanPropertyComponent* checkpointFlag = new BooleanPropertyComponent(hasCheckPoint, "Goal Point:", "transition to next level");
 	levelObjConditionalProperties.add(checkpointFlag);
 
 	hasCheckPoint.addListener(this);

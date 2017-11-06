@@ -62,6 +62,8 @@ public:
 
 	void addNewBlock() {
         GameObject * gameObj = new GameObject(worldPhysics);
+
+		gameObj->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/brick.png"));
         gameObj->setModel(modelsForRendering[0]);
         gameObj->setScale(1.0f, 1.0f);
 		gameObjects.add(gameObj);
@@ -75,9 +77,9 @@ public:
     
 	void addNewEnemy() {
 		EnemyObject* enm = new EnemyObject(worldPhysics);
-		enm->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
+		enm->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/blue_alien/walk/"));
 
-		enm->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_stand.png"));
+		enm->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/blue_alien/p2_stand.png"));
 
 
 		enm->getRenderableObject().animationProperties.setCanimate(true);

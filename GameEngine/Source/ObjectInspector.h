@@ -245,9 +245,13 @@ private:
 				break;
 			case Player:	//player
 				addGenericMovementProperties();
-				addHudProperties();
+				//addHudProperties();
+
+				//add to panel
+				propertyPanel.addSection("Object Physics", objPhysicsProperties);
 				break;
 			case Enemy:	//ai, maybe differntiate between types of ai with this?
+				addGenericMovementProperties();
 				aiState.setValue(var( ( (EnemyObject*)selectedObj)->getAIState()));
 				ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(aiState, "AI:");
 				combo->setTextWhenNothingSelected("Choose AI Type");
@@ -258,7 +262,10 @@ private:
 				combo->addItem("Do Nothing", 1);
 				combo->setSelectedId(((EnemyObject*)selectedObj)->getAIState() + 1, dontSendNotification);
 				aiState.addListener(this);
-				objPhysicsProperties.add(combo);
+				objBackgroundProperties.add(combo);
+
+				//add to panel
+				propertyPanel.addSection("Object Physics", objPhysicsProperties);
                 break;
 			}
 
@@ -266,8 +273,6 @@ private:
             
             addAudioProperties();
             
-			//add to panel
-			propertyPanel.addSection("Object Physics", objPhysicsProperties);
 
 			//Add misc properties to panel
 			propertyPanel.addSection("Misc. Properties", objBackgroundProperties);
@@ -307,18 +312,18 @@ private:
 		objPhysicsFriction.setValue(var(selectedObj->getPhysicsProperties().getFriction()));
 		SliderPropertyComponent* objFrictionText = new SliderPropertyComponent(objPhysicsFriction, "Friction:", 0, 1.0, 0.1);
 		objPhysicsFriction.addListener(this);
-		objPhysicsProperties.add(objFrictionText);
+		//objPhysicsProperties.add(objFrictionText);
 
 		objPhysicsRestitution.setValue(var(selectedObj->getPhysicsProperties().getRestitution()));
 		SliderPropertyComponent* objRestitutionText = new SliderPropertyComponent(objPhysicsRestitution, "Bounciness:", 0, 10.0, 0.1);
 		objPhysicsRestitution.addListener(this);
-		objPhysicsProperties.add(objRestitutionText);
+		//objPhysicsProperties.add(objRestitutionText);
 
 		stateComboValue.setValue(var((int)1));
-		combo = new ComboBoxPropertyComponent(stateComboValue, "State:");
-		combo->setTextWhenNothingSelected("Choose State");
-        combo->addItem("Static", 1);
-        combo->addItem("Dynamic", 2);
+		combo = new ComboBoxPropertyComponent(stateComboValue, "Physics:");
+		combo->setTextWhenNothingSelected("Choose if active");
+        combo->addItem("No", 1);
+        combo->addItem("Yes", 2);
         combo->setSelectedId(selectedObj->getPhysicsProperties().getIsStatic() ? 1 : 2, NotificationType::dontSendNotification);
 		stateComboValue.addListener(this);
 		objPhysicsProperties.add(combo);
@@ -369,13 +374,13 @@ private:
 
 		//new TextPropertyComponent(xPosition, "x-Position:", 4,false);
 
-		objBackgroundProperties.add(slider);
+		//objBackgroundProperties.add(slider);
 
 		//This is going to require a specification of the axis for the game
 		yPosition.setValue(var((int)selectedObj->getRenderableObject().position.y));
 		SliderPropertyComponent* slider2 = new SliderPropertyComponent(yPosition, "y-Position:", -10, 10, .25);
 		yPosition.addListener(this);
-		objBackgroundProperties.add(slider2);
+		//objBackgroundProperties.add(slider2);
 
 		//Note that this is the custom ComboBoxPropertyComponent JUCE docs
 		comboValue.setValue(var((int)2));
