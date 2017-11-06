@@ -13,7 +13,6 @@ public:
         getPhysicsProperties().setIsStatic(true);
 		radius = 1.5;
 		isActive = true;
-		setBodyInfo();
 	}
 	~CollectableObject() {}
 
@@ -31,20 +30,13 @@ public:
 				//make this disappear so that we don't mess with it anymore
 				// make it invisible
 
-				//updateState(GameObject::DYNAMIC);
-				
 			}
 		}
 		return collected;
 	}
 private:
-	GLfloat linearDamp;
 	bool isActive;
-	float32 radius;
-	Vector3D<GLfloat> position;
-	OwnedArray<Vector3D<GLfloat>> vertices;	 // The vertices from the origin
-	ScopedPointer<GLfloat> glVertices;
-
-	JUCE_LEAK_DETECTOR(PlayerObject)
+	float radius;
+	JUCE_LEAK_DETECTOR(CollectableObject)
 
 };

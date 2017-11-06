@@ -10,57 +10,48 @@ public:
 	{
 		setName("Player");
 		objType = GameObjectType::Player;
-		setXVelocityCap(Speed::SLOW);
-		setYVelocityCap(Speed::SLOW);
+		setMoveSpeed(Speed::MED);
+		setJumpSpeed(Speed::SLOW);
 
         getPhysicsProperties().setIsStatic(false);
-		getPhysicsProperties().setFriction(0.5f);
-		linearDamp = 0.5f;
-		setBodyInfo();
 	}
 	~PlayerObject(){}
 	void moveUp()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y += getYVel();
-		if (store.y > getYVelocityCap()) {
-			store.y = getYVelocityCap();
+		store.y += getJumpSpeedVelocity();
+		if (store.y > cappedJumpSpeed) {
+			store.y = cappedJumpSpeed;
 		}
 
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
-		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
 	void moveDown()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y -= getYVel();
-		if (store.y < -getYVelocityCap()) {
-			store.y = -getYVelocityCap();
+		store.y -= getJumpSpeedVelocity();
+		if (store.y < -cappedJumpSpeed) {
+			store.y = -cappedJumpSpeed;
 		}
-
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
-		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
 	void moveLeft()
 	{
-
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x -= getXVel();
-		if (store.x < -getXVelocityCap()) {
-			store.x = -getXVelocityCap();
+		store.x -= getRunSpeedVelocity();
+		if (store.x < -cappedMoveSpeed) {
+			store.x = -cappedMoveSpeed;
 		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
-		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
 	void moveRight()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x += getXVel();
-		if (store.x > getXVelocityCap()) {
-			store.x = getXVelocityCap();
+		store.x += getRunSpeedVelocity();
+		if (store.x > cappedMoveSpeed) {
+			store.x = cappedMoveSpeed;
 		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
-		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
 	b2Vec2 getPosition() {
 		return getPhysicsProperties().GetPosition();
@@ -71,12 +62,8 @@ public:
 //		getPhysicsProperties().setLinearVelocity(0.0f,0.0f);
 //	}
 private:
-	GLfloat linearDamp;
-
-	Vector3D<GLfloat> position;
-	OwnedArray<Vector3D<GLfloat>> vertices;	 // The vertices from the origin
-	ScopedPointer<GLfloat> glVertices;
-
+	Speed move;
+	Speed jump;
 	JUCE_LEAK_DETECTOR(PlayerObject)
 
 };

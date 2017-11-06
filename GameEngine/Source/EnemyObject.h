@@ -9,15 +9,12 @@ class EnemyObject : public GameObject {
 public:
 	EnemyObject(WorldPhysics & worldPhysics) : GameObject(worldPhysics)
 	{
-
 		objType = GameObjectType::Enemy;
 		aiState = NONE;
-		setXVelocityCap(Speed::SLOW);
-		setYVelocityCap(Speed::MED);
+
+		setMoveSpeed(Speed::SLOW);
+		setJumpSpeed(Speed::SLOW);
 		detection_radius = 7;
-		getPhysicsProperties().setFriction(0.5f);
-		//linearDamp = 0.5f;
-		setBodyInfo();
 		setName("Enemy");
 		direction = 1;
 		timeToSwap = 200;	//value that deltaTime will sum to for us to determine we need to switch directions
@@ -84,13 +81,6 @@ public:
 				{
 					moveLeft();
 				}
-				if (myPos.y < theirPos.y) {
-					//moveUp();
-				}
-				else if (myPos.y > theirPos.y)
-				{
-					//moveDown();
-				}
 			}
 			break;
 		case SCAREDAF:
@@ -106,13 +96,6 @@ public:
 				{
 					moveLeft();
 				}
-				if (myPos.y > theirPos.y) {
-					//moveUp();
-				}
-				else if (myPos.y < theirPos.y)
-				{
-					//moveDown();
-				}
 			}
 			break;
 		}
@@ -120,9 +103,9 @@ public:
 	void moveUp()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y = -getYVel() / 2;
-		if (store.y > getYVelocityCap()) {
-			store.y = getYVelocityCap();
+		store.y = -getJumpSpeedVelocity() / 2;
+		if (store.y > cappedJumpSpeed) {
+			store.y = cappedJumpSpeed;
 		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
@@ -130,9 +113,9 @@ public:
 	void moveDown()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y = getYVel() / 2;
-		if (store.y < -getYVelocityCap()) {
-			store.y = -getYVelocityCap();
+		store.y = getJumpSpeedVelocity() / 2;
+		if (store.y < -cappedJumpSpeed) {
+			store.y = -cappedJumpSpeed;
 		}
 
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
@@ -142,9 +125,9 @@ public:
 	{
 
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x = -getXVel();
-		if (store.x < -getXVelocityCap()) {
-			store.x = -getXVelocityCap();
+		store.x = -getRunSpeedVelocity();
+		if (store.x < -cappedMoveSpeed) {
+			store.x = -cappedMoveSpeed;
 		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
@@ -152,44 +135,36 @@ public:
 	void moveRight()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x = getXVel();
-		if (store.x > getXVelocityCap()) {
-			store.x = getXVelocityCap();
+		store.x = getRunSpeedVelocity();
+		if (store.x > cappedMoveSpeed) {
+			store.x = cappedMoveSpeed;
 		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
-		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
 	void moveLateral() {
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x = getXVel() * direction;
-		if (store.x > getXVelocityCap()) {
-			store.x = getXVelocityCap();
+		store.x = getRunSpeedVelocity() * direction;
+		if (store.x > cappedMoveSpeed) {
+			store.x = cappedMoveSpeed;
 		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 	}
 	void jumpLateral() {
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x = getXVel() * direction;
-		if (store.x > getXVelocityCap()) {
-			store.x = getXVelocityCap();
+		store.x = getRunSpeedVelocity() * direction;
+		if (store.x > cappedMoveSpeed) {
+			store.x = cappedMoveSpeed;
 		}
 		if (store.y == 0) {
-			store.y = getYVel();
+			store.y = getJumpSpeedVelocity();
 		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 	}
 private:
-	float linearDamp;
 	double timeToSwap,timeElapsed;
 	int direction;
 	AIType aiState;
-	//bounds at which to patrol
-
 	float detection_radius;
-	Vector3D<GLfloat> position;
-	OwnedArray<Vector3D<GLfloat>> vertices;	 // The vertices from the origin
-	ScopedPointer<GLfloat> glVertices;
-
 
 	JUCE_LEAK_DETECTOR(EnemyObject)
 

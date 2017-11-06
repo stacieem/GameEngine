@@ -20,7 +20,6 @@ public:
 		//addAndMakeVisible(scrollBar);
 		//scrollBar.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
 		addAndMakeVisible(propertyPanel);
-		playerHasHealth.addListener(this);
 		selectedObj = NULL;
 	}
 	~ObjectInspector() {
@@ -94,13 +93,13 @@ public:
 		if (value.refersToSameSourceAs(objPhysicsXCap)) {
 			switch ((int)objPhysicsXCap.getValue()) {
 			case 1:
-				selectedObj->setXVelocityCap(Speed::SLOW);
+				selectedObj->setMoveSpeed(Speed::SLOW);
 				break;
 			case 2:
-				selectedObj->setXVelocityCap(Speed::MED);
+				selectedObj->setMoveSpeed(Speed::MED);
 				break;
 			case 3:
-				selectedObj->setXVelocityCap(Speed::FAST);
+				selectedObj->setMoveSpeed(Speed::FAST);
 				break;
 			}
 
@@ -109,13 +108,13 @@ public:
 		if (value.refersToSameSourceAs(objPhysicsYCap)) {
 			switch ((int)objPhysicsYCap.getValue()) {
 			case 1:
-				selectedObj->setYVelocityCap(Speed::SLOW);
+				selectedObj->setJumpSpeed(Speed::SLOW);
 				break;
 			case 2:
-				selectedObj->setYVelocityCap(Speed::MED);
+				selectedObj->setJumpSpeed(Speed::MED);
 				break;
 			case 3:
-				selectedObj->setYVelocityCap(Speed::FAST);
+				selectedObj->setJumpSpeed(Speed::FAST);
 				break;
 			}
 
@@ -180,28 +179,8 @@ public:
 				break;
 			}
 		}
-		/*
-		if (value.refersToSameSourceAs(objPhysicsFriction)) {
-			float fric = (float)value.getValue();
-			selectedObj->getPhysicsProperties().setFriction(fric);
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
-		}
-
-		if (value.refersToSameSourceAs(objPhysicsRestitution)) {
-
-			float rest = (float)value.getValue();
-			selectedObj->getPhysicsProperties().setRestitution(rest);
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
-		}
-		*/
-		if (value.refersToSameSourceAs(playerHasHealth)) {
-			selectedObj->setHealthEnabled();
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
-			updateObj();
-		}
-
-		if (value.refersToSameSourceAs(playerHealth)) {
-			selectedObj->setHealth(value.getValue());
+		if (value.refersToSameSourceAs(playerLives)) {
+			selectedObj->setLives(value.getValue());
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 	}
@@ -290,23 +269,23 @@ private:
 	//base physics properties
 	void addGenericMovementProperties() {
 
-		objPhysicsXCap.setValue(var((int)1));
+		objPhysicsXCap.setValue(var(selectedObj->getMoveSpeed()));
 		ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(objPhysicsXCap, "Move Speed:");
 		combo->setTextWhenNothingSelected("Choose Move Speed");
 		combo->addItem("Fast", 3);
 		combo->addItem("Medium", 2);
 		combo->addItem("Slow", 1);
-		combo->setSelectedId(1, dontSendNotification);
+		combo->setSelectedId(selectedObj->getMoveSpeed() + 1, dontSendNotification);
 		objPhysicsXCap.addListener(this);
 		objPhysicsProperties.add(combo);
 
-		objPhysicsYCap.setValue(var((int)1));
+		objPhysicsYCap.setValue(var(selectedObj->getJumpSpeed()));
 		combo = new ComboBoxPropertyComponent(objPhysicsYCap, "Jump Speed:");
 		combo->setTextWhenNothingSelected("Choose Jump Speed");
 		combo->addItem("Fast", 3);
 		combo->addItem("Medium", 2);
 		combo->addItem("Slow", 1);
-		combo->setSelectedId(1, dontSendNotification);
+		combo->setSelectedId(selectedObj->getJumpSpeed()+1, dontSendNotification);
 		objPhysicsYCap.addListener(this);
 		objPhysicsProperties.add(combo);
 		/*
@@ -320,7 +299,7 @@ private:
 		objPhysicsRestitution.addListener(this);
 		objPhysicsProperties.add(objRestitutionText);
 		*/
-		stateComboValue.setValue(var((int)1));
+		stateComboValue.setValue(var(selectedObj->getPhysicsProperties().getIsStatic()));
 		combo = new ComboBoxPropertyComponent(stateComboValue, "Physics:");
 		combo->setTextWhenNothingSelected("Choose if active");
         combo->addItem("No", 1);
@@ -329,30 +308,16 @@ private:
 		stateComboValue.addListener(this);
 		objPhysicsProperties.add(combo);
 
-		//Density removed for now
-		/*objPhysicsDensity.setValue(var(selectedObj->getPhysicsProperties().getDensity()));
-		TextPropertyComponent* objDensityText = new TextPropertyComponent(objPhysicsDensity, "Density:", 3, false);
-		objDensityText->addListener(this);
-		objPhysicsProperties.add(objDensityText);*/
-
 	}
 
 	//base HUD properties
 	void addHudProperties()
     {
-		playerHasHealth.removeListener(this);
-		playerHasHealth.setValue(var((selectedObj)->isHealthEnabled()));
-		BooleanPropertyComponent* healthFlag = new BooleanPropertyComponent(playerHasHealth, "HealthBar:", "use HealthBar");
-		
-		objHudProperties.add(healthFlag);
-
-		if (selectedObj->isHealthEnabled()) {
-			playerHealth.setValue(var(selectedObj->getHealth()));
-			SliderPropertyComponent* playerHealthValue = new SliderPropertyComponent(playerHealth, "Health:", 0, 100, 1);
-			playerHealth.addListener(this);
+			playerLives.setValue(var(selectedObj->getLives()));
+			SliderPropertyComponent* playerHealthValue = new SliderPropertyComponent(playerLives, "Lives:", 0, 100, 1);
+			playerLives.addListener(this);
 			objHudProperties.add(playerHealthValue);
-		}
-		playerHasHealth.addListener(this);
+		
 		//Add HUD properties to panel
 		propertyPanel.addSection("HUD Properties", objHudProperties);
 	}
@@ -384,13 +349,13 @@ private:
 		//objBackgroundProperties.add(slider2);
 		*/
 		//Note that this is the custom ComboBoxPropertyComponent JUCE docs
-		comboValue.setValue(var((int)2));
+		comboValue.setValue(var((selectedObj->getRenderableObject()).animationProperties.getAnimationSpeed()));
 		ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(comboValue, "Animation Speed:");
 		combo->setTextWhenNothingSelected("Choose Speed");
 		combo->addItem("Fast", 3);
 		combo->addItem("Normal", 2);
 		combo->addItem("Slow", 1);
-		combo->setSelectedId(2, dontSendNotification);
+		combo->setSelectedId((selectedObj->getRenderableObject()).animationProperties.getAnimationSpeed() + 1, dontSendNotification);
 		comboValue.addListener(this);
 		objBackgroundProperties.add(combo);
 
@@ -426,7 +391,7 @@ private:
 
 	Value objName, objPhysicsX, objPhysicsY, objPhysicsXCap, objPhysicsYCap,
 		   objPhysicsDensity, comboValue, stateComboValue, aiState,
-			playerHealth, playerHasHealth;
+			playerLives;
 
 	ScopedPointer<FilenameComponent> chooseFile;
 

@@ -36,24 +36,14 @@ public:
         // By default an object is not renderable
         renderable = false;
         
-        // By default no health
-        hasHealth = false;
-
 		objType = GameObjectType::Generic;
-		Health = 0;
-		yVelocityCap = 0;
-		xVelocityCap = 0;
+		lives = 0;
 		xVel = 0;
 		yVel = 0;
-        maxJumps = 2;
-        currJumps = 0;
-        hasLanded = false;
-        hasHealth = false;
-        
+		cappedMoveSpeed = 10;
+		cappedJumpSpeed = 30;
+		setAnimationSpeed(MED);
         physicsProperties.setIsStatic(true);
-        
-        // This seems odd? We want to set origin to wherever an object is placed
-        // in edit mode.
         updateOrigin();
     }
     
@@ -67,15 +57,7 @@ public:
         this->renderableObject = objectToCopy.renderableObject;
         this->xVel = objectToCopy.xVel;
         this->yVel = objectToCopy.yVel;
-        this->xVelocityCap = objectToCopy.xVelocityCap;
-        this->yVelocityCap = objectToCopy.yVelocityCap;
         this->actionToAudio = objectToCopy.actionToAudio;
-		this->hasHealth = objectToCopy.hasHealth;
-
-        this->maxJumps = objectToCopy.maxJumps;
-        this->currJumps = objectToCopy.currJumps;
-        this->hasLanded = objectToCopy.hasLanded;
-        this->hasHealth = objectToCopy.hasHealth;
         
         this->physicsProperties.setIsStatic((objectToCopy.getPhysicsProperties().getIsStatic()));
         
@@ -92,7 +74,6 @@ public:
     {
         return name;
     }
-    
     void setName(String name)
     {
         this->name = name;
@@ -100,24 +81,10 @@ public:
     
     // Rendering Data ==========================================================
 
-	void setBodyInfo() {
-		getPhysicsProperties().getBody()->SetUserData(this);
-	}
-
     bool isRenderable()
     {
         return renderable;
     }
-
-	bool isHealthEnabled()
-	{
-		return hasHealth;
-	}
-    
-	void setHealthEnabled()
-	{
-		hasHealth = !hasHealth;
-	}
 
     /** Sets if the renderable object should be rendered as being "Selected"
         in the GameView. This renders the object as highlighted in the
@@ -173,8 +140,7 @@ public:
         // Update physics so it knows about the visual change in vertices
         physicsProperties.updateModelScale(renderableObject.model, x, y);
     }
-
-    
+ 
     /** Sets the 2D position of a GameObject in world coordinates and in the
         physics world
      */
@@ -192,39 +158,6 @@ public:
         physicsProperties.setPosition (x, y);
 		updateOrigin();
     }
-
-	/** Sets the 2D position of a GameObject in world coordinates and in the
-	physics world
-	*/
-	void setYPositionWithPhysics(GLfloat y)
-	{
-		// Update visual object position
-		renderableObject.position.y = y;
-
-		// Modify model matrix to translate object to correct position
-		renderableObject.modelMatrix[3][1] = y;
-
-		// Update physical object position
-		physicsProperties.setPosition(renderableObject.position.x, y);
-		updateOrigin();
-	}
-
-	/** Sets the 2D position of a GameObject in world coordinates and in the
-	physics world
-	*/
-	void setXPositionWithPhysics(GLfloat x)
-	{
-		// Update visual object position
-		renderableObject.position.x = x;
-
-		// Modify model matrix to translate object to correct position
-		renderableObject.modelMatrix[3][0] = x;
-
-		// Update physical object position
-		physicsProperties.setPosition(x, renderableObject.position.y);
-
-		updateOrigin();
-	}
 
     PhysicsProperties & getPhysicsProperties()
     {
@@ -256,21 +189,20 @@ public:
     }
     
     
-    // These seem a but weird to me. They seem to be a physics origin.
-    // There is already an origin position inside a renderable object, but it
-    // does make more sense to have a position for every object, even if it
-    // is not renderable.
+    /* Provides a singular function that can be called in multiple places
+	 * to make changes to the origin of the object based on where it is positioned
+	 * in the editor
+	*/
 	void updateOrigin()
     {
-		origin = getPhysicsProperties().GetPosition();
+		origin.x = getPhysicsProperties().GetPosition().x;
+		origin.y = getPhysicsProperties().GetPosition().y;
 	}
-    
-	b2Vec2 getOrigin()
+	glm::vec2 getOrigin()
     {
 		return origin;
 	}
-    
-    
+
 	// Audio to Action Mapping =================================================
     /** Maps an audio file to play when a specific action happens to this object
         in the physical game world.
@@ -279,148 +211,110 @@ public:
     {
         actionToAudio.insert(std::pair<PhysicalAction, File>(action, audioFile));
     }
-    
-    
+
     /** Gets the audio to play when a specific PhysicalAction occurs in the game.
      */
-    File * getAudioFileForAction(PhysicalAction action)
-    {
-        auto mapIterator = actionToAudio.find(action);
-        if (mapIterator != actionToAudio.end())
-            return &(actionToAudio.find(action)->second);
-        else
-            return nullptr;
-    }
- 
-    
-    
-    // Animation ?? ============================================================
-    
-	float getXVel()
+	File * getAudioFileForAction(PhysicalAction action)
+	{
+		auto mapIterator = actionToAudio.find(action);
+		if (mapIterator != actionToAudio.end())
+			return &(actionToAudio.find(action)->second);
+		else
+			return nullptr;
+	}
+
+	//Numerical speeds for the object
+	float getRunSpeedVelocity()
     {
 		return xVel;
 	}
-
-	float getYVel()
+	float getJumpSpeedVelocity()
     {
 		return yVel;
 	}
-	
-	float getXVelocityCap()
-    {
-		return xVelocityCap;
+	void setMoveSpeed(Speed moveSpeed)
+	{
+		this->moveSpeed = moveSpeed;
+		switch (this->moveSpeed) {
+		case FAST:
+			xVel = 3;
+			break;
+		case MED:
+			xVel = 2;
+			break;
+		case SLOW:
+			xVel = 1;
+			break;
+		}
 	}
-	
-	float getYVelocityCap()
-    {
-		return yVelocityCap;
-	}
-	
-	int getHealth()
-    {
-		return Health;
+	void setJumpSpeed(Speed jumpspeed) {
+		this->jumpSpeed = jumpspeed;
+		switch (this->jumpSpeed) {
+		case FAST:
+			yVel = 12;
+			break;
+		case MED:
+			yVel = 10;
+			break;
+		case SLOW:
+			yVel = 7;
+			break;
+		}
 	}
 
-	void setHealth(int newHealth)
-    {
-		Health = newHealth;
+	//Enumerated Speed values for the object
+	Speed getMoveSpeed() {
+		return moveSpeed;
 	}
-	
+	Speed getJumpSpeed() {
+		return jumpSpeed;
+	}
 	GameObjectType getObjType()
-    {
+	{
 		return objType;
 	}
 
-	void setXVelocityCap(Speed moveSpeed)
+	// Player Lives 
+	int getLives()
     {
-		int newXVel = 0;
-		switch (moveSpeed) {
-		case FAST:
-			newXVel = 10;
-			break;
-		case MED:
-			newXVel = 5;
-			break;
-		case SLOW:
-			newXVel = 3;
-			break;
-		}
-
-		xVelocityCap = newXVel;
-		if (xVel > xVelocityCap) {
-			xVel = xVelocityCap;
-		}
-		xVel = xVelocityCap / 3;
+		return lives;
 	}
-
-	void setYVelocityCap(Speed jumpspeed) {
-		int newYVel = 0;
-		switch (jumpspeed) {
-		case FAST:
-			newYVel = 40;
-			break;
-		case MED:
-			newYVel = 30;
-			break;
-		case SLOW:
-			newYVel = 20;
-			break;
-		}
-		yVelocityCap = newYVel;
-		if (yVel > yVelocityCap) {
-			yVel = yVelocityCap;
-		}
-
-		yVel = yVelocityCap / 3;
-	}
-
-
-	void setXVel(float newXVel)
+	void setLives(int newLives)
     {
-		xVel = newXVel;
-		if (xVel > xVelocityCap) {
-			xVel = xVelocityCap;
-		}
+		lives = newLives;
 	}
 
-	void setYVel(float newYVel) {
-		yVel = newYVel;
-		if (yVel > yVelocityCap) {
-			yVel = yVelocityCap;
-		}
+	// Animation speed
+	Speed getAnimationSpeed() {
+		return renderableObject.animationProperties.getAnimationSpeed();
+	}
+	void setAnimationSpeed(Speed animSpeed) {
+		this->animSpeed = animSpeed;
+		renderableObject.animationProperties.setAnimationSpeed(animSpeed);
 	}
 
-	//testing box2d collision implementation
-	void startContact() { contacting = true; }
-	void endContact() { contacting = false; }
 protected:
 	GameObjectType objType;
-
+	float cappedMoveSpeed, cappedJumpSpeed;
 private:
 	
     /** Name of object */
     String name;
-	//object statistics
-	int Health;
-	int maxJumps, currJumps;
-	b2Vec2 origin;
+	int lives;
+	glm::vec2 origin;
     /** Specifies wether or not the object will be rendered visually to the screen */
     bool renderable;
-	//state checks
-	bool hasHealth, hasLanded;
-	bool contacting;
-    /** Renderable representation of this object.
+    /** 
+		Renderable representation of this object.
      */
     RenderableObject renderableObject;
-    
+
+
     /** Physical properties associated with the object */
     PhysicsProperties physicsProperties;
-
-	//Physics related accelerations and max velocities
-	/*EVENTUALLY should go in PhysicsProperties*/
-	GLfloat xVel, yVel;
-	float xVelocityCap, yVelocityCap;
-    
+	float xVel, yVel;
+	// Speed of object jump/run
+	Speed moveSpeed, jumpSpeed, animSpeed;
     /** Map of in-game physics-based actions to specific audio files */
     std::map<PhysicalAction, File> actionToAudio;
 

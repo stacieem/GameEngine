@@ -12,20 +12,30 @@ public:
 		radius = 1.5;
 		objType = GameObjectType::Checkpoint;
         getPhysicsProperties().setIsStatic(true);
-		setBodyInfo();
+		LevelToGoTo = 0;
 	}
 	bool collision(PlayerObject& player) {
 		bool triggered = false;
 			b2Vec2 dist = (player.getPosition() - getPhysicsProperties().GetPosition());
 			float leng = sqrt(dist.x * dist.x + dist.y*dist.y);
 			if (leng < radius) {
-				// go to next level
 				triggered = true;
 			}
 		
 		return triggered;
 	}
+	
+	// Destination level
+	int getLevelToGoTo() {
+		return LevelToGoTo;
+	}
+	void setLevelToGoTo(int level) {
+		LevelToGoTo = level;
+	}
 private:
 	b2Vec2 origin;
+	int LevelToGoTo;
 	float radius;
+
+	JUCE_LEAK_DETECTOR(GoalPointObject)
 };
