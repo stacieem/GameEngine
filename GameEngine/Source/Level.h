@@ -262,6 +262,24 @@ public:
 			removeCheckpoint();
 		}
 	}
+    
+    void deleteObject (GameObject * gameObjectToDelete)
+    {
+        for (int i = 0; i < gameObjects.size(); ++i)
+        {
+            GameObject * curObject = gameObjects[i];
+            // If object found, delete it
+            if (curObject == gameObjectToDelete)
+            {
+                // Remove the object from the physics world
+                worldPhysics.removeObject (curObject->getPhysicsProperties().getBody());
+                
+                // Remove the object from the level
+                gameObjects.remove(i);
+                break;
+            }
+        }
+    }
 
 private:
     

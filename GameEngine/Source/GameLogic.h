@@ -13,10 +13,11 @@
 class GameLogic : public Thread
 {
 public:
-	GameLogic(GameAudio & gameAudio) : Thread("GameLogic"), gameAudio(gameAudio)
+	GameLogic(GameAudio & gameAudio, CriticalSection * objectDeletionLock) : Thread("GameLogic"), gameAudio(gameAudio)
     {
         //inputManager = new InputManager();
 		gamePaused = true;
+        this->objectDeletionLock = objectDeletionLock;
     }
     
 	~GameLogic()
@@ -282,26 +283,43 @@ private:
             // Set camera view matrix
             renderSwapFrame->setViewMatrix(levelCamera.getViewMatrix());
             
-            // Create array of potentially renderable objects in view
+        
             /** FUTURE EFFICIENCY FEATURE:
                 Add in some pre-render visiblity checking. If an object is
                 obviously going to be out of view, do not put it in a render
                 frame.
              */
-            vector<RenderableObject> renderableObjects;
-            for (auto gameObject : currLevel->getGameObjects())
-			{
-                if (gameObject->isRenderable())
+
+            
+            // GameObject deletion is a race condition, because a deleted object
+            // could have a function called on it such as: getRenderableObject()
+            // Therefore, we must lock here
+            objectDeletionLock->enter();
+            
+                // Create array of potentially renderable objects in view
+                /** FUTURE EFFICIENCY FEATURE:
+                    Add in some pre-render visiblity checking. If an object is
+                    obviously going to be out of view, do not put it in a render
+                    frame.
+                 */
+
+                vector<RenderableObject> renderableObjects;
+                for (auto gameObject : currLevel->getGameObjects())
                 {
-                    renderableObjects.push_back(gameObject->getRenderableObject());
-                    
-                    // If the game is playing, make sure no object is selected
-                    if (!isPaused())
+                    if (gameObject->isRenderable())
                     {
-                        renderableObjects.back().isSelected = false;
+                        renderableObjects.push_back(gameObject->getRenderableObject());
+                        
+                        // If the game is playing, make sure no object is selected
+                        if (!isPaused())
+                        {
+                            renderableObjects.back().isSelected = false;
+                        }
                     }
                 }
-			}
+            
+            objectDeletionLock->exit();
+            
             // Add the renderables to the swap frame to send to GameView
             renderSwapFrame->setRenderableObjects(renderableObjects);
  
@@ -331,6 +349,9 @@ private:
 	WorldPhysics world;
 
 	bool gamePaused;
+    
+    // GameModel Object synchronization
+    CriticalSection * objectDeletionLock;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GameLogic)
 };

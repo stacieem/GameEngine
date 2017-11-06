@@ -88,22 +88,27 @@ public:
 	*	remove the object at a given index position in the bodyList
 	*	remember that the ground is the first object created
 	**************************************************************************/
-	void removeObj(int index)
-	{
-		if (index < world.GetBodyCount())
-		{
-			int pos = 0;
-			for (b2Body* bodyObject = world.GetBodyList() ; bodyObject || pos < index;++pos)
-			{
-				b2Body* oldBody = bodyObject;
-				bodyObject = bodyObject->GetNext();
-				if (pos == index)
-				{
-					world.DestroyBody(oldBody);
-				}
-			}
-		}
-	}
+//	void removeObj(int index)
+//	{
+//		if (index < world.GetBodyCount())
+//		{
+//			int pos = 0;
+//			for (b2Body* bodyObject = world.GetBodyList() ; bodyObject || pos < index;++pos)
+//			{
+//				b2Body* oldBody = bodyObject;
+//				bodyObject = bodyObject->GetNext();
+//				if (pos == index)
+//				{
+//					world.DestroyBody(oldBody);
+//				}
+//			}
+//		}
+//	}
+    
+    void removeObject (b2Body * bodyToDestroy)
+    {
+        world.DestroyBody (bodyToDestroy);
+    }
 
 	/**************************************************************************
 	*

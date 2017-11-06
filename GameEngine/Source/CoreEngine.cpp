@@ -10,7 +10,7 @@
 
 
 //==============================================================================
-CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
+CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio, &objectDeletionLock)
 {
     // Setup JUCE Components & Windowing
     addAndMakeVisible (gameView);
@@ -215,21 +215,27 @@ GameModel& CoreEngine::getGameModel() {
 void CoreEngine::addBlock()
 {
 	gameModelCurrentFrame->getCurrentLevel()->addNewBlock();
-
 }
+
+void CoreEngine::deleteGameObject (GameObject * gameObject)
+{
+    const ScopedLock scopedLock (objectDeletionLock);
+    
+    gameModelCurrentFrame->getCurrentLevel()->deleteObject(gameObject);
+}
+
 void CoreEngine::addEnemy()
 {
 	gameModelCurrentFrame->getCurrentLevel()->addNewEnemy();
-
 }
+
 void CoreEngine::addCollectable()
 {
 	gameModelCurrentFrame->getCurrentLevel()->addNewCollectable();
-
 }
+
 void CoreEngine::toggleGamePause()
 {
-	
 	if (gameLogic.isPaused()) {
 		gameLogic.setPaused(false);
         // When game is playing, grab keyboard focus
@@ -237,9 +243,7 @@ void CoreEngine::toggleGamePause()
 	} else {
 		gameLogic.setPaused(true);
 	}
-	
 }
-
 
 void CoreEngine::addLevel()
 {

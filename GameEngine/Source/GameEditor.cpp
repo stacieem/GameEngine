@@ -2,7 +2,7 @@
 #include "GameEditor.h"
 
 
-GameEditor::GameEditor() : levelInspector(worldNavigator) {
+GameEditor::GameEditor() : worldNavigator(&gameEngine), levelInspector(worldNavigator) {
 	
     // Default window size
     setSize(1200, 800);
