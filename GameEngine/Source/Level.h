@@ -7,7 +7,6 @@
 #include "GameObject.h"
 #include "CollectableObject.h"
 #include "Camera.h"
-#include "ListenerClass.h"
 class Level {
 public:
 	Level(String levelName) {
@@ -15,7 +14,6 @@ public:
         // Add a default model
         modelsForRendering.add(new Model());
 		this->levelName = levelName;
-		worldPhysics.getWorld().SetContactListener(&myContactListenerInstance);
 		// Trystan's Multiplayer Test
 		PlayerObject* player = new PlayerObject(worldPhysics);
 
@@ -263,6 +261,9 @@ public:
 		}
 	}
 
+	int getGravityState() {
+		return worldPhysics.getGravityLevel();
+	}
 private:
     
     /** Updates positions from all objects from the Physics updates
@@ -287,7 +288,6 @@ private:
 	GoalPointObject* checkpoint;
     /** Physics for the level */
     WorldPhysics worldPhysics;
-	ListenerClass myContactListenerInstance;
 
     /** GameObjects in the level */
 	OwnedArray<GameObject> gameObjects;

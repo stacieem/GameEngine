@@ -113,6 +113,7 @@ void LevelInspector::updateInspector(GameModel & gameModel)
     combo->addItem("High gravity", 3);
     combo->addItem("Anti Gravity", 2);
     combo->addItem("Normal", 1);
+	combo->setSelectedId(selectedLevel->getGravityState()+1,dontSendNotification);
     levelPhysicsProperties.add(combo);
 
     propertyPanel.addSection("World Physics", levelPhysicsProperties);
@@ -284,6 +285,7 @@ void LevelInspector::setChildrenEnabled(bool shouldBeEnabled)
 	addLevelButton.setEnabled(shouldBeEnabled);
 	removeLevelButton.setEnabled(shouldBeEnabled);
 	levelLabel.setEnabled(shouldBeEnabled);
+	resetLevelButton.setEnabled(shouldBeEnabled);
 }
 
 void LevelInspector::comboBoxChanged(ComboBox *comboBoxThatHasChanged)

@@ -26,6 +26,7 @@ public:
 		if (store.y > getYVelocityCap()) {
 			store.y = getYVelocityCap();
 		}
+
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}

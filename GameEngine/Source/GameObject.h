@@ -339,10 +339,10 @@ public:
 			newXVel = 10;
 			break;
 		case MED:
-			newXVel = 8;
+			newXVel = 5;
 			break;
 		case SLOW:
-			newXVel = 5;
+			newXVel = 3;
 			break;
 		}
 

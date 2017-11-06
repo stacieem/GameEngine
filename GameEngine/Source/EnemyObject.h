@@ -11,16 +11,17 @@ public:
 	{
 
 		objType = GameObjectType::Enemy;
-		aiState = GROUNDPATROL;
+		aiState = NONE;
 		setXVelocityCap(Speed::SLOW);
-		setYVelocityCap(Speed::SLOW);
-		detection_radius = 10;
+		setYVelocityCap(Speed::MED);
+		detection_radius = 7;
 		getPhysicsProperties().setFriction(0.5f);
 		//linearDamp = 0.5f;
 		setBodyInfo();
 		setName("Enemy");
 		direction = 1;
-		timeToSwap = 10;
+		timeToSwap = 200;	//value that deltaTime will sum to for us to determine we need to switch directions
+		timeElapsed = 0;
         
         getPhysicsProperties().setIsStatic(false);
 	}
@@ -28,11 +29,11 @@ public:
 	~EnemyObject() {}
 
 	enum AIType {
+		NONE,
 		GROUNDPATROL,
 		JUMPPATROL,
-		CHASE,
 		SCAREDAF,
-		NONE
+		CHASE
 	};
 	void changeAI(AIType type) {
 		aiState = type;
@@ -45,27 +46,34 @@ public:
 	void decision(PlayerObject& player, double elapsed) {
 		switch (aiState) {
 		case GROUNDPATROL:
-			DBG("PATROL" << elapsed << "-----" << timeToSwap);
 			if (timeElapsed >= timeToSwap) {
 				timeElapsed = 0;
 				direction *= -1;
-				DBG("swap direction");
+				b2Vec2 store = getPhysicsProperties().getLinearVel();
+				getPhysicsProperties().setLinearVelocity(0, store.y);
 			}
 			else
 			{
-				timeElapsed += elapsed;
+				timeElapsed += 1;
 			}
 			moveLateral();
 			break;
 		case JUMPPATROL:
-			if (timeElapsed == timeToSwap) {
+			if (timeElapsed >= timeToSwap) {
 				timeElapsed = 0;
 				direction *= -1;
+				b2Vec2 store = getPhysicsProperties().getLinearVel();
+				getPhysicsProperties().setLinearVelocity(0, store.y);
 			}
-			moveLateral();
+			else
+			{
+				timeElapsed += 1;
+			}
+			jumpLateral();
 			break;
 		case CHASE:
-			if ((b2Vec2(getRenderableObject().position.x, getRenderableObject().position.y) - b2Vec2(player.getRenderableObject().position.x, player.getRenderableObject().position.y)).Length() < 7)	//detected
+			if ((b2Vec2(getRenderableObject().position.x, getRenderableObject().position.y) - 
+					b2Vec2(player.getRenderableObject().position.x, player.getRenderableObject().position.y)).Length() < detection_radius)	//detected
 			{
 				b2Vec2 myPos = b2Vec2(getRenderableObject().position.x, getRenderableObject().position.y);
 				b2Vec2 theirPos = b2Vec2(player.getRenderableObject().position.x, player.getRenderableObject().position.y);
@@ -77,32 +85,33 @@ public:
 					moveLeft();
 				}
 				if (myPos.y < theirPos.y) {
-					moveUp();
+					//moveUp();
 				}
 				else if (myPos.y > theirPos.y)
 				{
-					moveDown();
+					//moveDown();
 				}
 			}
 			break;
 		case SCAREDAF:
-			if ((b2Vec2(getRenderableObject().position.x, getRenderableObject().position.y) - b2Vec2(player.getRenderableObject().position.x, player.getRenderableObject().position.y)).Length() < 7)	//detected
+			if ((b2Vec2(getRenderableObject().position.x, getRenderableObject().position.y) - 
+					b2Vec2(player.getRenderableObject().position.x, player.getRenderableObject().position.y)).Length() < detection_radius)	//detected
 			{
 				b2Vec2 myPos = b2Vec2(getRenderableObject().position.x, getRenderableObject().position.y);
 				b2Vec2 theirPos = b2Vec2(player.getRenderableObject().position.x, player.getRenderableObject().position.y);
-				if (myPos.x >= theirPos.x) {
+				if (myPos.x > theirPos.x) {
 					moveRight();
 				}
 				else if (myPos.x < theirPos.x)
 				{
 					moveLeft();
 				}
-				if (myPos.y >= theirPos.y) {
-					moveUp();
+				if (myPos.y > theirPos.y) {
+					//moveUp();
 				}
 				else if (myPos.y < theirPos.y)
 				{
-					moveDown();
+					//moveDown();
 				}
 			}
 			break;
@@ -111,7 +120,7 @@ public:
 	void moveUp()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y += getYVel() / 4;
+		store.y = -getYVel() / 2;
 		if (store.y > getYVelocityCap()) {
 			store.y = getYVelocityCap();
 		}
@@ -121,7 +130,7 @@ public:
 	void moveDown()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y -= getYVel() / 4;
+		store.y = getYVel() / 2;
 		if (store.y < -getYVelocityCap()) {
 			store.y = -getYVelocityCap();
 		}
@@ -133,7 +142,7 @@ public:
 	{
 
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x -= getXVel() / 4;
+		store.x = -getXVel();
 		if (store.x < -getXVelocityCap()) {
 			store.x = -getXVelocityCap();
 		}
@@ -143,7 +152,7 @@ public:
 	void moveRight()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x += getXVel() / 4;
+		store.x = getXVel();
 		if (store.x > getXVelocityCap()) {
 			store.x = getXVelocityCap();
 		}
@@ -152,9 +161,20 @@ public:
 	}
 	void moveLateral() {
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x += (getXVel() / 4) * direction;
+		store.x = getXVel() * direction;
 		if (store.x > getXVelocityCap()) {
 			store.x = getXVelocityCap();
+		}
+		getPhysicsProperties().setLinearVelocity(store.x, store.y);
+	}
+	void jumpLateral() {
+		b2Vec2 store = getPhysicsProperties().getLinearVel();
+		store.x = getXVel() * direction;
+		if (store.x > getXVelocityCap()) {
+			store.x = getXVelocityCap();
+		}
+		if (store.y == 0) {
+			store.y = getYVel();
 		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
 	}

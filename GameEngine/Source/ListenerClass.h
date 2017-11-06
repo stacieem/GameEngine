@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "PlayerObject.h"
 class ListenerClass : public b2ContactListener{
 public:
 		void endContact(b2Contact* contact) {
@@ -10,6 +9,9 @@ public:
 
 		void beginContact(b2Contact* contact) {
 			void* bodyUserData = contact->GetFixtureA()->GetBody()->GetUserData();
+			if (bodyUserData) {
+				DBG("Contacted2");
+			}
 			DBG("Contacted");
 			if (((GameObject*)bodyUserData)->getObjType() == Player) {
 				bodyUserData = contact->GetFixtureB()->GetBody()->GetUserData();

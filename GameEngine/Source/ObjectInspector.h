@@ -164,10 +164,19 @@ public:
 
 			switch ((int)aiState.getValue()) {
 			case 1:
-				dynamic_cast<EnemyObject *>(selectedObj)->changeAI(EnemyObject::CHASE);
+				((EnemyObject*)(selectedObj))->changeAI(EnemyObject::NONE);
 				break;
 			case 2:
-				dynamic_cast<EnemyObject *>(selectedObj)->changeAI(EnemyObject::SCAREDAF);
+				((EnemyObject*)(selectedObj))->changeAI(EnemyObject::GROUNDPATROL);
+				break;
+			case 3:
+				((EnemyObject*)(selectedObj))->changeAI(EnemyObject::JUMPPATROL);
+				break;
+			case 4:
+				((EnemyObject*)(selectedObj))->changeAI(EnemyObject::SCAREDAF);
+				break;
+			case 5:
+				((EnemyObject*)(selectedObj))->changeAI(EnemyObject::CHASE);
 				break;
 			}
 		}
@@ -242,9 +251,12 @@ private:
 				aiState.setValue(var( ( (EnemyObject*)selectedObj)->getAIState()));
 				ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(aiState, "AI:");
 				combo->setTextWhenNothingSelected("Choose AI Type");
-				combo->addItem("Flee", 2);
-				combo->addItem("Chase", 1);
-				combo->setSelectedId(((EnemyObject*)selectedObj)->getAIState(), dontSendNotification);
+				combo->addItem("Chase", 5);
+				combo->addItem("Flee", 4);
+				combo->addItem("Jump & Patrol", 3);
+				combo->addItem("Patrol", 2);
+				combo->addItem("Do Nothing", 1);
+				combo->setSelectedId(((EnemyObject*)selectedObj)->getAIState() + 1, dontSendNotification);
 				aiState.addListener(this);
 				objPhysicsProperties.add(combo);
                 break;

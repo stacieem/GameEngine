@@ -44,7 +44,9 @@ public:
 		gameModelCurrentFrame = curentFrame;
 	}
     
+	void playerDied() {
 
+	}
 	/** Sets the Render swap frame that will be processed for logic before it
 	is sent to the GameView to be rendered.
 	*/
@@ -84,6 +86,7 @@ public:
 	void registerInputManager(InputManager* inputManager) {
 		this->inputManager = inputManager;
 	}
+	
 
 private:
 
@@ -122,7 +125,7 @@ private:
 				for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
 					switch (obj->getObjType()) {
 					case Enemy:
-						((EnemyObject*)(obj))->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0), deltaTime);
+						((EnemyObject*)(obj))->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0), deltaTime/1000);
 						break;
 					case Collectable:
 						if (((CollectableObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
@@ -140,7 +143,6 @@ private:
 					}
 				}
 			}
-
 			//locks in the commands for this iteration
 			inputManager->getCommands(newCommands);
 
@@ -237,12 +239,12 @@ private:
 			if (!gamePaused) {
                 
                 // Process AI (this should be a function)
-                for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
+                /*for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
                     if (obj->getObjType() == GameObjectType::Enemy) {
-                        EnemyObject* objEnemy = dynamic_cast<EnemyObject*>(obj);
+                        EnemyObject* objEnemy = (EnemyObject*)(obj);
                         objEnemy->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0), deltaTime);
                     }
-                }
+                }*/
                 
 				// Process Physics - processes physics and updates objects positions
 				currLevel->processWorldPhysics(deltaTime);
