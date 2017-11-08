@@ -147,6 +147,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\Source\CoreEngine.cpp"/>
     <ClCompile Include="..\..\Source\GameAudio.cpp"/>
+    <ClCompile Include="..\..\Source\GameEditor.cpp"/>
     <ClCompile Include="..\..\Source\Main.cpp"/>
     <ClCompile Include="..\..\..\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
@@ -1896,8 +1897,10 @@
     <ClInclude Include="..\..\Source\Attributes.h"/>
     <ClInclude Include="..\..\Source\CoreEngine.h"/>
     <ClInclude Include="..\..\Source\DrawableObject.h"/>
+    <ClInclude Include="..\..\Source\EditorControl.h"/>
     <ClInclude Include="..\..\Source\GameAudio.h"/>
     <ClInclude Include="..\..\Source\GameCommand.h"/>
+    <ClInclude Include="..\..\Source\GameEditor.h"/>
     <ClInclude Include="..\..\Source\GameHUD.h"/>
     <ClInclude Include="..\..\Source\GameLogic.h"/>
     <ClInclude Include="..\..\Source\GameModel.h"/>
@@ -1905,10 +1908,18 @@
     <ClInclude Include="..\..\Source\GameView.h"/>
     <ClInclude Include="..\..\Source\HealthBar.h"/>
     <ClInclude Include="..\..\Source\InputManager.h"/>
+    <ClInclude Include="..\..\Source\Inspector.h"/>
+    <ClInclude Include="..\..\Source\Level.h"/>
+    <ClInclude Include="..\..\Source\LevelInspector.h"/>
+    <ClInclude Include="..\..\Source\ObjectBrowser.h"/>
+    <ClInclude Include="..\..\Source\ObjectInspector.h"/>
     <ClInclude Include="..\..\Source\PhysicalAction.h"/>
     <ClInclude Include="..\..\Source\PhysicsProperties.h"/>
     <ClInclude Include="..\..\Source\PlayerObject.h"/>
     <ClInclude Include="..\..\Source\RenderSwapFrame.h"/>
+    <ClInclude Include="..\..\Source\Resource.h"/>
+    <ClInclude Include="..\..\Source\TextureResource.h"/>
+    <ClInclude Include="..\..\Source\TextureResourceManager.h"/>
     <ClInclude Include="..\..\Source\Uniforms.h"/>
     <ClInclude Include="..\..\Source\Vertex.h"/>
     <ClInclude Include="..\..\Source\VertexBuffer.h"/>

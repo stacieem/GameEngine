@@ -13,15 +13,25 @@
 class GameLogic : public Thread
 {
 public:
-	GameLogic(GameAudio & gameAudio) : Thread("GameLogic"), gameAudio(gameAudio)
+	GameLogic(GameAudio & gameAudio, CriticalSection * objectDeletionLock) : Thread("GameLogic"), gameAudio(gameAudio)
     {
         //inputManager = new InputManager();
-		gamePaused = false;
+		gamePaused = true;
+        this->objectDeletionLock = objectDeletionLock;
+
+		currentTime = Time::currentTimeMillis();
+		checkTime = 0;
+
+		currLevel = nullptr;
+		victory = new Level("Victory");
+		gameOver = new Level("Game Over");
     }
     
 	~GameLogic()
     {
         gameModelCurrentFrame = nullptr;
+		delete victory;
+		delete gameOver;
 	}
 
 	/** Sets whether or not the game is paused.
@@ -43,7 +53,17 @@ public:
     {
 		gameModelCurrentFrame = curentFrame;
 	}
-    
+	void playerRespawn() {
+		currLevel->resetLevel();
+		b2Vec2 pos = currLevel->getPlayer(0)->getPosition();
+		currLevel->getPlayer(0)->setPosition(pos.x,pos.y);
+	}
+	void playerDied() {
+		currLevel = gameOver;
+		for (auto level : gameModelCurrentFrame->getLevels()) {
+			level->resetLevel();
+		}
+	}
 
 	/** Sets the Render swap frame that will be processed for logic before it
 	is sent to the GameView to be rendered.
@@ -84,6 +104,12 @@ public:
 	void registerInputManager(InputManager* inputManager) {
 		this->inputManager = inputManager;
 	}
+	
+	void copyPlayerAttributes(Level* currLevel, Level* destLevel) {
+		destLevel->getPlayer(0)->setLives(currLevel->getPlayer(0)->getLives());
+		destLevel->getPlayer(0)->setScore(currLevel->getPlayer(0)->getScore());
+		currLevel->resetLevel();
+	}
 
 private:
 
@@ -91,28 +117,16 @@ private:
 	void run()
     {
         // Set time the very first time GameLogic runs
-		currentTime = Time::currentTimeMillis();
-		int64 checkTime = 0;
 
-		Level& currLevel = gameModelCurrentFrame->getCurrentLevel();
 		// Main Logic loop
 		while (!threadShouldExit())
         {
-
-
-
-			// ADD: If level changed, update the current level
-				// currentLevel = gameModelCurrentFrame->getCurrentLevel();
-
-
-
 			// Wait for CoreEngine to signal() this loop
 			logicWaitable->wait();
+            
+            // Grab current level
+            currLevel = gameModelCurrentFrame->getCurrentLevel();
 
-			if (gamePaused) {
-				currentTime = Time::currentTimeMillis();
-				
-			}
 
 			// Calculate time
 			newTime = Time::currentTimeMillis();
@@ -120,6 +134,59 @@ private:
 			currentTime = newTime;
 			checkTime += deltaTime;
 
+			if (gamePaused) {
+				currentTime = Time::currentTimeMillis();
+				DBG("Score");
+				DBG(gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getScore());
+			}
+			else
+			{
+				//	process each object (I'm sure if we looked more into contact listeners or bit masking we could've figured this out
+				//	however this is the quickest solution i could think of)
+				//	ai motions
+				for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
+					switch (obj->getObjType()) {
+					case Enemy:
+						((EnemyObject*)(obj))->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0), deltaTime/1000);
+						
+						if (((EnemyObject*)(obj))->getIsActive() &&
+							((EnemyObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
+							if (gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getLives() - 1 == 0) {
+								playerDied();
+							}
+							else
+							{
+								playerRespawn();
+								gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->
+									setLives(gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getLives() - 1);
+							}
+						}
+						break;
+					case Collectable:
+						if (((CollectableObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
+							gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->addScore(gameModelCurrentFrame->getCurrentLevel()->getCollectablePoints());
+						}
+						break;
+					case Checkpoint:
+						GoalPointObject * chkPoint = (GoalPointObject*)obj;
+						if (chkPoint->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) 
+						{
+								if (chkPoint->getToWin()) {
+									//go to winning level
+									//createVictory();
+									currLevel = victory;
+									//engine.winScreen()
+								}
+								else
+								{
+									copyPlayerAttributes(currLevel,&gameModelCurrentFrame->getLevel(chkPoint->getLevelToGoTo() - 1));
+									gameModelCurrentFrame->setCurrentLevel(chkPoint->getLevelToGoTo()-1);
+								}
+						}
+						break;
+					}
+				}
+			}
 			//locks in the commands for this iteration
 			inputManager->getCommands(newCommands);
 
@@ -127,120 +194,180 @@ private:
 			{
 				switch (command)
 				{
-					//Apparently if statements inside a switch are a thing, probably a bad thing
-					//Don't accept this input if the game is paused
-					if (!isPaused()) {
-
-						case GameCommand::Player1MoveUp:
-							currLevel.getPlayer(0)->moveUp();
-
-							break;
-						case GameCommand::Player1MoveDown:
-							currLevel.getPlayer(0)->moveDown();
-
-							break;
-						case GameCommand::Player1MoveLeft:
-							currLevel.getPlayer(0)->moveLeft();
-							if (!currLevel.getPlayer(0)->getIsAnimating()) {
-								currLevel.getPlayer(0)->setAnimationStartTime(currentTime);
-								currLevel.getPlayer(0)->setLeftAnimation(true);
-								currLevel.getPlayer(0)->setIsAnimating(true);
-							}
-
-							break;
-						case GameCommand::Player1MoveRight:
-							currLevel.getPlayer(0)->moveRight();
-
-							if (!currLevel.getPlayer(0)->getIsAnimating()) {
-								currLevel.getPlayer(0)->setAnimationStartTime(currentTime);
-								currLevel.getPlayer(0)->setLeftAnimation(false);
-								currLevel.getPlayer(0)->setIsAnimating(true);
+				
+					case GameCommand::Player1MoveUp:
+						if (!isPaused()) {
+							if (!oldCommands.contains(GameCommand::Player1MoveUp)) {
+								currLevel->getPlayer(0)->moveUp();
 							}
 							
+						}
+
+						break;
+					case GameCommand::Player1MoveDown:
+						if (!isPaused()) {
+							currLevel->getPlayer(0)->moveDown();
+						}
+
+						break;
+					case GameCommand::Player1MoveLeft:
+						if (!isPaused()) {
+							currLevel->getPlayer(0)->moveLeft();
+							if (!currLevel->getPlayer(0)->getRenderableObject().animationProperties.getIsAnimating()) {
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setAnimationStartTime(currentTime);
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setLeftAnimation(true);
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setIsAnimating(true);
+							}
+						}
+
+						break;
+					case GameCommand::Player1MoveRight:
+						if (!isPaused()) {
+							currLevel->getPlayer(0)->moveRight();
+
+							if (!currLevel->getPlayer(0)->getRenderableObject().animationProperties.getIsAnimating()) {
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setAnimationStartTime(currentTime);
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setLeftAnimation(false);
+								currLevel->getPlayer(0)->getRenderableObject().animationProperties.setIsAnimating(true);
+							}
+						}
 							
-							break;
-						//Player 2 commands
-						case GameCommand::Player2MoveUp:
-							currLevel.getPlayer(1)->moveUp();
-							break;
-						case GameCommand::Player2MoveDown:
-							currLevel.getPlayer(1)->moveDown();
-							break;
-						case GameCommand::Player2MoveLeft:
-							currLevel.getPlayer(1)->moveLeft();
-							break;
-						case GameCommand::Player2MoveRight:
-							currLevel.getPlayer(1)->moveRight();
-							break;
-						case GameCommand::reset:
-							currLevel.getPlayer(0)->reset();
-							currLevel.getPlayer(1)->reset();
-							break;
-					}
+							
+						break;
+					//Player 2 commands
+					case GameCommand::Player2MoveUp:
+						if (!isPaused()) {
+							currLevel->getPlayer(1)->moveUp();
+						}
+						break;
+					case GameCommand::Player2MoveDown:
+						if (!isPaused()) {
+							currLevel->getPlayer(1)->moveDown();
+						}
+						break;
+					case GameCommand::Player2MoveLeft:
+						if (!isPaused()) {
+							currLevel->getPlayer(1)->moveLeft();
+						}
+						break;
+					case GameCommand::Player2MoveRight:
+						if (!isPaused()) {
+							currLevel->getPlayer(1)->moveRight();
+						}
+						break;
 				}
-				
-				
 			}
 
+            // Determine if player is not moving, if so, it should not be animating
 			if ((oldCommands.contains(GameCommand::Player1MoveRight) && !newCommands.contains(GameCommand::Player1MoveRight)) ||
 				(oldCommands.contains(GameCommand::Player1MoveLeft) && !newCommands.contains(GameCommand::Player1MoveLeft)) ||
-				newCommands.contains(GameCommand::Player1MoveLeft) && newCommands.contains(GameCommand::Player1MoveRight)) {
-				//DBG("stop");
+				(newCommands.contains(GameCommand::Player1MoveLeft) && newCommands.contains(GameCommand::Player1MoveRight))) {
 
-				if (!newCommands.contains(GameCommand::Player1MoveLeft) && !newCommands.contains(GameCommand::Player1MoveRight) ||
-					newCommands.contains(GameCommand::Player1MoveLeft) && newCommands.contains(GameCommand::Player1MoveRight)) {
-					currLevel.getPlayer(0)->setIsAnimating(false);
-					
+				if ((!newCommands.contains(GameCommand::Player1MoveLeft) && !newCommands.contains(GameCommand::Player1MoveRight)) ||
+					(newCommands.contains(GameCommand::Player1MoveLeft) && newCommands.contains(GameCommand::Player1MoveRight))) {
+                    
+					currLevel->getPlayer(0)->getRenderableObject().animationProperties.setIsAnimating(false);
+
 				}
-
-				
 			}
 
 			oldCommands = newCommands;
+            
+            
+            // Update gameplay data ============================================
+        
+            // Grab the camera for the level
+            Camera & levelCamera = currLevel->getCamera();
 			
-            //Only do these things if the game is not paused
+            // Only do these things while the game is playing
 			if (!gamePaused) {
-				// Process Physics
-				currLevel.processWorldPhysics(deltaTime);
+                
+                // Process AI (this should be a function)
+                /*for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
+                    if (obj->getObjType() == GameObjectType::Enemy) {
+                        EnemyObject* objEnemy = (EnemyObject*)(obj);
+                        objEnemy->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0), deltaTime);
+                    }
+                }*/
+                
+				// Process Physics - processes physics and updates objects positions
+				currLevel->processWorldPhysics(deltaTime);
 
 				// Play Audio
 				// If any new collisions occur, play the specified collision audio
-				for (auto & object : currLevel.getGameObjects())
+				for (auto & object : currLevel->getGameObjects())
 				{
-					if (object->getCanimate()) {
-						if (object->getIsAnimating()) {
-							object->updateAnimationCurrentTime(currentTime);
+					if (object->getRenderableObject().animationProperties.getCanimate()) {
+						if (object->getRenderableObject().animationProperties.getIsAnimating()) {
+							object->getRenderableObject().animationProperties.updateAnimationCurrentTime(currentTime);
 						}
 					}
 
 					if (object->getPhysicsProperties().hasNewCollisions())
 					{
-						//                    File * audioFile = object->getAudioFileForAction(PhysicalAction::collsion);
-						//                 
-						//                     If audio file was not in the map, do nothing
-						//                    if (audioFile != nullptr)
-						//                    {
-						//                        gameAudio.playAudioFile(*audioFile, false);
-						//                    }
-						gameAudio.playAudioFile(object->getAudioFile(), false);
-
+                        File * audioFile = object->getAudioFileForAction(PhysicalAction::collsion);
+                     
+                        // If audio file was not in the map, do nothing
+                        if (audioFile != nullptr)
+                        {
+                            gameAudio.playAudioFile(*audioFile, false);
+                        }
 					}
 				}
+                
+                // Update camera position based on the position of player 1
+                // The player1 object will be unmoving, while the world moves around it
+                //levelCamera.setXPosition(-currLevel->getPlayer(0)->getRenderableObject().position.x);
+                levelCamera.setPositionXY(-currLevel->getPlayer(0)->getRenderableObject().position.x, 0.0f);
 			}
             
-            // Update the GameModel
-			//Update the number of DrawableObjects in the RenderSwapFrame
-			renderSwapFrame->setDrawableObjectsLength(currLevel.getNumGameObjects());
+            
+            // Update render data ==============================================
+            /** Always render, regardless of pause/play */
+            
+            // Set camera view matrix
+            renderSwapFrame->setViewMatrix(levelCamera.getViewMatrix());
+            
+        
+            /** FUTURE EFFICIENCY FEATURE:
+                Add in some pre-render visiblity checking. If an object is
+                obviously going to be out of view, do not put it in a render
+                frame.
+             */
 
-			for (int i = 0; i < currLevel.getGameObjects().size(); i++)
-			{
-				renderSwapFrame->setDrawableObjectVertices(currLevel.getGameObjects()[i]->getVertices(), i);
+            
+            // GameObject deletion is a race condition, because a deleted object
+            // could have a function called on it such as: getRenderableObject()
+            // Therefore, we must lock here
+            objectDeletionLock->enter();
+            
+                // Create array of potentially renderable objects in view
+                /** FUTURE EFFICIENCY FEATURE:
+                    Add in some pre-render visiblity checking. If an object is
+                    obviously going to be out of view, do not put it in a render
+                    frame.
+                 */
 
-				renderSwapFrame->setDrawableObjectTexture(currLevel.getGameObjects()[i]->getTexture(),i);
-			}
-            // Maybe actions are triggered here ???
-            // IMPLEMENT . . .
-
+                vector<RenderableObject> renderableObjects;
+                for (auto gameObject : currLevel->getGameObjects())
+                {
+                    if (gameObject->isRenderable())
+                    {
+                        renderableObjects.push_back(gameObject->getRenderableObject());
+                        
+                        // If the game is playing, make sure no object is selected
+                        if (!isPaused())
+                        {
+                            renderableObjects.back().isSelected = false;
+                        }
+                    }
+                }
+            
+            objectDeletionLock->exit();
+            
+            // Add the renderables to the swap frame to send to GameView
+            renderSwapFrame->setRenderableObjects(renderableObjects);
+ 
 			// Notify CoreEngine logic is done
 			coreEngineWaitable->signal();
 		}
@@ -267,6 +394,14 @@ private:
 	WorldPhysics world;
 
 	bool gamePaused;
+	int64 checkTime;
+
+	//end game Screens
+	Level* victory;
+	Level* gameOver;
+	Level * currLevel;
+    // GameModel Object synchronization
+    CriticalSection * objectDeletionLock;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GameLogic)
 };

@@ -38,35 +38,31 @@ public:
         
         openGLContext.setRenderer(this);
         openGLContext.attachTo(*this);
-
-        addAndMakeVisible(gameHUD);
-		setWantsKeyboardFocus(true);
+        
+        // Default to no camera
+        camera = nullptr;
+        
         // Setup GUI Overlay Label: Status of Shaders, compiler errors, etc.
         addAndMakeVisible (statusLabel);
         statusLabel.setJustificationType (Justification::topLeft);
         statusLabel.setFont (Font (14.0f));
         statusLabel.toBack();
-
-
-        // GameView Variables
-        isEnabled = false;
-        objectVBOsSize = 0;
         
+        // Setup GameHUD Overlay over OpenGL
+        addAndMakeVisible(gameHUD);
+        setWantsKeyboardFocus(true);
 
         setOpaque(true);
+        
+        // GameView Variables
+        isEnabled = false;
     }
     
     ~GameView()
     {
-        
-        
         // Turn off OpenGL
         openGLContext.setContinuousRepainting (false);
         openGLContext.detach();
-		
-		
-		openGLContext.extensions.glDeleteBuffers(1, &vertexBuffer);
-		openGLContext.extensions.glDeleteBuffers(1, &indexBuffer);
     }
     
     /** Enables or disables the OpenGL layer of GameView. Enabling continuously
@@ -94,13 +90,6 @@ public:
         // Setup Shaders
         createShaders();
 
-
-		openGLContext.extensions.glGenBuffers(1, &vertexBuffer);
-		openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-
-		openGLContext.extensions.glGenBuffers(1, &indexBuffer);
-		openGLContext.extensions.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-
 		avgMilliseconds = 0.0;
 		currentTime = Time::currentTimeMillis();
 		checkTime = 0;
@@ -112,11 +101,25 @@ public:
         uniforms = nullptr;
 
 		texResourceManager.releaseTextures();
+        
+        
+        /**
+            The code below throws an error due to a misordering of object
+            destructors, but is not really necessary here.
+         
+        !!  BUT we do need to think about where to unregister models, probably
+            when we change levels we want to register/unregister all the models
+            for that level
+         */
+        // Unregister all the Models that were being used
+//        for (auto & renderableObject : renderSwapFrame->getRenderableObjects())
+//        {
+//            renderableObject.model->unregisterWithOpenGLContext(openGLContext);
+//        }
     }
     
     void renderOpenGL() override
     {
-
         jassert (OpenGLHelpers::isContextActive());
         
         // Wait for CoreEngine to signal() GameView
@@ -140,19 +143,11 @@ public:
         glViewport (0, 0, roundToInt (renderingScale * getWidth()), roundToInt (renderingScale * getHeight()));
     
         // Set background Color
-		OpenGLHelpers::clear(getLookAndFeel().findColour(ResizableWindow::backgroundColourId));
-
-		/*TEXTURE SAMPLE*/
+		OpenGLHelpers::clear(Colour(0xFF171C1F));
 
 		// OpenGL methods to avoid displaying pixels behind front pixels
 		glEnable(GL_DEPTH_TEST);   // Enable the test
 		glDepthFunc(GL_LESS);      // Do not display back pixels
-								   // Using a texture to paint main OpenGL object (teapot)
-		openGLContext.extensions.glActiveTexture(GL_TEXTURE0); // Using texture #0
-		glEnable(GL_TEXTURE_2D);   // It's a 2-D image texture
-								   // Tell the GPU to use that texture
-		
-		/*END TEXTURE SAMPLE*/
         
         // Enable Alpha Blending
         glEnable (GL_BLEND);
@@ -160,88 +155,66 @@ public:
         
         // Use Shader Program that's been defined
         shader->use();
-
-		if (uniforms->demoTexture != nullptr)
-		{
-			uniforms->demoTexture->set((GLint)0);
+        
+        // Set Projection Matrix
+		if (uniforms->projectionMatrix != nullptr)
+        {
+            if (camera != nullptr)
+            {
+                uniforms->projectionMatrix->setMatrix4(&camera->getProjectionMatrix()[0][0], 1, false);
+            }
 		}
         
-        // Setup the Uniforms for use in the Shader
-		if (uniforms->projectionMatrix != nullptr) {
-			uniforms->projectionMatrix->setMatrix4(getProjectionMatrix().mat, 1, false);
-		}
-        
+        // Set View Matrix
         if (uniforms->viewMatrix != nullptr)
         {
-            // Scale and view matrix
-            Matrix3D<float> scale;
-            scale.mat[0] = 0.5;
-            scale.mat[5] = 0.5;
-            scale.mat[10] = 0.5;
-            Matrix3D<float> finalMatrix = scale * getViewMatrix();
-            uniforms->viewMatrix->setMatrix4 (finalMatrix.mat, 1, false);
+            uniforms->viewMatrix->setMatrix4(&(renderSwapFrame->getViewMatrix()[0][0]), 1, false);
         }
         
-		attributes = new Attributes(openGLContext, *shader);
-        
         // Draw all the game objects
-
-        for (auto & drawableObject : renderSwapFrame->getDrawableObjects())
+        for (auto & renderableObject : renderSwapFrame->getRenderableObjects())
         {
+            // Set Model Matrix
+            if (uniforms->modelMatrix != nullptr)
+            {
+                uniforms->modelMatrix->setMatrix4(&renderableObject.modelMatrix[0][0], 1, false);
+            }
+            
+            // If model has not yet been registered, register it
+            if (!renderableObject.model->isRegisteredWithOpenGLContext())
+            {
+                renderableObject.model->registerWithOpenGLContext(openGLContext);
+            }
 
-			OpenGLTexture* tex = texResourceManager.loadTexture(drawableObject->getTexture());
-
-			if (tex != nullptr) {
+            // Set Texture Info
+			// Reverse texture coords if left animation
+            uniforms->isLeftAnimation->set(renderableObject.animationProperties.isLeftAnimation());
+            uniforms->isSelectedObject->set(renderableObject.isSelected);
+            
+            // Set Texture
+			OpenGLTexture* tex = texResourceManager.loadTexture(renderableObject.animationProperties.getTexture());
+			
+			if (tex != nullptr) {	
 				tex->bind();
 			}
-			
-			// OpenGL method to specify how the image is horizontally tiled
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-			// OpenGL method to specify how the image is vertically tiled
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
-			Array<Vertex> verts = drawableObject->getVertices();
+            // Draw Model
+            renderableObject.model->drawModelToOpenGLContext(openGLContext);
 
-			openGLContext.extensions.glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-			openGLContext.extensions.glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-
-			openGLContext.extensions.glBufferData(GL_ARRAY_BUFFER,
-				static_cast<GLsizeiptr> (static_cast<size_t> (verts.size()) * sizeof(Vertex)),
-				verts.getRawDataPointer(), GL_STREAM_DRAW);
-
-			// Define Which Vertex Indexes Make the Square
-			GLuint indices[] = {  // Note that we start from 0!
-				0, 1, 3,   // First Triangle
-				1, 2, 3    // Second Triangle
-			};
-
-			openGLContext.extensions.glBufferData(GL_ELEMENT_ARRAY_BUFFER,
-				static_cast<GLsizeiptr> (static_cast<size_t> (6) * sizeof(GLuint)),
-				indices, GL_STREAM_DRAW);
-
-			
-
-			attributes->enable(openGLContext);
-            //glDrawArrays (GL_TRIANGLES, 0, gameObject->getNumVertices()); // For just VBO's (Vertex Buffer Objects)
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-			attributes->disable(openGLContext);
-            
-
+            // Unbind texture
 			if (tex != nullptr) {
 				tex->unbind();
 			}
-            
         }
         
+        // THIS IS DONE BY THE DRAW METHODS OF RENDERABLE OBJS
         // Reset the element buffers so child Components draw correctly
+        // Do it just for safety right now . . . .
         openGLContext.extensions.glBindBuffer (GL_ARRAY_BUFFER, 0);
-
         openGLContext.extensions.glBindBuffer (GL_ELEMENT_ARRAY_BUFFER, 0);
-
-        //openGLContext.extensions.glBindVertexArray(0);
+        openGLContext.extensions.glBindVertexArray(0);
         
 		
-
         // Signal CoreEngine that rendering is done
         coreEngineWaitable->signal();
     }
@@ -252,10 +225,20 @@ public:
 	{
 	
 	}
+    
 	void resized() override
     {
         gameHUD.setBounds(getLocalBounds());
         statusLabel.setBounds (getLocalBounds().reduced (4).removeFromTop (75));
+        
+        if (camera != nullptr)
+        {
+            // Setup OpenGL projection matrix to render accurate aspect ratio of
+            // objects regardless of aspect ratio of the OpenGLRenderer component
+            const float w = 10.0f;
+            const float h = w * getLocalBounds().toFloat().getAspectRatio (false);
+            camera->setProjectionWH(w, h);
+        }
     }
 
     // Custom Functions ========================================================
@@ -292,57 +275,65 @@ public:
         
     }
     
+    /** Sets the Camera to update when the size of this Component is updated.
+     */
+    void setCameraToHandle (Camera * camera)
+    {
+        this->camera = camera;
+        resized();
+    }
+    
+    void removeCameraToHandle()
+    {
+        this->camera = nullptr;
+    }
+    
 private:
     
     //==========================================================================
     // OpenGL Shader Functions
-
-    /** Calculates and returns the Projection Matrix.
-     */
-    Matrix3D<float> getProjectionMatrix() const
-    {
-        float w = 1.0f / (0.5f + 0.1f);
-        float h = w * getLocalBounds().toFloat().getAspectRatio (false);
-        return Matrix3D<float>::fromFrustum (-w, w, -h, h, 4.0f, 30.0f);
-    }
-    
-    /** Calculates and returns the View Matrix.
-     */
-    Matrix3D<float> getViewMatrix() const
-    {
-        Matrix3D<float> viewMatrix (Vector3D<float> (0.0f, 0.0f, -10.0f));
-        //Matrix3D<float> rotationMatrix = draggableOrientation.getRotationMatrix();
-        
-        return /*rotationMatrix **/ viewMatrix;
-    }
     
     /** Loads the OpenGL Shaders and sets up the whole ShaderProgram
      */
     void createShaders()
     {
-        vertexShader =
+		vertexShader =
         "#version 330 core\n"
-        "layout (location = 0) in vec2 position;\n"
-		"layout (location = 1) in vec2 textureCoordIn;\n"
+        "layout (location = 0) in vec3 position;\n"
+        "layout (location = 1) in vec4 color;\n"
+        "layout (location = 2) in vec2 textureCoordIn;\n"
         "uniform mat4 projectionMatrix;\n"
         "uniform mat4 viewMatrix;\n"
-		"out vec2 textureCoordOut;\n"
+        "uniform mat4 modelMatrix;\n"
+        "uniform bool isLeftAnimation;\n"
+        "out vec4 vertexColor;\n"
+        "out vec2 textureCoordOut;\n"
         "\n"
         "void main()\n"
         "{\n"
-		"    textureCoordOut = textureCoordIn;\n"
-        "    gl_Position = projectionMatrix * viewMatrix * vec4(position, 0.0f, 1.0f);\n"
+        "	if(isLeftAnimation) {"
+        "		textureCoordOut = vec2(1.0 - textureCoordIn.s, textureCoordIn.t);\n"
+        "   } else {\n"
+        "		textureCoordOut = textureCoordIn;\n"
+        "	}\n"
+        "    vertexColor = color;\n"
+        "    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(position, 1.0f);\n"
         "}\n";
         
-        // Base Fragment-Shader paints the object green.
         fragmentShader =
         "#version 330 core\n"
+        "in vec4 vertexColor;\n"
+        "in vec2 textureCoordOut;\n"
         "out vec4 color;\n"
-		"in vec2 textureCoordOut;\n"
 		"uniform sampler2D uniformTexture;\n"
+        "uniform bool isSelectedObject;\n"
         "void main()\n"
         "{\n"
-		"   color = texture(uniformTexture, textureCoordOut);\n"
+		"   if(isSelectedObject) {\n"
+        "       color = (texture(uniformTexture, textureCoordOut)) * 0.5f + vertexColor * 0.5f;\n"
+        "   } else {\n"
+        "       color = texture(uniformTexture, textureCoordOut);\n"
+        "   }\n"
         "}\n";
         
         ScopedPointer<OpenGLShaderProgram> newShader (new OpenGLShaderProgram (openGLContext));
@@ -357,7 +348,7 @@ private:
             shader = newShader;
             shader->use();
             
-            uniforms   = new Uniforms (openGLContext, *shader);
+            uniforms = new Uniforms (openGLContext, *shader);
             
             statusText = "GLSL: v" + String (OpenGLShaderProgram::getLanguageVersion(), 2);
         }
@@ -377,16 +368,17 @@ private:
     OpenGLContext openGLContext;
     ScopedPointer<OpenGLShaderProgram> shader;
     ScopedPointer<Uniforms> uniforms;
-    GLuint * objectVBOs;
-    int objectVBOsSize;
-    //GLuint VAO;
-    //GLuint EBO;
     
+    // Rendering information
+    RenderSwapFrame* renderSwapFrame;
+    TextureResourceManager texResourceManager;
+    
+    // Camera to update with aspect ratio information
+    Camera * camera;
+    
+    // Shaders
     const char* vertexShader;
     const char* fragmentShader;
-    
-    // Game Data Model
-    OwnedArray<GameObject> gameObjects;
     
     // JUCE Components
     GameHUD gameHUD;
@@ -394,14 +386,11 @@ private:
     // DEBUGGING
     Label statusLabel;
     
+    // Synchronization with CoreEngine
     WaitableEvent* renderWaitable;
     WaitableEvent* coreEngineWaitable;
 
-	ScopedPointer<Attributes> attributes;
-	GLuint vertexBuffer, indexBuffer;
-	RenderSwapFrame* renderSwapFrame;
-	TextureResourceManager texResourceManager;
-
+    // Time Variables (for FPS)
 	int64 newTime;
 	int64 currentTime;
 	int64 deltaTime;
@@ -409,5 +398,4 @@ private:
 	int64 checkTime;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GameView)
-
 };

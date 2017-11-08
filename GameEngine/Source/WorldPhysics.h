@@ -31,9 +31,10 @@ public:
          create a shape(box for this instance)
          */
 		b2PolygonShape groundBox;
-		b2PolygonShape wallBox;
-		groundBox.SetAsBox(100.0f, 0.5f);
-		wallBox.SetAsBox(0.3f, 100.0f);
+		
+		//b2PolygonShape wallBox;
+		groundBox.SetAsBox(100000000.0f, 0.5f);
+		//wallBox.SetAsBox(0.3f, 100.0f);
 
 		
         /*
@@ -41,7 +42,8 @@ public:
          When you attach a shape to a body using a fixture, the shape's coordinates become local to the body. So
          when the body moves, so does the shape.
          */
-        groundBody->CreateFixture(&groundBox, 0.0f);
+        
+		 groundBody->CreateFixture(&groundBox, 0.0f);
 		bodyDef.position.Set(0.0f, 6.1f);
 		groundBody = world.CreateBody(&bodyDef);
 		groundBody->CreateFixture(&groundBox, 0.0f);
@@ -49,10 +51,14 @@ public:
 		
 		bodyDef.position.Set(-8.7f, 0.0f);
 		groundBody = world.CreateBody(&bodyDef);
-		groundBody->CreateFixture(&wallBox, 0.0f);
+
+		//groundBody->CreateFixture(&wallBox, 0.0f);
+
 		bodyDef.position.Set(8.7f, 0.0f);
+		world.SetAllowSleeping(false);
 		groundBody = world.CreateBody(&bodyDef);
-		groundBody->CreateFixture(&wallBox, 0.0f);
+		//groundBody->CreateFixture(&wallBox, 0.0f);
+		gravityLev = Normal;
 	}
 
 	~WorldPhysics()
@@ -60,6 +66,11 @@ public:
 
 	}
 
+	enum gravityLevel {
+		Normal,
+		AntiGrav,
+		HighGrav
+	};
 
 	/**************************************************************************
 	*
@@ -82,22 +93,27 @@ public:
 	*	remove the object at a given index position in the bodyList
 	*	remember that the ground is the first object created
 	**************************************************************************/
-	void removeObj(int index)
-	{
-		if (index < world.GetBodyCount())
-		{
-			int pos = 0;
-			for (b2Body* bodyObject = world.GetBodyList() ; bodyObject || pos < index;++pos)
-			{
-				b2Body* oldBody = bodyObject;
-				bodyObject = bodyObject->GetNext();
-				if (pos == index)
-				{
-					world.DestroyBody(oldBody);
-				}
-			}
-		}
-	}
+//	void removeObj(int index)
+//	{
+//		if (index < world.GetBodyCount())
+//		{
+//			int pos = 0;
+//			for (b2Body* bodyObject = world.GetBodyList() ; bodyObject || pos < index;++pos)
+//			{
+//				b2Body* oldBody = bodyObject;
+//				bodyObject = bodyObject->GetNext();
+//				if (pos == index)
+//				{
+//					world.DestroyBody(oldBody);
+//				}
+//			}
+//		}
+//	}
+    
+    void removeObject (b2Body * bodyToDestroy)
+    {
+        world.DestroyBody (bodyToDestroy);
+    }
 
 	/**************************************************************************
 	*
@@ -139,6 +155,26 @@ public:
 	{
 		world.SetGravity(b2Vec2(gravx,gravy));
 	}
+
+	void setGravity(gravityLevel grav)
+	{
+		gravityLev = grav;
+		switch (grav) {
+		case Normal:
+			world.SetGravity(b2Vec2(0, -9.8));
+			break;
+		case AntiGrav:
+			world.SetGravity(b2Vec2(0, 9.8));
+			break;
+		case HighGrav:
+			world.SetGravity(b2Vec2(0, -18.0));
+			break;
+		}
+	}
+
+	gravityLevel getGravityLevel() {
+		return gravityLev;
+	}
 	/**************************************************************************
 	*
 	*	set the gravity
@@ -161,8 +197,10 @@ public:
 	float getGravity() {
 		return world.GetGravity().y;
 	}
+	
 private:
 	b2World world;
+	gravityLevel gravityLev;
 	juce::int32 velocityIterations;
 	juce::int32 positionIterations;
 	float32 timeStep;

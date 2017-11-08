@@ -138,9 +138,12 @@
     </Bscmake>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\Source\ComboBoxPropertyComponent.cpp" />
     <ClCompile Include="..\..\Source\CoreEngine.cpp" />
+    <ClCompile Include="..\..\Source\FilenamePropertyComponent.cpp" />
     <ClCompile Include="..\..\Source\GameAudio.cpp" />
     <ClCompile Include="..\..\Source\GameEditor.cpp" />
+    <ClCompile Include="..\..\Source\LevelInspector.cpp" />
     <ClCompile Include="..\..\Source\Main.cpp" />
     <ClCompile Include="..\..\..\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.cpp">
       <ExcludedFromBuild>true</ExcludedFromBuild>
@@ -1885,12 +1888,20 @@
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_gui_extra.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_opengl.cpp" />
     <ClCompile Include="..\..\JuceLibraryCode\include_juce_video.cpp" />
+    <ClCompile Include="..\..\Source\SelectObjectButtonPropertyComponent.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\Source\AnimationProperties.h" />
     <ClInclude Include="..\..\Source\Attributes.h" />
+    <ClInclude Include="..\..\Source\Camera.h" />
+    <ClInclude Include="..\..\Source\CollectableObject.h" />
+    <ClInclude Include="..\..\Source\CollisionFiltering.h" />
+    <ClInclude Include="..\..\Source\ComboBoxPropertyComponent.h" />
     <ClInclude Include="..\..\Source\CoreEngine.h" />
     <ClInclude Include="..\..\Source\DrawableObject.h" />
     <ClInclude Include="..\..\Source\EditorControl.h" />
+    <ClInclude Include="..\..\Source\EnemyObject.h" />
+    <ClInclude Include="..\..\Source\FilenamePropertyComponent.h" />
     <ClInclude Include="..\..\Source\GameAudio.h" />
     <ClInclude Include="..\..\Source\GameCommand.h" />
     <ClInclude Include="..\..\Source\GameEditor.h" />
@@ -1900,24 +1911,32 @@
     <ClInclude Include="..\..\Source\GameObject.h" />
     <ClInclude Include="..\..\Source\GameObjectType.h" />
     <ClInclude Include="..\..\Source\GameView.h" />
+    <ClInclude Include="..\..\Source\GoalPointObject.h" />
     <ClInclude Include="..\..\Source\HealthBar.h" />
     <ClInclude Include="..\..\Source\InputManager.h" />
     <ClInclude Include="..\..\Source\Inspector.h" />
     <ClInclude Include="..\..\Source\Level.h" />
     <ClInclude Include="..\..\Source\LevelInspector.h" />
+    <ClInclude Include="..\..\Source\ListenerClass.h" />
+    <ClInclude Include="..\..\Source\Mesh.h" />
+    <ClInclude Include="..\..\Source\Model.h" />
     <ClInclude Include="..\..\Source\ObjectBrowser.h" />
     <ClInclude Include="..\..\Source\ObjectInspector.h" />
     <ClInclude Include="..\..\Source\PhysicalAction.h" />
     <ClInclude Include="..\..\Source\PhysicsProperties.h" />
     <ClInclude Include="..\..\Source\PlayerObject.h" />
+    <ClInclude Include="..\..\Source\RenderableObject.h" />
     <ClInclude Include="..\..\Source\RenderSwapFrame.h" />
     <ClInclude Include="..\..\Source\Resource.h" />
+    <ClInclude Include="..\..\Source\SelectObjectButtonPropertyComponent.h" />
     <ClInclude Include="..\..\Source\SensorContactListener.h" />
+    <ClInclude Include="..\..\Source\Speed.h" />
     <ClInclude Include="..\..\Source\TextureResource.h" />
     <ClInclude Include="..\..\Source\TextureResourceManager.h" />
     <ClInclude Include="..\..\Source\Uniforms.h" />
     <ClInclude Include="..\..\Source\Vertex.h" />
     <ClInclude Include="..\..\Source\VertexBuffer.h" />
+    <ClInclude Include="..\..\Source\WorldNavigator.h" />
     <ClInclude Include="..\..\Source\WorldPhysics.h" />
     <ClInclude Include="..\..\..\JUCE\modules\juce_audio_basics\audio_play_head\juce_AudioPlayHead.h" />
     <ClInclude Include="..\..\..\JUCE\modules\juce_audio_basics\buffers\juce_AudioChannelSet.h" />

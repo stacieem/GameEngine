@@ -8,8 +8,11 @@
 
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "CollisionFiltering.h"
-#include "SensorContactListener.h"
+
+#include "Model.h"
+
+
+
 /*
 	Holds all the properties that are used for any new
 	object.
@@ -19,9 +22,12 @@ class PhysicsProperties
 public:
 	PhysicsProperties(b2World& world) 
 	{
-	
-		world.SetContactListener(&sensorContactListener);
+        // FIX
+        // Default should be no physics properties, these are added as a Model
+        // is added to a GameObject
+		
 		//bodies position within the world
+
 		bodyDef.type = b2_dynamicBody;
 		bodyDef.position.Set(0.0f, 0.0f);
 
@@ -31,7 +37,7 @@ public:
 		//create the objects collision box with properties
 		dynamicBox.SetAsBox(0.5f, 0.5f);
 		fixtureDef.shape = &dynamicBox;
-		fixtureDef.friction = 1.2f;
+		fixtureDef.friction = 1.0f;
 		fixtureDef.restitution = 0.0f;
 		fixtureDef.density = 1.0f;
 
@@ -39,6 +45,10 @@ public:
 		this->myFixture = body->CreateFixture(&fixtureDef);
 		//body->GetContactList()->contact();
 		//b2ContactEdge test;
+        
+        
+        // Default to a static object
+        setIsStatic(true);
 	}
 	
 	PhysicsProperties(b2World& world, float originx, float originy,float width,float height) 
@@ -144,16 +154,26 @@ public:
 		center.y += y;
 		body->SetTransform(center, 0.0);
 	}
+    
 	/**************************************************************************
 	*
 	*	moves the center of the object over by x and y units
 	*	Note: Conversion equation would be nice from pixels/coords to position
 	*
 	**************************************************************************/
-	void translateTo(GLfloat x, GLfloat y)
+	void setPosition(GLfloat x, GLfloat y)
 	{
 		body->SetTransform(b2Vec2(x,y), 0.0);
 	}
+    
+    /** Updates the scaling of the physics body based on the scaling of the
+        renderable Model
+     */
+    void updateModelScale (Model * model, float xScale, float yScale)
+    {
+		resizeCollisionBox(model->getWidth() * xScale, model->getHeight() * yScale);
+    }
+    
 	/**************************************************************************
 	*
 	*	rotates the body around the current center a certain number of degrees
@@ -262,13 +282,13 @@ public:
 	}
 
 	/// b2Shape properties
-	void resizeCollisionBox(GLfloat x, GLfloat y)
+	void resizeCollisionBox(GLfloat width, GLfloat height)
 	{
-		dynamicBox.SetAsBox(x, y);
+		dynamicBox.SetAsBox(width/2, height/2);
 		fixtureDef.shape = &dynamicBox;
 		body->DestroyFixture(this->myFixture);
-
 		this->myFixture = body->CreateFixture(&fixtureDef);
+
 	}
 
 	/// b2Shape properties
@@ -305,15 +325,50 @@ public:
         
         return hasNewCollisions;
     }
-    
+	void setActiveStatus(bool active) {
+		body->SetActive(active);
+	}
 	b2Body* getBody() {
 		return body;
 	}
+    
+    /** Specifies whether or not an object is static (unmoving) or is instead
+        dynamic (affected by physics).
+     
+        @return true if the object is unaffected by physics, falst if affected
+                by physics
+     */
+    bool getIsStatic()
+    {
+        return isStatic;
+    }
+    
+    /** Sets whether or not the object is static or dynamic.
+        True - static
+        False - dynamic
+     */
+    void setIsStatic (bool isStatic)
+    {
+        this->isStatic = isStatic;
+        
+        if (isStatic)
+        {
+            body->SetType(b2_staticBody);
+        }
+        else
+        {
+            body->SetType(b2_dynamicBody);
+        }
+    }
+    
 private:
 	const float RADTODEG = 57.29577951308f;
 	const float DEGTORAD = 0.017453292519f;
 	const float PI = 3.14159f;
  
+    /** Specifies whether or not the object is affected by physics, or is unmoveable (static) */
+    bool isStatic;
+    
     /** The number of collisions that were last checked. */
     int lastNumCollsions = 0;
     
@@ -333,5 +388,4 @@ private:
 	b2Fixture* triggerFixture;
 	b2FixtureDef triggerFixtureDef;
 	b2CircleShape triggerRangeSphere;
-	SensorContactListener sensorContactListener;
 };

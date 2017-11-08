@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include <map>
 
 class Resource {
 public:
@@ -23,12 +22,7 @@ public:
 	
 
 private:
-
 	String name;
-
-	
 	
 	JUCE_LEAK_DETECTOR(Resource)
-
-
 };

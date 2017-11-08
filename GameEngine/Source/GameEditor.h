@@ -5,8 +5,7 @@
 #include "ObjectBrowser.h"
 #include "LevelInspector.h"
 #include "CoreEngine.h"
-#include "EditorControl.h"
-
+#include "WorldNavigator.h"
 
 class GameEditor : public Component, public ChangeListener {
 public:
@@ -22,7 +21,7 @@ public:
 		Components that the GameModel of the CoreEngine has been modified and
 		viusal updates should be made.
 	*/
-	void changeListenerCallback(ChangeBroadcaster * source);
+	void changeListenerCallback(ChangeBroadcaster * source) override;
 
 private:
 
@@ -36,12 +35,22 @@ private:
 	*/
 	ChangeBroadcaster updateInspectorsChangeBroadcaster;
 
-
+    /** Engine running the game */
 	CoreEngine gameEngine;
-	EditorControl EditorController;
 
-	ObjectInspector objInspector;
+    // Game Editing GUI Panels =================================================
+    
+    /** Invisible overlay of the GameEngine that allows mouse navigation */
+    WorldNavigator worldNavigator;
+
+    /** Inspects the current Level and allows user to switch levels */
+    LevelInspector levelInspector;
+    
+    /** Inspects the currently selected GameObject */
+    ObjectInspector objInspector;
+    
+    /** Library of default GameObjects for user to pick from and use in game */
 	ObjectBrowser objBrowser;
-	LevelInspector levelInspector;
+    
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GameEditor)
 };

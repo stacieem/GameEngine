@@ -20,13 +20,11 @@ public:
 	//Loads a texture from the resource manager and returns the texture reference
 	OpenGLTexture* loadTexture(File texFile) {
 
-		//if not already in the map
-		std::map<File, Resource*>::iterator it;
-
 		//Search through the map for the resource
-		it = resourceMap.find(texFile);
+		auto iterator = resourceMap.find(texFile);
 
-		if (it == resourceMap.end()) {
+        // If not in the map, add to the map
+		if (iterator == resourceMap.end()) {
 
 			//Create a new texture and load in the texFile
 			TextureResource* tex = new TextureResource;
@@ -34,22 +32,24 @@ public:
 			tex->loadTexture(texFile);
 
 			resourceMap[texFile] = tex;
-
 		}
 
-		//Get the resource and downcast it as a TextureResource
+		// Get the resource and downcast it as a TextureResource
 		TextureResource* tex = (TextureResource*)resourceMap[texFile];
 
 		return tex->getTexture();
 	}
 
 	void releaseTextures() {
-		std::map<File, Resource*>::iterator it;
-		for (it = resourceMap.begin(); it != resourceMap.end(); it++)
+		for (auto iterator = resourceMap.begin(); iterator != resourceMap.end(); ++iterator)
 		{
-			delete it->second;
+			delete iterator->second;
 		}
 
+        // MAYBE FIX LATER
+        // Should we do this in destructor instead? What if we had audio
+        // in these resources and not just textures? We wouldn't want releaseTextures
+        // to get rid of audio too.
 		resourceMap.clear();
 	}
 
