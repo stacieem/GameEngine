@@ -13,18 +13,21 @@
 #include "InspectorUpdater.h"
 
 /** Allows the user to navigate through the game world and select various objects
-    to edit the game. Keeps track of the currently selected object.
+    to edit the game. Keeps track of the currently selected objects.
  
     Features
         - Scroll mouse xy to manipulate camera to move around in the game world.
         - Click to select objects in the GameWorld.
 */
-class WorldNavigator : public Component, public InspectorUpdater
+class WorldNavigator : public Component, public InspectorUpdater, public KeyListener
 {
 public:
     
-    WorldNavigator()
+    WorldNavigator(CoreEngine * coreEngine)
     {
+        // Set core engine to manupilate
+        this->coreEngine = coreEngine;
+        
         // Default to not enabled
         isEnabled = false;
         
@@ -39,6 +42,10 @@ public:
         
         // Set default is not copying object
         isCopyingObject = false;
+        
+        // Allow keypresses to be received
+        setWantsKeyboardFocus(true);
+        addKeyListener(this);
     }
     
     /** Enables or disables the WorldNatigator from modifying the camera
@@ -247,6 +254,26 @@ public:
 //    }
     
     
+    bool keyPressed (const KeyPress &key, Component *originatingComponent) override
+    {
+        // If delete key, delete object
+        if(isEnabled && (key.isKeyCode(KeyPress::backspaceKey) || key.isKeyCode(KeyPress::deleteKey)) && selectedObject != nullptr)
+        {
+            // Delete Object
+            coreEngine->deleteGameObject(selectedObject);
+            
+            // Deselect object and update all other inspectors
+            setSelectedObject(nullptr);
+            
+            // Keypress was handled
+            return true;
+        }
+        
+        // Keypress was not handled
+        return false;
+    }
+    
+    
 private:
     /** A constant for how the scrolling of the mouse affects movement of camera */
     const float SCROLL_SPEED = 10.0f;
@@ -257,11 +284,17 @@ private:
     /** Camera that is being manipulated by the navigator */
     Camera * camera;
     
+    /** Model to manipulate to delete objects */
+    GameModel * gameModel;
+    
     /** Currently viewed level */
     Level * level;
     
     /** Currently selected object */
-    GameObject * selectedObject;
+    GameObject * selectedObject; // In future, this should be an array of selected objects
+    
+    /** Core Engine to call safe GameModel functions (ex: delete objects) */
+    CoreEngine* coreEngine;
     
     bool isCopyingObject;
 };

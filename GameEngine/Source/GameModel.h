@@ -64,7 +64,9 @@ public:
     {
         return levels.size();
     }
-
+	OwnedArray<Level>& getLevels() {
+		return levels;
+	}
 private:
 	OwnedArray<Level> levels;
 	int currentLevel;

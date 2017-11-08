@@ -287,7 +287,6 @@ public:
 		dynamicBox.SetAsBox(width/2, height/2);
 		fixtureDef.shape = &dynamicBox;
 		body->DestroyFixture(this->myFixture);
-
 		this->myFixture = body->CreateFixture(&fixtureDef);
 
 	}
@@ -326,8 +325,8 @@ public:
         
         return hasNewCollisions;
     }
-	void removeCollisionBox() {
-		body->DestroyFixture(this->myFixture);
+	void setActiveStatus(bool active) {
+		body->SetActive(active);
 	}
 	b2Body* getBody() {
 		return body;

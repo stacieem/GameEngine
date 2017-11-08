@@ -34,12 +34,14 @@ public:
 		name = "Game Object";
         
         // By default an object is not renderable
-        renderable = false;
+		setRenderable(false);
         
 		objType = GameObjectType::Generic;
 		lives = 0, score = 0;
 		xVel = 0;
 		yVel = 0;
+		isActive = true;
+		setActive(true);
 		cappedMoveSpeed = 5;
 		cappedJumpSpeed = 9;
 		setAnimationSpeed(MED);
@@ -80,7 +82,9 @@ public:
     }
     
     // Rendering Data ==========================================================
-
+	void setRenderable(bool canRender) {
+		renderable = canRender;
+	}
     bool isRenderable()
     {
         return renderable;
@@ -295,6 +299,15 @@ public:
 		score += points;
 	}
 	
+	//active State of object
+	bool getIsActive() {
+		return isActive;
+	}
+	void setActive(bool active) {
+		isActive = active;
+		physicsProperties.setActiveStatus(active);
+	}
+
 	// Animation speed
 	Speed getAnimationSpeed() {
 		return renderableObject.animationProperties.getAnimationSpeed();
@@ -314,7 +327,7 @@ private:
 	int lives, score;
 	glm::vec2 origin;
     /** Specifies wether or not the object will be rendered visually to the screen */
-    bool renderable;
+    bool renderable, isActive;
     /** 
 		Renderable representation of this object.
      */

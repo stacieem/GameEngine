@@ -34,10 +34,8 @@ public:
 
 
         player->setModel(modelsForRendering[0]);
-
-		Score = 0;
-		enemyPoints = 0;
-		collectablePoints = 0;
+		enemyPoints = 15;
+		collectablePoints = 5;
 		timerSpeed = 0;
 		hasTimer = false;
 		hasScore = false;
@@ -160,13 +158,11 @@ public:
     
 	//reset the current level to an original state
 	void resetLevel() {
-		DBG("resetLevel");
 		for (auto  obj : gameObjects) {
-			DBG("obj origin: " << obj->getOrigin().x << " " << obj->getOrigin().y);
-			DBG("obj position: " << obj->getPhysicsProperties().GetPosition().x << " " << obj->getPhysicsProperties().GetPosition().y);
-			
 			obj->setPositionWithPhysics(obj->getOrigin().x, obj->getOrigin().y);
 			obj->getPhysicsProperties().setLinearVelocity(0, 0);
+			obj->setActive(true);
+			obj->setRenderable(true);
 		}
 	}
     
@@ -208,17 +204,11 @@ public:
 	bool isScoreEnabled() {
 		return hasScore;
 	}
-	int getScore() {
-		return Score;
-	}
 	int getEnemyPoints() {
 		return enemyPoints;
 	}
 	int getCollectablePoints() {
 		return collectablePoints;
-	}
-	void setScore(int baseScore) {
-		Score = baseScore;
 	}
 	void setEnemyPoints(int points) {
 		enemyPoints = points;
@@ -226,29 +216,25 @@ public:
 	void setCollectablePoints(int points) {
 		collectablePoints = points;
 	}
-	void addToScore(int points) {
-		Score += points;
-	}
 	
-	//timer properties
-	bool isTimerEnabled() {
-		return hasTimer;
-	}
-	void setTimerEnabled() {
-		hasTimer = !hasTimer;
-	}
-	int getTimer() {
-		return Time;
-	}
-	void setTimer(float baseTimer) {
-		Score = baseTimer;
-	}
-	void setTimerSpeed(float timeSpeed) {
-		timerSpeed = timeSpeed;
-	}
-	void decrementTimer(float decrement) {
-		Time -= decrement;
-	}
+    
+    void deleteObject (GameObject * gameObjectToDelete)
+    {
+        for (int i = 0; i < gameObjects.size(); ++i)
+        {
+            GameObject * curObject = gameObjects[i];
+            // If object found, delete it
+            if (curObject == gameObjectToDelete)
+            {
+                // Remove the object from the physics world
+                worldPhysics.removeObject (curObject->getPhysicsProperties().getBody());
+                
+                // Remove the object from the level
+                gameObjects.remove(i);
+                break;
+            }
+        }
+    }
 
 
 	int getGravityState() {
@@ -269,10 +255,10 @@ private:
     
     /** Name of level */
     String levelName;
-	int Score, enemyPoints, collectablePoints;
+	int enemyPoints, collectablePoints;
 	float Time, timerSpeed;
 	bool hasScore, hasTimer, hasCheckpoint;
-   
+	int score, level;
 	/** Camera view of the current level */
     Camera camera;
 	GoalPointObject* checkpoint;
