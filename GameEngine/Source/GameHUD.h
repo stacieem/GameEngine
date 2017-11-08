@@ -22,8 +22,15 @@ public:
     {
         setOpaque(false);
         
-        //addAndMakeVisible(healthBar);
-        healthBar.setRange(0, 10, 1.0);
+        addAndMakeVisible(healthBar);
+		// Setup frame rate label
+		addAndMakeVisible(frameRateLabel);
+
+		frameRateLabel.setJustificationType(Justification::topRight);
+		frameRateLabel.setFont(Font(14.0f));
+		frameRateLabel.setText("0 fps", dontSendNotification);
+
+
     }
     
     ~GameHUD()
@@ -35,6 +42,8 @@ public:
     
     void paint (Graphics &g) override
     {
+		
+		
     }
     
     void resized () override
@@ -46,7 +55,8 @@ public:
         const int healthBarH = h * 0.3;
         const int margin = 20;
         
-        healthBar.setBounds(margin, (h - healthBarH) / 2, healthBarW, healthBarH);
+        healthBar.setBounds(10, 10, 200, 75);
+		frameRateLabel.setBounds(getLocalBounds().reduced(4).removeFromTop(75).translated(0.0, 20.0));
     }
 
     /** Consider getting rid of this ... 
@@ -57,7 +67,14 @@ public:
 		
     }
     
+	void setFrameRate(int frameRate)
+	{
+		frameRateLabel.setText(String(frameRate) + " fps", dontSendNotification);
+		repaint();
+	}
+
     
 private:
     HealthBar healthBar;
+	Label frameRateLabel;
 };

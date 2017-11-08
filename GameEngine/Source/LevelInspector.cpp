@@ -250,6 +250,7 @@ void LevelInspector::buttonClicked(Button * button) {
 		removeLevelButton.setEnabled(shouldBeEnabled);
 		levelLabel.setEnabled(shouldBeEnabled);
 		resetLevelButton.setEnabled(shouldBeEnabled);
+		saveLevelButton.setEnabled(shouldBeEnabled);
 	}
 
 	void LevelInspector::valueChanged(Value &value)

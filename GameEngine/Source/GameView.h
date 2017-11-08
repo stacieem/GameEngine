@@ -43,11 +43,11 @@ public:
         camera = nullptr;
         
         // Setup GUI Overlay Label: Status of Shaders, compiler errors, etc.
-        addAndMakeVisible (statusLabel);
+        /*addAndMakeVisible (statusLabel);
         statusLabel.setJustificationType (Justification::topLeft);
         statusLabel.setFont (Font (14.0f));
         statusLabel.toBack();
-        
+        */
         // Setup GameHUD Overlay over OpenGL
         addAndMakeVisible(gameHUD);
         setWantsKeyboardFocus(true);
@@ -135,6 +135,7 @@ public:
 		// For every second, update the calculated frame rate
 		if (checkTime > 1000) {
 			checkTime = 0;
+			gameHUD.setFrameRate((int)(1.0 / avgMilliseconds));
 			//DBG((int)(1.0 / avgMilliseconds));
 		}
         
