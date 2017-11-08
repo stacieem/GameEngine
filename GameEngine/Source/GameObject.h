@@ -27,7 +27,7 @@ class GameObject
 public:
     /** Constructs a GameObject and attatches it to the world's physics.
      */
-    GameObject(WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld())
+    GameObject(WorldPhysics & worldPhysics, Model* model) : physicsProperties (worldPhysics.getWorld())
     {
 
         // Come up with better default naming
@@ -35,26 +35,45 @@ public:
         
         // By default an object is not renderable
         renderable = false;
-
+        
 		objType = GameObjectType::Generic;
-
-		yVelocityCap = 0;
-		xVelocityCap = 0;
+		lives = 0;
 		xVel = 0;
 		yVel = 0;
-
-
-
+		cappedMoveSpeed = 10;
+		cappedJumpSpeed = 30;
+		setAnimationSpeed(MED);
+        physicsProperties.setIsStatic(true);
+		setModel(model);
+        updateOrigin();
+		setScale(1.0, 1.0);
+    }
+    
+    /** Copy Constructor - Used to easily make a copy of an existing GameObject
+        (this is directly used by the WorldNavigator when alt-dragging)
+     */
+    GameObject (GameObject & objectToCopy, WorldPhysics & worldPhysics) : physicsProperties (worldPhysics.getWorld())
+    {
+        this->name = objectToCopy.name;
+        this->renderable = objectToCopy.renderable;
+        this->renderableObject = objectToCopy.renderableObject;
+        this->xVel = objectToCopy.xVel;
+        this->yVel = objectToCopy.yVel;
+        this->actionToAudio = objectToCopy.actionToAudio;
+        
+        this->physicsProperties.setIsStatic((objectToCopy.getPhysicsProperties().getIsStatic()));
+        
+        // This seems odd? We want to set origin to wherever an object is placed
+        // in edit mode.
+        updateOrigin();
     }
 
-	GameObject(WorldPhysics & worldPhysics, ValueTree gameObjectValueTree) : physicsProperties(worldPhysics.getWorld())
+	GameObject(WorldPhysics & worldPhysics, Model* model, ValueTree gameObjectValueTree) : physicsProperties(worldPhysics.getWorld())
 	{
 
-		yVelocityCap = 0;
-		xVelocityCap = 0;
-		xVel = 0;
-		yVel = 0;
-
+		setModel(model);
+		cappedMoveSpeed = 10;
+		cappedJumpSpeed = 30;
 		parseFrom(gameObjectValueTree);
 
 
@@ -69,23 +88,25 @@ public:
     {
         return name;
     }
-    
     void setName(String name)
     {
         this->name = name;
     }
     
     // Rendering Data ==========================================================
-   
-	enum ObjectStateType {
-		DYNAMIC,
-		STATIC
-	};
-
 
     bool isRenderable()
     {
         return renderable;
+    }
+
+    /** Sets if the renderable object should be rendered as being "Selected"
+        in the GameView. This renders the object as highlighted in the
+        GameView.
+     */
+    void setRenderableIsSelected(bool isSelected)
+    {
+		renderableObject.isSelected = isSelected;
     }
     
     /** Gets the renderable object for reading and copying.
@@ -137,7 +158,6 @@ public:
 		return glm::vec2(renderableObject.modelMatrix[0][0], renderableObject.modelMatrix[1][1]);
 	}
 
-    
     /** Sets the 2D position of a GameObject in world coordinates and in the
         physics world
      */
@@ -153,45 +173,54 @@ public:
         
         // Update physical object position
         physicsProperties.setPosition (x, y);
+		updateOrigin();
     }
-
-	/** Sets the 2D position of a GameObject in world coordinates and in the
-	physics world
-	*/
-	void setYPositionWithPhysics(GLfloat y)
-	{
-		// Update visual object position
-		renderableObject.position.y = y;
-
-		// Modify model matrix to translate object to correct position
-		renderableObject.modelMatrix[3][1] = y;
-
-		// Update physical object position
-		physicsProperties.setPosition(renderableObject.position.x, y);
-	}
-
-	/** Sets the 2D position of a GameObject in world coordinates and in the
-	physics world
-	*/
-	void setXPositionWithPhysics(GLfloat x)
-	{
-		// Update visual object position
-		renderableObject.position.x = x;
-
-		// Modify model matrix to translate object to correct position
-		renderableObject.modelMatrix[3][0] = x;
-
-		// Update physical object position
-		physicsProperties.setPosition(x, renderableObject.position.y);
-	}
 
     PhysicsProperties & getPhysicsProperties()
     {
         return physicsProperties;
     }
     
-    // Audio to Action Mapping =================================================
+    /** Specifies whether or not the GameObject is at a given position in the
+        world.
+     */
+    bool isAtPosition(glm::vec2 position)
+    {
+        // Get half width and half height of object
+        float halfWidth = renderableObject.model->getWidth() / 2.0f;
+        float halfHeight = renderableObject.model->getHeight() / 2.0f;
+        
+        // If the position is within the bounds of the RenderableObject, the
+        // object is at that position
+        if (renderableObject.position.x - halfWidth <= position.x &&
+            position.x <= renderableObject.position.x + halfWidth &&
+            renderableObject.position.y - halfHeight <= position.y &&
+            position.y <= renderableObject.position.y + halfHeight)
+        {
+            return true;
+        }
+
+        
+        // Otherwise return false
+        return false;
+    }
     
+    
+    /* Provides a singular function that can be called in multiple places
+	 * to make changes to the origin of the object based on where it is positioned
+	 * in the editor
+	*/
+	void updateOrigin()
+    {
+		origin.x = getPhysicsProperties().GetPosition().x;
+		origin.y = getPhysicsProperties().GetPosition().y;
+	}
+	glm::vec2 getOrigin()
+    {
+		return origin;
+	}
+
+	// Audio to Action Mapping =================================================
     /** Maps an audio file to play when a specific action happens to this object
         in the physical game world.
      */
@@ -199,114 +228,85 @@ public:
     {
         actionToAudio.insert(std::pair<PhysicalAction, File>(action, audioFile));
     }
-    
-    
+
     /** Gets the audio to play when a specific PhysicalAction occurs in the game.
      */
-    File * getAudioFileForAction(PhysicalAction action)
-    {
-        auto mapIterator = actionToAudio.find(action);
-        if (mapIterator != actionToAudio.end())
-            return &(actionToAudio.find(action)->second);
-        else
-            return nullptr;
-    }
- 
-    // Animation ?? ============================================================
+	File * getAudioFileForAction(PhysicalAction action)
+	{
+		auto mapIterator = actionToAudio.find(action);
+		if (mapIterator != actionToAudio.end())
+			return &(actionToAudio.find(action)->second);
+		else
+			return nullptr;
+	}
 
-	float getXVel()
+	//Numerical speeds for the object
+	float getRunSpeedVelocity()
     {
 		return xVel;
 	}
-
-	
-	float getYVel() {
-
+	float getJumpSpeedVelocity()
+    {
 		return yVel;
 	}
-	
-	float getXVelocityCap() {
-		return xVelocityCap;
+	void setMoveSpeed(Speed moveSpeed)
+	{
+		this->moveSpeed = moveSpeed;
+		switch (this->moveSpeed) {
+		case FAST:
+			xVel = 3;
+			break;
+		case MED:
+			xVel = 2;
+			break;
+		case SLOW:
+			xVel = 1;
+			break;
+		}
 	}
-	
-	float getYVelocityCap() {
-		return yVelocityCap;
+	void setJumpSpeed(Speed jumpspeed) {
+		this->jumpSpeed = jumpspeed;
+		switch (this->jumpSpeed) {
+		case FAST:
+			yVel = 12;
+			break;
+		case MED:
+			yVel = 10;
+			break;
+		case SLOW:
+			yVel = 7;
+			break;
+		}
 	}
-	
-	GameObjectType getObjType() {
+
+	//Enumerated Speed values for the object
+	Speed getMoveSpeed() {
+		return moveSpeed;
+	}
+	Speed getJumpSpeed() {
+		return jumpSpeed;
+	}
+	GameObjectType getObjType()
+	{
 		return objType;
 	}
 
-
-
-	void setXVelocityCap(Speed moveSpeed) {
-		int newXVel = 0;
-		switch (moveSpeed) {
-		case FAST:
-			newXVel = 8;
-			break;
-		case MED:
-			newXVel = 5;
-			break;
-		case SLOW:
-			newXVel = 2;
-			break;
-		}
-
-		xVelocityCap = newXVel;
-		if (xVel > xVelocityCap) {
-			xVel = xVelocityCap;
-		}
-		xVel = xVelocityCap / 3;
-		
-	}
-
-	void setYVelocityCap(Speed jumpspeed) {
-		int newYVel = 0;
-		switch (jumpspeed) {
-		case FAST:
-			newYVel = 40;
-			break;
-		case MED:
-			newYVel = 30;
-			break;
-		case SLOW:
-			newYVel = 20;
-			break;
-		}
-		yVelocityCap = newYVel;
-		if (yVel > yVelocityCap) {
-			yVel = yVelocityCap;
-		}
-
-		yVel = yVelocityCap / 3;
-	}
-
-
-	void setXVel(float newXVel)
+	// Player Lives 
+	int getLives()
     {
-		xVel = newXVel;
-		if (xVel > xVelocityCap) {
-			xVel = xVelocityCap;
-		}
+		return lives;
+	}
+	void setLives(int newLives)
+    {
+		lives = newLives;
 	}
 
-	void setYVel(float newYVel) {
-		yVel = newYVel;
-		if (yVel > yVelocityCap) {
-			yVel = yVelocityCap;
-		}
+	// Animation speed
+	Speed getAnimationSpeed() {
+		return renderableObject.animationProperties.getAnimationSpeed();
 	}
-
-	void updateState(ObjectStateType state) {
-		switch (state) {
-		case STATIC:
-			physicsProperties.toStatic();
-			break;
-		case DYNAMIC:
-			physicsProperties.toDynamic();
-			break;
-		}
+	void setAnimationSpeed(Speed animSpeed) {
+		renderableObject.animationProperties.setAnimationSpeed(animSpeed);
 	}
 
 	void parseFrom(ValueTree valueTree) {
@@ -325,23 +325,73 @@ public:
 		case 2:
 			objType = Enemy;
 			break;
+		case 3:
+			objType = Collectable;
+			break;
+		case 4:
+			objType = Checkpoint;
+			break;
+		}
+
+		ValueTree moveSpeedTree = valueTree.getChildWithName(Identifier("MoveSpeed"));
+		int moveSpeedInt = moveSpeedTree.getProperty(Identifier("value"));
+
+		switch (moveSpeedInt) {
+
+		case 0:
+			setMoveSpeed(SLOW);
+			break;
+		case 1:
+			setMoveSpeed(MED);
+			break;
+		case 2:
+			setMoveSpeed(FAST);
+			break;
+		}
+
+		ValueTree jumpSpeedTree = valueTree.getChildWithName(Identifier("JumpSpeed"));
+		int jumpSpeedInt = jumpSpeedTree.getProperty(Identifier("value"));
+
+		switch (jumpSpeedInt) {
+
+		case 0:
+			setJumpSpeed(SLOW);
+			break;
+		case 1:
+			setJumpSpeed(MED);
+			break;
+		case 2:
+			setJumpSpeed(FAST);
+			break;
 		}
 
 		ValueTree renderableTree = valueTree.getChildWithName(Identifier("Renderable"));
-
 		renderable = renderableTree.getProperty(Identifier("value"));
+
+		ValueTree originTree = valueTree.getChildWithName(Identifier("Origin"));
+		origin.x = originTree.getProperty(Identifier("x"));
+		origin.y = originTree.getProperty(Identifier("y"));
+		setPositionWithPhysics(origin.x, origin.y);
+
+		ValueTree livesTree = valueTree.getChildWithName(Identifier("Lives"));
+		lives = livesTree.getProperty(Identifier("value"));
 
 		renderableObject.parseFrom(valueTree.getChildWithName(Identifier("RenderableObject")));
 
-
 		physicsProperties.parseFrom(valueTree.getChildWithName(Identifier("PhysicsProperties")));
 
+		glm::vec2 scale;
+
+		ValueTree scaleTree = valueTree.getChildWithName(Identifier("Scale"));
+		scale.x = scaleTree.getProperty(Identifier("x"));
+		scale.y = scaleTree.getProperty(Identifier("y"));
+		setScale(scale.x, scale.y);
 	}
 
 	ValueTree serializeToValueTree() {
 
 		//Create the root ValueTree to serialize the game
-		ValueTree gameObjectSerialization = ValueTree("GameObject");
+		ValueTree gameObjectSerialization("GameObject");
 
 		gameObjectSerialization.setProperty(Identifier("name"), var(this->getName()), nullptr);
 
@@ -359,12 +409,18 @@ public:
 		case Enemy:
 			objectTypeInt = 2;
 			break;
+		case Collectable:
+			objectTypeInt = 3;
+			break;
+		case Checkpoint:
+			objectTypeInt = 4;
+			break;
 		}
 
 		gameObjectSerialization.setProperty(Identifier("type"), var(objectTypeInt), nullptr);
 
 		//Serialize Renderable bool
-		ValueTree isRenderableValueTree = ValueTree("Renderable");
+		ValueTree isRenderableValueTree("Renderable");
 
 		isRenderableValueTree.setProperty(Identifier("value"), var(renderable), nullptr);
 
@@ -375,60 +431,90 @@ public:
 
 		gameObjectSerialization.addChild(physicsProperties.serializeToValueTree(), -1, nullptr);
 
-		ValueTree xvelTree = ValueTree("XVel");
+		ValueTree moveSpeedTree("MoveSpeed");
 
-		xvelTree.setProperty(Identifier("value"), var(xVel), nullptr);
+		int moveSpeedInt;
 
-		gameObjectSerialization.addChild(xvelTree, -1, nullptr);
+		switch (moveSpeed) {
 
-		ValueTree yvelTree = ValueTree("YVel");
+		case SLOW:
+			moveSpeedInt = 0;
+			break;
+		case MED:
+			moveSpeedInt = 1;
+			break;
+		case FAST:
+			moveSpeedInt = 2;
+			break;
+		}
 
-		yvelTree.setProperty(Identifier("value"), var(yVel), nullptr);
+		moveSpeedTree.setProperty(Identifier("value"), var(moveSpeedInt), nullptr);
+		gameObjectSerialization.addChild(moveSpeedTree, -1, nullptr);
 
-		gameObjectSerialization.addChild(yvelTree, -1, nullptr);
+		ValueTree jumpSpeedTree("JumpSpeed");
 
-		ValueTree xvelTreeCap = ValueTree("XVelCap");
+		int jumpSpeedInt;
 
-		xvelTreeCap.setProperty(Identifier("value"), var(xVelocityCap), nullptr);
+		switch (jumpSpeed) {
 
-		gameObjectSerialization.addChild(xvelTreeCap, -1, nullptr);
+		case SLOW:
+			jumpSpeedInt = 0;
+			break;
+		case MED:
+			jumpSpeedInt = 1;
+			break;
+		case FAST:
+			jumpSpeedInt = 2;
+			break;
+		}
 
-		ValueTree yvelTreeCap = ValueTree("YVelCap");
+		jumpSpeedTree.setProperty(Identifier("value"), var(jumpSpeedInt), nullptr);
+		gameObjectSerialization.addChild(jumpSpeedTree, -1, nullptr);
 
-		yvelTreeCap.setProperty(Identifier("value"), var(yVelocityCap), nullptr);
+		ValueTree originTree("Origin");
+		originTree.setProperty(Identifier("x"), var(origin.x), nullptr);
+		originTree.setProperty(Identifier("y"), var(origin.y), nullptr);
+		gameObjectSerialization.addChild(originTree, -1, nullptr);
 
-		gameObjectSerialization.addChild(yvelTreeCap, -1, nullptr);
+		glm::vec2 scale = getScale();
+
+		ValueTree scaleTree("Scale");
+		scaleTree.setProperty(Identifier("x"), var(scale.x), nullptr);
+		scaleTree.setProperty(Identifier("y"), var(scale.y), nullptr);
+		gameObjectSerialization.addChild(scaleTree, -1, nullptr);
+
+		ValueTree livesTree("Lives");
+		livesTree.setProperty(Identifier("value"), var(lives), nullptr);
+		gameObjectSerialization.addChild(livesTree, -1, nullptr);
+
 
 		return gameObjectSerialization;
 	}
 
 protected:
 	GameObjectType objType;
-
+	float cappedMoveSpeed, cappedJumpSpeed;
 private:
 	
     /** Name of object */
     String name;
-    
+	int lives;
+	glm::vec2 origin;
     /** Specifies wether or not the object will be rendered visually to the screen */
     bool renderable;
-    
-    /** Renderable representation of this object.
+    /** 
+		Renderable representation of this object.
      */
     RenderableObject renderableObject;
-    
+
+
     /** Physical properties associated with the object */
     PhysicsProperties physicsProperties;
-
-	//Physics related accelerations and max velocities
-	/*EVENTUALLY should go in PhysicsProperties*/
-	GLfloat xVel, yVel;
-	float xVelocityCap, yVelocityCap;
-    
+	float xVel, yVel;
+	// Speed of object jump/run
+	Speed moveSpeed, jumpSpeed;
     /** Map of in-game physics-based actions to specific audio files */
     std::map<PhysicalAction, File> actionToAudio;
-    
-	String objName;
 
 	JUCE_LEAK_DETECTOR(GameObject)
 };

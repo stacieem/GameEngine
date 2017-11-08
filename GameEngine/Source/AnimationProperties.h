@@ -14,43 +14,6 @@ public:
 		animationSpeed = MED;
 	}
 
-	/*AnimationProperties(const AnimationProperties& obj) {
-		animationTextureFiles = obj.animationTextureFiles;
-		idleTexture = obj.idleTexture;
-	    animationDirectory = obj.animationDirectory;
-
-		canimate = obj.canimate;
-		isAnimating = obj.isAnimating;
-		leftAnimation = obj.leftAnimation;
-
-		animationStartTime = obj.animationStartTime;
-		animationCurrentTime = obj.animationCurrentTime;
-		animationTotalTime = obj.animationTotalTime;
-
-
-		animationSpeed;
-
-	}
-
-	AnimationProperties& operator=(const AnimationProperties& obj) {
-		animationTextureFiles = obj.animationTextureFiles;
-		idleTexture = obj.idleTexture;
-		animationDirectory = obj.animationDirectory;
-
-		canimate = obj.canimate;
-		isAnimating = obj.isAnimating;
-		leftAnimation = obj.leftAnimation;
-
-		animationStartTime = obj.animationStartTime;
-		animationCurrentTime = obj.animationCurrentTime;
-		animationTotalTime = obj.animationTotalTime;
-
-
-		animationSpeed;
-
-		return *this;
-	}*/
-
 	~AnimationProperties() {
 
 	}
@@ -65,10 +28,6 @@ public:
 	}
 
 	void setLeftAnimation(bool isLeft) {
-		/*if (isLeft != leftAnimation) {
-			reverseTextureCoords();
-
-		}*/
 
 		this->leftAnimation = isLeft;
 
@@ -299,7 +258,6 @@ private:
 	int64 animationStartTime;
 	int64 animationCurrentTime;
 	int64 animationTotalTime;
-
 
 	Speed animationSpeed;
 

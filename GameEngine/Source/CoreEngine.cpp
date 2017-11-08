@@ -13,10 +13,6 @@
 CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
 {
 
-
-
-
-
     // Setup JUCE Components & Windowing
     addAndMakeVisible (gameView);
     
@@ -45,8 +41,6 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
 		else {
 			gameModelCurrentFrame = new GameModel();
 		}
-
-		
 	}
     
 	renderSwapFrameA = new RenderSwapFrame();
@@ -88,6 +82,9 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio)
 	inputManager->addCommand(aKey, GameCommand::Player2MoveRight);
 	aKey = KeyPress('r');
 	inputManager->addCommand(aKey, GameCommand::reset);
+    
+    // Set the current level to level 0
+    setCurrentLevel(0);
 
 	//Register pause command
 	//inputManager->addCommand(KeyPress('p'), GameCommand::TOGGLEPAUSE);
@@ -245,11 +242,18 @@ void CoreEngine::addEnemy()
 	gameModelCurrentFrame->getCurrentLevel()->addNewEnemy();
 
 }
+void CoreEngine::addCollectable()
+{
+	gameModelCurrentFrame->getCurrentLevel()->addNewCollectable();
+
+}
 void CoreEngine::toggleGamePause()
 {
 	
 	if (gameLogic.isPaused()) {
 		gameLogic.setPaused(false);
+        // When game is playing, grab keyboard focus
+        grabKeyboardFocus();
 	} else {
 		gameLogic.setPaused(true);
 	}
@@ -270,6 +274,9 @@ void CoreEngine::removeLevel(int levelIndex)
 void CoreEngine::setCurrentLevel(int levelIndex)
 {
 	gameModelCurrentFrame->setCurrentLevel(levelIndex);
+    
+    // Set the game view to manipulate the level's camera
+    gameView.setCameraToHandle(&gameModelCurrentFrame->getCurrentLevel()->getCamera());
 }
 
 bool CoreEngine::isPaused()

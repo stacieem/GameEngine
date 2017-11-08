@@ -82,11 +82,19 @@ public:
             mesh.drawMeshToOpenGLContext(openGLContext);
         }
     }
+    
+    /** Gets the height of a Model
+     */
 	float getHeight() {
-		float maxY = 0, minY = 0;
-		for (Mesh &m : meshes) {
-			for (auto v : m.getVertices()) {
-				maxY = max(v.position.y,maxY);
+        
+        float maxY = 0.0f;
+        float minY = 0.0f;
+        
+		for (Mesh &m : meshes)
+        {
+			for (auto v : m.getVertices())
+            {
+				maxY = max(v.position.y, maxY);
 				minY = min(v.position.y, minY);
 			}
 		}
@@ -94,14 +102,22 @@ public:
 		return maxY - minY;
 	}
 
+    /** Gets the width of a Model
+     */
 	float getWidth() {
-		float maxX = 0, minX = 0;
-		for (Mesh &m : meshes) {
-			for (auto v : m.getVertices()) {
+        
+        float maxX = 0.0f;
+        float minX = 0.0f;
+        
+		for (Mesh &m : meshes)
+        {
+			for (auto v : m.getVertices())
+            {
 				maxX = max(v.position.x, maxX);
 				minX = min(v.position.x, minX);
 			}
 		}
+        
 		return maxX - minX;
 	}
 

@@ -3,39 +3,48 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PlayerObject.h"
 #include "EnemyObject.h"
+#include "GoalPointObject.h"
 #include "GameObject.h"
+#include "CollectableObject.h"
 #include "Camera.h"
-
 class Level {
 public:
 	Level(String levelName) {
         
         // Add a default model
         modelsForRendering.add(new Model());
-        
 		this->levelName = levelName;
 		// Trystan's Multiplayer Test
-		PlayerObject* player = new PlayerObject(worldPhysics);
+		PlayerObject* player = new PlayerObject(worldPhysics, modelsForRendering[0]);
 
 		player->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
-		
+	
 		player->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_stand.png"));
-
 		player->getRenderableObject().animationProperties.setCanimate(true);
+
 
 		gameObjects.add(player);
 		players.add(player);
 
+
         player->setModel(modelsForRendering[0]);
 
+		score = 0;
+		enemyPoints = 0;
+		collectablePoints = 0;
+		timerSpeed = 0;
+		hasTimer = false;
+		hasScore = false;
+		hasCheckpoint = false;
 	}
 
 	Level(ValueTree levelValueTree) {
 
 		modelsForRendering.add(new Model());
 
-		parseLevel(levelValueTree);
+		parseFrom(levelValueTree);
 	}
+
     
 	~Level()
     {
@@ -47,31 +56,67 @@ public:
 	}
 
 	void addNewPlayer() {
-		players.add(new PlayerObject(worldPhysics));
+		players.add(new PlayerObject(worldPhysics, modelsForRendering[0]));
 	}
 
 	void addNewObject() {
-		gameObjects.add(new GameObject(worldPhysics));
+		gameObjects.add(new GameObject(worldPhysics, modelsForRendering[0]));
 	}
 
 	void addNewBlock() {
-        GameObject * gameObj = new GameObject(worldPhysics);
-        gameObj->setModel(modelsForRendering[0]);
-        gameObj->setScale(1.0f, 1.0f);
+        GameObject * gameObj = new GameObject(worldPhysics, modelsForRendering[0]);
+
+		gameObj->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/brick.png"));
 		gameObjects.add(gameObj);
 	}
+    
+    GameObject * copyObject(GameObject * objectToCopy) {
+        GameObject * newObject = new GameObject(*objectToCopy, worldPhysics);
+        gameObjects.add(newObject);
+        return newObject;
+    }
+    
 	void addNewEnemy() {
-		EnemyObject* enm = new EnemyObject(worldPhysics);
-		enm->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/blue_alien/walk_p2/"));
+		EnemyObject* enm = new EnemyObject(worldPhysics, modelsForRendering[0]);
+		enm->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/blue_alien/walk/"));
 
 		enm->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/blue_alien/p2_stand.png"));
 
 
 		enm->getRenderableObject().animationProperties.setCanimate(true);
-		enm->setModel(modelsForRendering[0]);
-		enm->setScale(1.0f, 1.0f);
 		gameObjects.add(enm);
 	}
+    
+	void addNewCollectable()
+    {
+		CollectableObject* collectable = new CollectableObject(worldPhysics, modelsForRendering[0]);
+
+		collectable->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/coin.png"));
+
+		gameObjects.add(collectable);
+	}
+    
+	void addCheckpoint()
+    {
+		checkpoint = new GoalPointObject(worldPhysics, modelsForRendering[0]);
+
+		checkpoint->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/checkpoint.png"));
+
+		gameObjects.add(checkpoint);
+	}
+
+	void removeCheckpoint()
+    {
+		int i = 0;
+		for (auto obj : gameObjects) {
+			
+			if (obj->getObjType() == Checkpoint) {
+				gameObjects.remove(i, true);
+			}
+			i++;
+		}
+	}
+
 	const OwnedArray<GameObject> & getGameObjects()
 	{
 		return gameObjects;
@@ -106,6 +151,17 @@ public:
         updateObjectsPositionsFromPhysics();
 	}
     
+	//reset the current level to an original state
+	void resetLevel() {
+		DBG("resetLevel");
+		for (auto  obj : gameObjects) {
+			DBG("obj origin: " << obj->getOrigin().x << " " << obj->getOrigin().y);
+			DBG("obj position: " << obj->getPhysicsProperties().GetPosition().x << " " << obj->getPhysicsProperties().GetPosition().y);
+			
+			obj->setPositionWithPhysics(obj->getOrigin().x, obj->getOrigin().y);
+			obj->getPhysicsProperties().setLinearVelocity(0, 0);
+		}
+	}
     
 	//Return the WorldPhysics for this level
 	WorldPhysics & getWorldPhysics()
@@ -117,11 +173,94 @@ public:
     {
         return camera;
     }
-
-	String getName() {
-		return levelName;
+    
+    /** Gets the game object at the position in world space.
+        (This essentially casts a ray into the scene and determines what object
+        it collides with, but since this is just 2D it is a bit simpler than that,
+        just the 2D position is evaluated)
+     
+        @return GameObject at the given position or nullptr if no object found
+     */
+    GameObject * getObjectAtPosition(glm::vec2 position)
+    {
+        // Iterate through GameObjects and find one that fits posiion
+        for (GameObject * gameObject : gameObjects)
+        {
+            if (gameObject->isAtPosition(position))
+                return gameObject;
+        }
+        
+        return nullptr;
+    }
+	
+	//clean this up
+	//Score properties
+	void setScoreEnabled() {
+		hasScore = !hasScore;
+	}
+	bool isScoreEnabled() {
+		return hasScore;
+	}
+	int getScore() {
+		return score;
+	}
+	int getEnemyPoints() {
+		return enemyPoints;
+	}
+	int getCollectablePoints() {
+		return collectablePoints;
+	}
+	void setScore(int baseScore) {
+		score = baseScore;
+	}
+	void setEnemyPoints(int points) {
+		enemyPoints = points;
+	}
+	void setCollectablePoints(int points) {
+		collectablePoints = points;
+	}
+	void addToScore(int points) {
+		score += points;
+	}
+	
+	//timer properties
+	bool isTimerEnabled() {
+		return hasTimer;
+	}
+	void setTimerEnabled() {
+		hasTimer = !hasTimer;
+	}
+	int getTimer() {
+		return time;
+	}
+	void setTimer(float baseTimer) {
+		score = baseTimer;
+	}
+	void setTimerSpeed(float timeSpeed) {
+		timerSpeed = timeSpeed;
+	}
+	void decrementTimer(float decrement) {
+		time -= decrement;
+	}
+	
+	//checkpoint properties
+	bool isCheckpointEnabled() {
+		return hasCheckpoint;
+	}
+	void setCheckpointEnabled() {
+		hasCheckpoint = !hasCheckpoint;
+		if (hasCheckpoint) {
+			addCheckpoint();
+		}
+		else
+		{
+			removeCheckpoint();
+		}
 	}
 
+	int getGravityState() {
+		return worldPhysics.getGravityLevel();
+	}
 
 	ValueTree serializeToValueTree() {
 
@@ -146,12 +285,13 @@ public:
 
 		//For each level, serialize and add to Levels child element
 		for (GameObject* gameObject : gameObjects) {
-			
+
 			//If this is the player, set the player index to be this index
 			if (gameObject == players[0]) {
 				playerValueTree.setProperty(Identifier("index"), var(gameObjects.indexOf(gameObject)), nullptr);
 				gameObjectsValueTree.addChild(((PlayerObject*)gameObject)->serializeToValueTree(), -1, nullptr);
-			} 			else if (gameObject->getObjType() == Enemy)	{
+			}
+			else if (gameObject->getObjType() == Enemy) {
 				gameObjectsValueTree.addChild(((EnemyObject*)gameObject)->serializeToValueTree(), -1, nullptr);
 			}
 			else {
@@ -166,7 +306,7 @@ public:
 		return levelSerialization;
 	}
 
-	void parseLevel(ValueTree levelTree) {
+	void parseFrom(ValueTree levelTree) {
 
 		camera.parseCameraFrom(levelTree.getChildWithName(Identifier("Camera")));
 
@@ -183,34 +323,37 @@ public:
 			switch (objTypeInt) {
 
 			case 0: {
-				GameObject* genericObj = new GameObject(worldPhysics, gameObjectValueTree);
-				genericObj->setModel(modelsForRendering[0]);
-				genericObj->setScale(1.0f, 1.0f);
+				GameObject* genericObj = new GameObject(worldPhysics, modelsForRendering[0], gameObjectValueTree);
 				gameObjects.add(genericObj);
 			}
-				break;
+					break;
 			case 1: {
-				PlayerObject* player = new PlayerObject(worldPhysics, gameObjectValueTree);
-				player->setModel(modelsForRendering[0]);
+				PlayerObject* player = new PlayerObject(worldPhysics, modelsForRendering[0], gameObjectValueTree);
 				gameObjects.add(player);
 				players.add(player);
-				
+
 			}
 					break;
 			case 2: {
-				EnemyObject* enm = new EnemyObject(worldPhysics, gameObjectValueTree);
-				enm->setModel(modelsForRendering[0]);
-				enm->setScale(1.0f, 1.0f);
+				EnemyObject* enm = new EnemyObject(worldPhysics, modelsForRendering[0], gameObjectValueTree);
 				gameObjects.add(enm);
+			}
+					break;
+			case 3: {
+				CollectableObject* collectable = new CollectableObject(worldPhysics, modelsForRendering[0], gameObjectValueTree);
+				gameObjects.add(collectable);
+			}
+				break;
+			case 4: {
+				GoalPointObject* goalPoint = new GoalPointObject(worldPhysics, modelsForRendering[0], gameObjectValueTree);
+				gameObjects.add(goalPoint);
 			}
 				break;
 			}
 
-		
+
 		}
 	}
-
-    
 private:
     
     /** Updates positions from all objects from the Physics updates
@@ -226,13 +369,16 @@ private:
     
     /** Name of level */
     String levelName;
-    
-    /** Camera view of the current level */
+	int score, enemyPoints, collectablePoints;
+	float time, timerSpeed;
+	bool hasScore, hasTimer, hasCheckpoint;
+   
+	/** Camera view of the current level */
     Camera camera;
-    
+	GoalPointObject* checkpoint;
     /** Physics for the level */
     WorldPhysics worldPhysics;
-    
+
     /** GameObjects in the level */
 	OwnedArray<GameObject> gameObjects;
     
@@ -256,3 +402,4 @@ private:
     /** Game Players in the level */
 	Array<PlayerObject *> players;
 };
+

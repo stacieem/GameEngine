@@ -6,17 +6,17 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Level.h"
 #include "CoreEngine.h"
-#include "Inspector.h"
+#include "InspectorUpdater.h"
 #include "SelectObjectButtonPropertyComponent.h"
 #include "ComboBoxPropertyComponent.h"
+#include "WorldNavigator.h"
 
 class LevelInspector : public Component, public InspectorUpdater,
                        public Button::Listener, public ComboBox::Listener, 
-					   public TextPropertyComponent::Listener, public Value::Listener
+					   public TextPropertyComponent::Listener, public Value::Listener						
 {
 public:
-	LevelInspector();
-
+	LevelInspector(WorldNavigator & worldNavigator);
 
 	~LevelInspector();
 
@@ -30,38 +30,46 @@ public:
 
 	void resized() override;
 
+
 	void buttonClicked(Button * button) override;
     
 	void comboBoxChanged(ComboBox *comboBoxThatHasChanged) override;
 
 
-	void valueChanged(Value &value);
+	void valueChanged(Value &value) override;
 
 	void setChildrenEnabled(bool shouldBeEnabled);
 
-
-	GameObject* getSelectedGameObject();
 private:
+    
+    const Colour SELECTED_ROW_COLOUR;
     
     Label levelLabel;
     ComboBox levelComboBox;
     TextButton addLevelButton;
     TextButton removeLevelButton;
 	TextButton saveLevelButton;
-    int currentLevelIndex;
+	TextButton resetLevelButton;
     
 	CoreEngine* coreEngine;
-	ToggleButton playButton;
+	TextButton playButton;
 	OwnedArray<TextButton> buttons;
 	PropertyPanel propertyPanel;
-	Value selectedObjectValue, gravity;
+	Value selectedObjectValue, gravity, endCheckPoint, hasScore;
+	Value hasTimer, timer;
+	Value hasCheckPoint;
+	Value enemyScore, collectableScore;
 	Array<GameObject*> gameObjects;
 
-	GameObject* selectedObject;
+    // Level selection
 	Level* selectedLevel;
+    int selectedLevelIndex;
+    
+    WorldNavigator & worldNavigator;
 
 	Array<PropertyComponent *> levelObjGraphProperties;
 	Array<PropertyComponent *> levelPhysicsProperties;
 	Array<PropertyComponent *> levelAudioProperties;
 	Array<PropertyComponent *> levelBackgroundProperties;
+	Array<PropertyComponent *> levelObjConditionalProperties;
 };

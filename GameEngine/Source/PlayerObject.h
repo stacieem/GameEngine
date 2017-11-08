@@ -6,76 +6,67 @@
 */
 class PlayerObject : public GameObject{
 public:
-	PlayerObject(WorldPhysics & worldPhysics) : GameObject(worldPhysics)
+	PlayerObject(WorldPhysics & worldPhysics, Model* model) : GameObject(worldPhysics, model)
 	{
+		setName("Player");
 		objType = GameObjectType::Player;
-		setXVelocityCap(Speed::SLOW);
-		setYVelocityCap(Speed::SLOW);
+		setMoveSpeed(Speed::MED);
+		setJumpSpeed(Speed::SLOW);
 
-		getPhysicsProperties().setFriction(0.5f);
-		linearDamp = 0.5f;
-
-		//origin = getPhysicsProperties().GetPosition();
-
+        getPhysicsProperties().setIsStatic(false);
 	}
 
-	PlayerObject(WorldPhysics & worldPhysics, ValueTree valueTree) : GameObject(worldPhysics)
+	PlayerObject(WorldPhysics & worldPhysics, Model* model, ValueTree valueTree) : GameObject(worldPhysics, model, valueTree)
 	{
-		GameObject::parseFrom(valueTree);
 		/*objType = GameObjectType::Player;
 		setXVelocityCap(Speed::SLOW);
 		setYVelocityCap(Speed::SLOW);
 		*/
 		getPhysicsProperties().setFriction(0.5f);
-		linearDamp = 0.5f;
 
 		//origin = getPhysicsProperties().GetPosition();
-
+		parseFrom(valueTree);
 	}
 
 	~PlayerObject(){}
 	void moveUp()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y += getYVel();
-		if (store.y > getYVelocityCap()) {
-			store.y = getYVelocityCap();
+		store.y += getJumpSpeedVelocity();
+		if (store.y > cappedJumpSpeed) {
+			store.y = cappedJumpSpeed;
 		}
+
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
-		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
 	void moveDown()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.y -= getYVel();
-		if (store.y < -getYVelocityCap()) {
-			store.y = -getYVelocityCap();
+		store.y -= getJumpSpeedVelocity();
+		if (store.y < -cappedJumpSpeed) {
+			store.y = -cappedJumpSpeed;
 		}
-
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
-		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
 	void moveLeft()
 	{
-
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x -= getXVel();
-		if (store.x < -getXVelocityCap()) {
-			store.x = -getXVelocityCap();
+		store.x -= getRunSpeedVelocity();
+		if (store.x < -cappedMoveSpeed) {
+			store.x = -cappedMoveSpeed;
 		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
-		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
 	void moveRight()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x += getXVel();
-		if (store.x > getXVelocityCap()) {
-			store.x = getXVelocityCap();
+		store.x += getRunSpeedVelocity();
+		if (store.x > cappedMoveSpeed) {
+			store.x = cappedMoveSpeed;
 		}
 		getPhysicsProperties().setLinearVelocity(store.x, store.y);
-		//getPhysicsProperties().setLinearDamping(linearDamp);
 	}
+
 
 	ValueTree serializeToValueTree() {
 
@@ -88,14 +79,20 @@ public:
 		return playerSerialization;
 	}
     
-//	void reset()
-//	{
-//		translateTo(origin.x, origin.y);
-//		getPhysicsProperties().setLinearVelocity(0.0f,0.0f);
-//	}
+
+	b2Vec2 getPosition() {
+		return getPhysicsProperties().GetPosition();
+	}
+
+
 private:
+
 	GLfloat linearDamp;
-	//b2Vec2 origin;
+
+
+
+	Speed move;
+	Speed jump;
 
 	JUCE_LEAK_DETECTOR(PlayerObject)
 

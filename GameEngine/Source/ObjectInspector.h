@@ -1,16 +1,20 @@
 /*
 
-		Lists the properties of the currently selected unit
+Lists the properties of the currently selected unit
 */
+#pragma once
+
 #include "CoreEngine.h"
-#include "Inspector.h"
+#include "InspectorUpdater.h"
 #include "GameObjectType.h"
 #include <string>   
 #include "ComboBoxPropertyComponent.h"
 #include "FilenamePropertyComponent.h"
 #include "Speed.h"
 
-class ObjectInspector : public Component, public InspectorUpdater, public TextPropertyComponent::Listener, public Value::Listener, FilenameComponentListener {
+class ObjectInspector : public Component, public InspectorUpdater,
+	public TextPropertyComponent::Listener,
+	public Value::Listener, FilenameComponentListener {
 public:
 	ObjectInspector() {
 		//addAndMakeVisible(scrollBar);
@@ -26,29 +30,29 @@ public:
 		coreEngine = engine;
 	}
 	void setSelectedObj(GameObject* obj) {
-			
+
 		if (selectedObj != obj) {
 			selectedObj = obj;
 			updateObj();
-			
+
 		}
-		
+
 	}
 	// JUCE GUI Callbacks ======================================================
 	void paint(Graphics& g) override {
 		//g.fillAll(Colours::coral);
 		//g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
 	}
-	
+
 	void resized() override
 	{
 		//scrollBar.setBounds(getLocalBounds());
 
 		propertyPanel.setBounds(getLocalBounds());
 	}
-	
-	void textPropertyComponentChanged(TextPropertyComponent * component) override{
 
+	void textPropertyComponentChanged(TextPropertyComponent * component) override
+	{
 		if (component->getName() == "Name:") {
 			selectedObj->setName(component->getText());
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
@@ -59,43 +63,44 @@ public:
 			File textureFile;
 			if (component->getText().isEmpty()) {
 				textureFile = File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/default.png");
-			} else {
+			}
+			else {
 				textureFile = File(component->getText());
 			}
 			selectedObj->getRenderableObject().animationProperties.setIdleTexture(textureFile);
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 
-
+		/*
 		if (component->getName() == "Density:") {
-			float dens = component->getText().getFloatValue()/100;
-			selectedObj->getPhysicsProperties().setDensity(dens);
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		float dens = component->getText().getFloatValue()/100;
+		selectedObj->getPhysicsProperties().setDensity(dens);
+		updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
-
+		*/
 	}
 
-	void valueChanged(Value &value) {
-		if (value.refersToSameSourceAs(xPosition)) {
-			if (value.getValue().isDouble()) {
-				
-				float x = (float)value.getValue();
-				selectedObj->setXPositionWithPhysics(x);
-				updateInspectorsChangeBroadcaster->sendChangeMessage();
+	void valueChanged(Value &value) override
+	{
+		/*if (value.refersToSameSourceAs(xPosition)) {
+		if (value.getValue().isDouble()) {
 
-			}
-
+		float x = (float)value.getValue();
+		selectedObj->setXPositionWithPhysics(x);
+		updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
+
+		}*/
 		if (value.refersToSameSourceAs(objPhysicsXCap)) {
 			switch ((int)objPhysicsXCap.getValue()) {
 			case 1:
-				selectedObj->setXVelocityCap(Speed::SLOW);
+				selectedObj->setMoveSpeed(Speed::SLOW);
 				break;
 			case 2:
-				selectedObj->setXVelocityCap(Speed::MED);
+				selectedObj->setMoveSpeed(Speed::MED);
 				break;
 			case 3:
-				selectedObj->setXVelocityCap(Speed::FAST);
+				selectedObj->setMoveSpeed(Speed::FAST);
 				break;
 			}
 
@@ -104,32 +109,32 @@ public:
 		if (value.refersToSameSourceAs(objPhysicsYCap)) {
 			switch ((int)objPhysicsYCap.getValue()) {
 			case 1:
-				selectedObj->setYVelocityCap(Speed::SLOW);
+				selectedObj->setJumpSpeed(Speed::SLOW);
 				break;
 			case 2:
-				selectedObj->setYVelocityCap(Speed::MED);
+				selectedObj->setJumpSpeed(Speed::MED);
 				break;
 			case 3:
-				selectedObj->setYVelocityCap(Speed::FAST);
+				selectedObj->setJumpSpeed(Speed::FAST);
 				break;
 			}
 
 		}
-
+		/*
 		if (value.refersToSameSourceAs(yPosition)) {
-			if (value.getValue().isDouble()) {
-				
+		if (value.getValue().isDouble()) {
 
-				float y = (float)value.getValue();
-				selectedObj->setYPositionWithPhysics(y);
-				updateInspectorsChangeBroadcaster->sendChangeMessage();
 
-			}
+		float y = (float)value.getValue();
+		selectedObj->setYPositionWithPhysics(y);
+		updateInspectorsChangeBroadcaster->sendChangeMessage();
 
 		}
 
+		}
+		*/
 		if (value.refersToSameSourceAs(comboValue)) {
-			
+
 			switch ((int)comboValue.getValue()) {
 			case 1:
 				selectedObj->getRenderableObject().animationProperties.setAnimationSpeed(Speed::SLOW);
@@ -147,10 +152,10 @@ public:
 
 			switch ((int)stateComboValue.getValue()) {
 			case 1:
-				selectedObj->updateState(GameObject::STATIC);
+				selectedObj->getPhysicsProperties().setIsStatic(true);
 				break;
 			case 2:
-				selectedObj->updateState(GameObject::DYNAMIC);
+				selectedObj->getPhysicsProperties().setIsStatic(false);
 				break;
 			}
 		}
@@ -159,40 +164,41 @@ public:
 
 			switch ((int)aiState.getValue()) {
 			case 1:
-				dynamic_cast<EnemyObject *>(selectedObj)->changeAI(EnemyObject::CHASE);
+				((EnemyObject*)(selectedObj))->changeAI(EnemyObject::NONE);
 				break;
 			case 2:
-				dynamic_cast<EnemyObject *>(selectedObj)->changeAI(EnemyObject::SCAREDAF);
+				((EnemyObject*)(selectedObj))->changeAI(EnemyObject::GROUNDPATROL);
+				break;
+			case 3:
+				((EnemyObject*)(selectedObj))->changeAI(EnemyObject::JUMPPATROL);
+				break;
+			case 4:
+				((EnemyObject*)(selectedObj))->changeAI(EnemyObject::SCAREDAF);
+				break;
+			case 5:
+				((EnemyObject*)(selectedObj))->changeAI(EnemyObject::CHASE);
 				break;
 			}
 		}
-
-		if (value.refersToSameSourceAs(objPhysicsFriction)) {
-			float fric = (float)value.getValue();
-			selectedObj->getPhysicsProperties().setFriction(fric);
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
-		}
-
-		if (value.refersToSameSourceAs(objPhysicsRestitution)) {
-
-			float rest = (float)value.getValue();
-			selectedObj->getPhysicsProperties().setRestitution(rest);
+		if (value.refersToSameSourceAs(playerLives)) {
+			selectedObj->setLives(value.getValue());
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 
 		if (value.refersToSameSourceAs(xScale)) {
 
-			float scale = (float)value.getValue();
-			selectedObj->setScale(scale, selectedObj->getScale().y);
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		float scale = (float)value.getValue();
+		selectedObj->setScale(scale, selectedObj->getScale().y);
+		updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 
 		if (value.refersToSameSourceAs(yScale)) {
 
-			float scale = (float)value.getValue();
-			selectedObj->setScale(selectedObj->getScale().x,scale);
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		float scale = (float)value.getValue();
+		selectedObj->setScale(selectedObj->getScale().x,scale);
+
 		}
+
 	}
 
 	void filenameComponentChanged(FilenameComponent *fileComponentThatHasChanged) {
@@ -205,67 +211,70 @@ public:
 			selectedObj->getRenderableObject().animationProperties.setIdleTexture(fileComponentThatHasChanged->getCurrentFile());
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
-		
+
+		if (fileComponentThatHasChanged->getName() == "Choose Collision Audio") {
+			selectedObj->mapAudioFileToPhysicalAction(fileComponentThatHasChanged->getCurrentFile(), PhysicalAction::collsion);
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
+
 	}
 
 private:
 
-	void updateObj() {
+	void updateObj()
+	{
 		propertyPanel.clear();
 		objPhysicsProperties.clear();
 		objAudioProperties.clear();
 		objBackgroundProperties.clear();
+		objHudProperties.clear();
 
 		//add Level Physics
 		//create additional functions in desired objects to make it easier to retrieve information.
 		//add sections to physics menu
-		if (selectedObj != NULL) {
-			switch (selectedObj->getObjType()) {
+		if (selectedObj != NULL)
+		{
+			switch (selectedObj->getObjType())
+			{
 			case Generic:	//environment?
 				addGenericMovementProperties();
 				break;
 			case Player:	//player
 				addGenericMovementProperties();
+				addHudProperties();
+
+				//add to panel
+				propertyPanel.addSection("Object Physics", objPhysicsProperties);
 				break;
 			case Enemy:	//ai, maybe differntiate between types of ai with this?
-				aiState.setValue(var( ( (EnemyObject*)selectedObj)->getAIState()));
+				addGenericMovementProperties();
+				aiState.setValue(var(((EnemyObject*)selectedObj)->getAIState()));
 				ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(aiState, "AI:");
 				combo->setTextWhenNothingSelected("Choose AI Type");
-				combo->addItem("Flee", 2);
-				combo->addItem("Chase", 1);
-				combo->setSelectedId(((EnemyObject*)selectedObj)->getAIState(), dontSendNotification);
+				combo->addItem("Chase", 5);
+				combo->addItem("Flee", 4);
+				combo->addItem("Jump & Patrol", 3);
+				combo->addItem("Patrol", 2);
+				combo->addItem("Do Nothing", 1);
+				combo->setSelectedId(((EnemyObject*)selectedObj)->getAIState() + 1, dontSendNotification);
 				aiState.addListener(this);
-				objPhysicsProperties.add(combo);
+				objBackgroundProperties.add(combo);
+
+				//add to panel
+				propertyPanel.addSection("Object Physics", objPhysicsProperties);
 				break;
-
-			
 			}
-
-			
 
 			addGenericGraphicProperties();
 
+			addAudioProperties();
 
-			
-			xScale.setValue(var((float)selectedObj->getScale().x));
-			xScale.addListener(this);
-			SliderPropertyComponent* slider = new SliderPropertyComponent(xScale, "x-scale:", 1, 10, .1);
-
-
-			objPhysicsProperties.add(slider);
-
-			//This is going to require a specification of the axis for the game
-			yScale.setValue(var((float)selectedObj->getScale().y));
-			SliderPropertyComponent* slider2 = new SliderPropertyComponent(yScale, "y-scale:", 1, 10, .1);
-			yScale.addListener(this);
-			objPhysicsProperties.add(slider2);
-
-			//add to panel
-			propertyPanel.addSection("Object Physics", objPhysicsProperties);
 
 			//Add misc properties to panel
 			propertyPanel.addSection("Misc. Properties", objBackgroundProperties);
 
+			// Add Object Audio
+			propertyPanel.addSection("Audio", objAudioProperties);
 		}
 
 		//add Object Audio
@@ -276,26 +285,26 @@ private:
 	//base physics properties
 	void addGenericMovementProperties() {
 
-		objPhysicsXCap.setValue(var((int)1));
+		objPhysicsXCap.setValue(var(selectedObj->getMoveSpeed()));
 		ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(objPhysicsXCap, "Move Speed:");
 		combo->setTextWhenNothingSelected("Choose Move Speed");
 		combo->addItem("Fast", 3);
 		combo->addItem("Medium", 2);
 		combo->addItem("Slow", 1);
-		combo->setSelectedId(1, dontSendNotification);
+		combo->setSelectedId(selectedObj->getMoveSpeed() + 1, dontSendNotification);
 		objPhysicsXCap.addListener(this);
 		objPhysicsProperties.add(combo);
 
-		objPhysicsYCap.setValue(var((int)1));
+		objPhysicsYCap.setValue(var(selectedObj->getJumpSpeed()));
 		combo = new ComboBoxPropertyComponent(objPhysicsYCap, "Jump Speed:");
 		combo->setTextWhenNothingSelected("Choose Jump Speed");
 		combo->addItem("Fast", 3);
 		combo->addItem("Medium", 2);
 		combo->addItem("Slow", 1);
-		combo->setSelectedId(1, dontSendNotification);
+		combo->setSelectedId(selectedObj->getJumpSpeed() + 1, dontSendNotification);
 		objPhysicsYCap.addListener(this);
 		objPhysicsProperties.add(combo);
-
+		/*
 		objPhysicsFriction.setValue(var(selectedObj->getPhysicsProperties().getFriction()));
 		SliderPropertyComponent* objFrictionText = new SliderPropertyComponent(objPhysicsFriction, "Friction:", 0, 1.0, 0.1);
 		objPhysicsFriction.addListener(this);
@@ -306,35 +315,56 @@ private:
 		objPhysicsRestitution.addListener(this);
 		objPhysicsProperties.add(objRestitutionText);
 
-		stateComboValue.setValue(var((int)1));
-		combo = new ComboBoxPropertyComponent(stateComboValue, "State:");
-		combo->setTextWhenNothingSelected("Choose State");
-		combo->addItem("Dynamic", 2);
-		combo->addItem("Static", 1);
-		combo->setSelectedId(1, dontSendNotification);
+		*/
+
+		xScale.setValue(var((float)selectedObj->getScale().x));
+		xScale.addListener(this);
+		SliderPropertyComponent* slider = new SliderPropertyComponent(xScale, "x-scale:", 1, 10, .1);
+
+
+		objPhysicsProperties.add(slider);
+
+		//This is going to require a specification of the axis for the game
+		yScale.setValue(var((float)selectedObj->getScale().y));
+		SliderPropertyComponent* slider2 = new SliderPropertyComponent(yScale, "y-scale:", 1, 10, .1);
+		yScale.addListener(this);
+		objPhysicsProperties.add(slider2);
+
+
+		stateComboValue.setValue(var(selectedObj->getPhysicsProperties().getIsStatic()));
+		combo = new ComboBoxPropertyComponent(stateComboValue, "Physics:");
+		combo->setTextWhenNothingSelected("Choose if active");
+		combo->addItem("No", 1);
+		combo->addItem("Yes", 2);
+		combo->setSelectedId(selectedObj->getPhysicsProperties().getIsStatic() ? 1 : 2, NotificationType::dontSendNotification);
 		stateComboValue.addListener(this);
 		objPhysicsProperties.add(combo);
 
-		//Density removed for now
-		/*objPhysicsDensity.setValue(var(selectedObj->getPhysicsProperties().getDensity()));
-		TextPropertyComponent* objDensityText = new TextPropertyComponent(objPhysicsDensity, "Density:", 3, false);
-		objDensityText->addListener(this);
-		objPhysicsProperties.add(objDensityText);*/
-
 	}
 
+	//base HUD properties
+	void addHudProperties()
+	{
+		playerLives.setValue(var(selectedObj->getLives()));
+		SliderPropertyComponent* playerHealthValue = new SliderPropertyComponent(playerLives, "Lives:", 0, 100, 1);
+		playerLives.addListener(this);
+		objHudProperties.add(playerHealthValue);
+
+		//Add HUD properties to panel
+		propertyPanel.addSection("HUD Properties", objHudProperties);
+	}
+
+
 	//base Graphical properties
-	void addGenericGraphicProperties() {
-
-
-
+	void addGenericGraphicProperties()
+	{
 		//Set objName to be the name of the selected object, and create its TextPropertyComponent
 		objName.setValue(var(selectedObj->getName()));
 		TextPropertyComponent* objNameText = new TextPropertyComponent(objName, "Name:", 40, false);
 		objNameText->addListener(this);
 
 		objBackgroundProperties.add(objNameText);
-
+		/*
 		//This is going to require a specification of the axis for the game
 		xPosition.setValue(var((int)selectedObj->getRenderableObject().position.x));
 		xPosition.addListener(this);
@@ -342,33 +372,43 @@ private:
 
 		//new TextPropertyComponent(xPosition, "x-Position:", 4,false);
 
-		objBackgroundProperties.add(slider);
+		//objBackgroundProperties.add(slider);
 
 		//This is going to require a specification of the axis for the game
 		yPosition.setValue(var((int)selectedObj->getRenderableObject().position.y));
 		SliderPropertyComponent* slider2 = new SliderPropertyComponent(yPosition, "y-Position:", -10, 10, .25);
 		yPosition.addListener(this);
-		objBackgroundProperties.add(slider2);
-
+		//objBackgroundProperties.add(slider2);
+		*/
 		//Note that this is the custom ComboBoxPropertyComponent JUCE docs
-		comboValue.setValue(var((int)2));
+		comboValue.setValue(var((selectedObj->getRenderableObject()).animationProperties.getAnimationSpeed()));
 		ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(comboValue, "Animation Speed:");
 		combo->setTextWhenNothingSelected("Choose Speed");
 		combo->addItem("Fast", 3);
 		combo->addItem("Normal", 2);
 		combo->addItem("Slow", 1);
-		combo->setSelectedId(2, dontSendNotification);
+		combo->setSelectedId((selectedObj->getRenderableObject()).animationProperties.getAnimationSpeed() + 1, dontSendNotification);
 		comboValue.addListener(this);
 		objBackgroundProperties.add(combo);
 
 		FilenamePropertyComponent* filename = new FilenamePropertyComponent("Choose Idle Texture", selectedObj->getRenderableObject().animationProperties.getIdleTexture(), false, false, false, "", "", "Select a file");
 		filename->addListener(this);
-
 		objBackgroundProperties.add(filename);
 
 		FilenamePropertyComponent* animationDirectory = new FilenamePropertyComponent("Animation Directory", selectedObj->getRenderableObject().animationProperties.getAnimationTextureDirectory(), false, true, false, "", "", "Select a Dir");
 		animationDirectory->addListener(this);
 		objBackgroundProperties.add(animationDirectory);
+	}
+
+
+	void addAudioProperties()
+	{
+		// Get file already associated with selected object
+		File * collisionAudioFile = selectedObj->getAudioFileForAction(PhysicalAction::collsion);
+
+		FilenamePropertyComponent* collisionAudio = new FilenamePropertyComponent("Choose Collision Audio", (collisionAudioFile == nullptr) ? File() : *collisionAudioFile, false, false, false, "", "", "Select a file");
+		collisionAudio->addListener(this);
+		objAudioProperties.add(collisionAudio);
 	}
 
 	CoreEngine* coreEngine;
@@ -379,11 +419,11 @@ private:
 	Array<PropertyComponent *> objPhysicsProperties;
 	Array<PropertyComponent *> objAudioProperties;
 	Array<PropertyComponent *> objBackgroundProperties;
+	Array<PropertyComponent *> objHudProperties;
 
-	Value objTexture, objName, xPosition, yPosition,
-		  objPhysicsX, objPhysicsY, objPhysicsXCap, objPhysicsYCap,
-		  objPhysicsFriction, objPhysicsRestitution, objPhysicsDensity,
-	      comboValue, stateComboValue, aiState, xScale, yScale;
+	Value objName, objPhysicsX, objPhysicsY, objPhysicsXCap, objPhysicsYCap,
+		objPhysicsDensity, comboValue, stateComboValue, aiState,
+		playerLives, xScale, yScale;
 
 	ScopedPointer<FilenameComponent> chooseFile;
 

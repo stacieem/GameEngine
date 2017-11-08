@@ -16,7 +16,7 @@ public:
     
     HealthBar()
     {
-        addAndMakeVisible (slider);
+        //addAndMakeVisible (slider);
         slider.setSliderStyle(Slider::SliderStyle::LinearBarVertical);
     }
 
