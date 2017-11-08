@@ -187,15 +187,14 @@ public:
 
 		if (value.refersToSameSourceAs(xScale)) {
 
-		float scale = (float)value.getValue();
-		selectedObj->setScale(scale, selectedObj->getScale().y);
-		updateInspectorsChangeBroadcaster->sendChangeMessage();
+			float scale = (float)value.getValue();
+			selectedObj->setScale(scale, selectedObj->getScale().y);
 		}
 
 		if (value.refersToSameSourceAs(yScale)) {
 
-		float scale = (float)value.getValue();
-		selectedObj->setScale(selectedObj->getScale().x,scale);
+			float scale = (float)value.getValue();
+			selectedObj->setScale(selectedObj->getScale().x,scale);
 
 		}
 
