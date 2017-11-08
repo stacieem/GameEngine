@@ -50,6 +50,7 @@ public:
 	void addBlock();
 	void addEnemy();
 	void addCollectable();
+	void addCheckpoint();
 	void toggleGamePause();
     
     void addLevel();

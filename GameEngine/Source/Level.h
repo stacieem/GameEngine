@@ -16,7 +16,8 @@ public:
 		this->levelName = levelName;
 		// Trystan's Multiplayer Test
 		PlayerObject* player = new PlayerObject(worldPhysics);
-
+		player->setScore(0);
+		player->setLives(1);
 		//player->addTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/alienBlue_stand.png"));
 		player->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
 		
@@ -65,6 +66,7 @@ public:
 
 		gameObj->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/brick.png"));
         gameObj->setModel(modelsForRendering[0]);
+		gameObj->setScore(10);
         gameObj->setScale(1.0f, 1.0f);
 		gameObjects.add(gameObj);
 	}
@@ -93,13 +95,13 @@ public:
 		CollectableObject* collectable = new CollectableObject(worldPhysics);
 
 		collectable->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/coin.png"));
-
+		collectable->setScore(5);
 		collectable->setModel(modelsForRendering[0]);
 		collectable->setScale(1.0f, 1.0f);
 		gameObjects.add(collectable);
 	}
     
-	void addCheckpoint()
+	void addNewCheckpoint()
     {
 		checkpoint = new GoalPointObject(worldPhysics);
 
@@ -247,21 +249,7 @@ public:
 	void decrementTimer(float decrement) {
 		Time -= decrement;
 	}
-	
-	//checkpoint properties
-	bool isCheckpointEnabled() {
-		return hasCheckpoint;
-	}
-	void setCheckpointEnabled() {
-		hasCheckpoint = !hasCheckpoint;
-		if (hasCheckpoint) {
-			addCheckpoint();
-		}
-		else
-		{
-			removeCheckpoint();
-		}
-	}
+
 
 	int getGravityState() {
 		return worldPhysics.getGravityLevel();

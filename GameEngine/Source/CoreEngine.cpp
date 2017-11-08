@@ -227,6 +227,12 @@ void CoreEngine::addCollectable()
 	gameModelCurrentFrame->getCurrentLevel()->addNewCollectable();
 
 }
+void CoreEngine::addCheckpoint()
+{
+	gameModelCurrentFrame->getCurrentLevel()->addNewCheckpoint();
+
+}
+
 void CoreEngine::toggleGamePause()
 {
 	

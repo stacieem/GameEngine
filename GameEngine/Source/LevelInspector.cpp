@@ -124,46 +124,6 @@ void LevelInspector::updateInspector(GameModel & gameModel)
 
     //add Level Background
 
-	//add Level Conditions(change the name)
-	hasScore.removeListener(this);
-	hasScore.setValue(var(selectedLevel->isScoreEnabled()));
-	BooleanPropertyComponent* scoreFlag = new BooleanPropertyComponent(hasScore, "Scores:", "Use Scoring System");
-	
-	levelObjConditionalProperties.add(scoreFlag);
-
-	if (selectedLevel->isScoreEnabled()) {
-		enemyScore.setValue(var(selectedLevel->getEnemyPoints()));
-		SliderPropertyComponent* enemyPointValue = new SliderPropertyComponent(enemyScore, "Enemy Point Value:", 0, 100, 1);
-		enemyScore.addListener(this);
-		levelObjConditionalProperties.add(enemyPointValue);
-
-		collectableScore.setValue(var(selectedLevel->getCollectablePoints()));
-		SliderPropertyComponent* collectablePointValue = new SliderPropertyComponent(collectableScore, "Collectable Point Value:", 0, 100, 1);
-		collectableScore.addListener(this);
-		levelObjConditionalProperties.add(collectablePointValue);
-	}
-	hasScore.addListener(this);
-	hasTimer.removeListener(this);
-	hasTimer.setValue(var(selectedLevel->isTimerEnabled()));
-	BooleanPropertyComponent* timerFlag = new BooleanPropertyComponent(hasTimer, "Timer:", "Use Timer");
-	levelObjConditionalProperties.add(timerFlag);
-	
-	if (selectedLevel->isTimerEnabled()) {
-		timer.setValue(var(selectedLevel->getTimer()));
-		SliderPropertyComponent* timerValue = new SliderPropertyComponent(timer, "Time(seconds):", 0, 500, 1);
-		timer.addListener(this);
-		levelObjConditionalProperties.add(timerValue);
-	}
-	hasTimer.addListener(this);
-
-
-	hasCheckPoint.removeListener(this);
-	hasCheckPoint.setValue(var(selectedLevel->isCheckpointEnabled()));
-	BooleanPropertyComponent* checkpointFlag = new BooleanPropertyComponent(hasCheckPoint, "Goal Point:", "transition to next level");
-	levelObjConditionalProperties.add(checkpointFlag);
-
-	hasCheckPoint.addListener(this);
-	propertyPanel.addSection("Conditions", levelObjConditionalProperties);
     propertyPanel.refreshAll();
 }
 
@@ -254,27 +214,6 @@ void LevelInspector::valueChanged(Value &value)
     {
         // Update navigator of selected object
         worldNavigator.setSelectedObject (gameObjects[(int)value.getValue()]);
-    }
-    else if (value.refersToSameSourceAs(hasScore)) {
-        selectedLevel->setScoreEnabled();
-        updateInspectorsChangeBroadcaster->sendChangeMessage();
-    }
-    else if (value.refersToSameSourceAs(collectableScore)) {
-        selectedLevel->setCollectablePoints(value.getValue());
-    }
-    else if (value.refersToSameSourceAs(enemyScore)) {
-        selectedLevel->setEnemyPoints(value.getValue());
-    }
-    else if (value.refersToSameSourceAs(hasTimer)) {
-        selectedLevel->setTimerEnabled();
-        updateInspectorsChangeBroadcaster->sendChangeMessage();
-    }
-    else if (value.refersToSameSourceAs(timer)) {
-        selectedLevel->setTimer(value.getValue());
-    } 
-    else if (value.refersToSameSourceAs(hasCheckPoint)) {
-        selectedLevel->setCheckpointEnabled();
-        updateInspectorsChangeBroadcaster->sendChangeMessage();
     }
 }
 

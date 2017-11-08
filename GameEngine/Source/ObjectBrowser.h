@@ -16,13 +16,15 @@ public:
 		addAndMakeVisible(enemy);
 		addAndMakeVisible(block);
 		addAndMakeVisible(collectable);
-
+		addAndMakeVisible(checkpoint);
 		enemy.setButtonText("Enemy Character");
 		block.setButtonText("Block");
 		collectable.setButtonText("Collectable");
+		checkpoint.setButtonText("Checkpoint");
 		block.addListener(this);
 		enemy.addListener(this);
 		collectable.addListener(this);
+		checkpoint.addListener(this);
 		//addAndMakeVisible(scrollBar);
 		//scrollBar.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
 
@@ -47,6 +49,7 @@ public:
 		enemy.setBounds(r.getX(), 0, getWidth(), BUTTON_HEIGHT);
 		block.setBounds(r.getX(), BUTTON_HEIGHT, getWidth(), BUTTON_HEIGHT);
 		collectable.setBounds(r.getX(), BUTTON_HEIGHT*2, getWidth(), BUTTON_HEIGHT);
+		checkpoint.setBounds(r.getX(), BUTTON_HEIGHT * 3, getWidth(), BUTTON_HEIGHT);
 		//scrollBar.setBounds(getLocalBounds());
 	}
 
@@ -67,6 +70,11 @@ public:
 			coreEngine->addCollectable();
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
+		if (button == &checkpoint)
+		{
+			coreEngine->addCheckpoint();
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}
 	}
 
 private:
@@ -75,6 +83,7 @@ private:
 	TextButton enemy;
 	TextButton collectable;
 	TextButton block;
+	TextButton checkpoint;
 	//Slider scrollBar;
 };
 

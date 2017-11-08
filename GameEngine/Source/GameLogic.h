@@ -87,7 +87,11 @@ public:
 		this->inputManager = inputManager;
 	}
 	
-
+	void copyPlayerAttributes(Level* currLevel, Level* destLevel) {
+		destLevel->getPlayer(0)->setLives(currLevel->getPlayer(0)->getLives());
+		destLevel->getPlayer(0)->setScore(currLevel->getPlayer(0)->getScore());
+		currLevel->resetLevel();
+	}
 private:
 
 
@@ -98,6 +102,8 @@ private:
 		int64 checkTime = 0;
 
 		Level * currLevel = gameModelCurrentFrame->getCurrentLevel();
+		victory = new Level("Victory");
+		gameOver = new Level("Game Over");
 		// Main Logic loop
 		while (!threadShouldExit())
         {
@@ -133,11 +139,18 @@ private:
 						}
 						break;
 					case Checkpoint:
-						if (((GoalPointObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
-							if (gameModelCurrentFrame->getCurrentLevelIndex() < gameModelCurrentFrame->getNumLevels() - 1) {
-								gameModelCurrentFrame->setCurrentLevel(gameModelCurrentFrame->getCurrentLevelIndex() + 1);
-								//signal update of inspectors and reload levels/gui
-							}
+						GoalPointObject * chkPoint = (GoalPointObject*)obj;
+						if (chkPoint->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) 
+						{
+								if (chkPoint->getToWin()) {
+									//go to winning level
+									currLevel = victory;
+								}
+								else
+								{
+									copyPlayerAttributes(currLevel,&gameModelCurrentFrame->getLevel(chkPoint->getLevelToGoTo() - 1));
+									gameModelCurrentFrame->setCurrentLevel(chkPoint->getLevelToGoTo()-1);
+								}
 						}
 						break;
 					}
@@ -333,6 +346,8 @@ private:
 	WorldPhysics world;
 
 	bool gamePaused;
-
+	//end game Screens
+	Level* victory;
+	Level* gameOver;
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GameLogic)
 };

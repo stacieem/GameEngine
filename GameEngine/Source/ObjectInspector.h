@@ -20,6 +20,7 @@ public:
 		//addAndMakeVisible(scrollBar);
 		//scrollBar.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
 		addAndMakeVisible(propertyPanel);
+		levelToWin.addListener(this);
 		selectedObj = NULL;
 	}
 	~ObjectInspector() {
@@ -31,11 +32,11 @@ public:
 	}
 	void setSelectedObj(GameObject* obj) {
 			
-		if (selectedObj != obj) {
+		//if (selectedObj != obj) {
 			selectedObj = obj;
 			updateObj();
 			
-		}
+		//}
 		
 	}
 	// JUCE GUI Callbacks ======================================================
@@ -81,15 +82,6 @@ public:
 
 	void valueChanged(Value &value) override
     {
-		/*if (value.refersToSameSourceAs(xPosition)) {
-			if (value.getValue().isDouble()) {
-				
-				float x = (float)value.getValue();
-				selectedObj->setXPositionWithPhysics(x);
-				updateInspectorsChangeBroadcaster->sendChangeMessage();
-			}
-
-		}*/
 		if (value.refersToSameSourceAs(objPhysicsXCap)) {
 			switch ((int)objPhysicsXCap.getValue()) {
 			case 1:
@@ -178,9 +170,14 @@ public:
 				((EnemyObject*)(selectedObj))->changeAI(EnemyObject::CHASE);
 				break;
 			}
-		}
-		if (value.refersToSameSourceAs(playerLives)) {
+		}else if (value.refersToSameSourceAs(playerLives)) {
 			selectedObj->setLives(value.getValue());
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}else if (value.refersToSameSourceAs(levelToWin)) {
+			((GoalPointObject*)selectedObj)->setToWin();
+			updateInspectorsChangeBroadcaster->sendChangeMessage();
+		}else if (value.refersToSameSourceAs(levelGoTo)) {
+			((GoalPointObject*)selectedObj)->setLevelToGoTo(levelGoTo.getValue());
 			updateInspectorsChangeBroadcaster->sendChangeMessage();
 		}
 	}
@@ -232,21 +229,20 @@ private:
 				break;
 			case Enemy:	//ai, maybe differntiate between types of ai with this?
 				addGenericMovementProperties();
-				aiState.setValue(var( ( (EnemyObject*)selectedObj)->getAIState()));
-				ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(aiState, "AI:");
-				combo->setTextWhenNothingSelected("Choose AI Type");
-				combo->addItem("Chase", 5);
-				combo->addItem("Flee", 4);
-				combo->addItem("Jump & Patrol", 3);
-				combo->addItem("Patrol", 2);
-				combo->addItem("Do Nothing", 1);
-				combo->setSelectedId(((EnemyObject*)selectedObj)->getAIState() + 1, dontSendNotification);
-				aiState.addListener(this);
-				objBackgroundProperties.add(combo);
+				addEnemyProperties();
 
 				//add to panel
 				propertyPanel.addSection("Object Physics", objPhysicsProperties);
                 break;
+			case Checkpoint:
+				addGenericMovementProperties();
+				addGoalPointProperties();
+
+				propertyPanel.addSection("Object Physics", objPhysicsProperties);
+				
+				break;
+			case Collectable:
+				break;
 			}
 
 			addGenericGraphicProperties();
@@ -265,7 +261,45 @@ private:
 
 	}
 
+	void addGoalPointProperties() {
 
+
+		levelToWin.removeListener(this);
+		levelToWin.setValue(var(((GoalPointObject*)selectedObj)->getToWin()));
+		BooleanPropertyComponent* toWinFlag = new BooleanPropertyComponent(levelToWin, "Transition", "Win Game?");
+		objBackgroundProperties.add(toWinFlag);
+		
+		if (!((GoalPointObject*)selectedObj)->getToWin()) {
+			GoalPointObject* goal = ((GoalPointObject*)selectedObj);
+			levelGoTo.setValue(var(goal->getLevelToGoTo()));
+			ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(levelGoTo, "Next Level:");
+			combo->setTextWhenNothingSelected("Choose next Level");
+			combo->addItem("1", 1);
+			for (int i = 1; i < coreEngine->getGameModel().getNumLevels(); i++) {
+				combo->addItem(String(i + 1), i + 1);
+			}
+			combo->setSelectedId(goal->getLevelToGoTo(), NotificationType::dontSendNotification);
+			objBackgroundProperties.add(combo);
+		}
+		
+		levelToWin.addListener(this);
+		levelGoTo.addListener(this);
+
+	}
+	
+	void addEnemyProperties() {
+		aiState.setValue(var(((EnemyObject*)selectedObj)->getAIState()));
+		ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(aiState, "AI:");
+		combo->setTextWhenNothingSelected("Choose AI Type");
+		combo->addItem("Chase", 5);
+		combo->addItem("Flee", 4);
+		combo->addItem("Jump & Patrol", 3);
+		combo->addItem("Patrol", 2);
+		combo->addItem("Do Nothing", 1);
+		combo->setSelectedId(((EnemyObject*)selectedObj)->getAIState() + 1, dontSendNotification);
+		aiState.addListener(this);
+		objBackgroundProperties.add(combo);
+	}
 	//base physics properties
 	void addGenericMovementProperties() {
 
@@ -391,7 +425,7 @@ private:
 
 	Value objName, objPhysicsX, objPhysicsY, objPhysicsXCap, objPhysicsYCap,
 		   objPhysicsDensity, comboValue, stateComboValue, aiState,
-			playerLives;
+			playerLives, levelGoTo,levelToWin;
 
 	ScopedPointer<FilenameComponent> chooseFile;
 

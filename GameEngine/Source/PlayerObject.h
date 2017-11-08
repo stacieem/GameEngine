@@ -12,7 +12,6 @@ public:
 		objType = GameObjectType::Player;
 		setMoveSpeed(Speed::MED);
 		setJumpSpeed(Speed::SLOW);
-
         getPhysicsProperties().setIsStatic(false);
 	}
 	~PlayerObject(){}

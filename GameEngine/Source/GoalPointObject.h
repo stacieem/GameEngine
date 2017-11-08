@@ -12,7 +12,8 @@ public:
 		radius = 1.5;
 		objType = GameObjectType::Checkpoint;
         getPhysicsProperties().setIsStatic(true);
-		LevelToGoTo = 0;
+		LevelToGoTo = 1;
+		goToWin = false;
 	}
 	bool collision(PlayerObject& player) {
 		bool triggered = false;
@@ -32,9 +33,19 @@ public:
 	void setLevelToGoTo(int level) {
 		LevelToGoTo = level;
 	}
+	
+	// Whether or not this checkpoint lets you win
+	bool getToWin() {
+		return goToWin;
+	}
+	void setToWin() {
+		goToWin = !goToWin;
+	}
+
 private:
 	b2Vec2 origin;
 	int LevelToGoTo;
+	bool goToWin;
 	float radius;
 
 	JUCE_LEAK_DETECTOR(GoalPointObject)

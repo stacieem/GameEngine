@@ -37,11 +37,11 @@ public:
         renderable = false;
         
 		objType = GameObjectType::Generic;
-		lives = 0;
+		lives = 0, score = 0;
 		xVel = 0;
 		yVel = 0;
-		cappedMoveSpeed = 10;
-		cappedJumpSpeed = 30;
+		cappedMoveSpeed = 5;
+		cappedJumpSpeed = 9;
 		setAnimationSpeed(MED);
         physicsProperties.setIsStatic(true);
         updateOrigin();
@@ -283,7 +283,18 @@ public:
     {
 		lives = newLives;
 	}
-
+	int getScore()
+	{
+		return score;
+	}
+	void setScore(int newScore)
+	{
+		score = newScore;
+	}
+	void addScore(int points) {
+		score += points;
+	}
+	
 	// Animation speed
 	Speed getAnimationSpeed() {
 		return renderableObject.animationProperties.getAnimationSpeed();
@@ -300,7 +311,7 @@ private:
 	
     /** Name of object */
     String name;
-	int lives;
+	int lives, score;
 	glm::vec2 origin;
     /** Specifies wether or not the object will be rendered visually to the screen */
     bool renderable;
