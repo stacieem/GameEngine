@@ -148,7 +148,6 @@ public:
 	*/
 	void processWorldPhysics(int64 timeStep)
 	{
-
 		if ((float32)timeStep < getWorldPhysics().getTimeStep()) {
 			getWorldPhysics().Step((float32)timeStep);
 		}
