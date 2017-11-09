@@ -11,7 +11,9 @@ public:
 		radius = 1.5;
 		objType = GameObjectType::Checkpoint;
         getPhysicsProperties().setIsStatic(true);
-		levelToGoTo = 0;
+
+		levelToGoTo = 1;
+		goToWin = false;
 	}
 
 	GoalPointObject(WorldPhysics & worldPhysics, Model* model, ValueTree valueTree) : GameObject(worldPhysics, model, valueTree)
@@ -50,6 +52,12 @@ public:
 
 		goalPointSerialization.addChild(levelToGoToValueTree, -1, nullptr);
 
+		ValueTree goToWinTree("GoToWin");
+
+		goToWinTree.setProperty(Identifier("value"), var(goToWin), nullptr);
+
+		goalPointSerialization.addChild(goToWinTree, -1, nullptr);
+
 		return goalPointSerialization;
 	}
 
@@ -61,10 +69,26 @@ public:
 
 		levelToGoTo = levelToGoToValueTree.getProperty(Identifier("value"));
 
+		ValueTree goToWinTree = valueTree.getChildWithName(Identifier("GoToWin"));
+
+		goToWin = goToWinTree.getProperty(Identifier("value"));
+
+	}
+
+	// Whether or not this checkpoint lets you win
+	bool getToWin() {
+		return goToWin;
+	}
+	void setToWin() {
+		goToWin = !goToWin;
 	}
 
 private:
 	int levelToGoTo;
+
+	b2Vec2 origin;
+	bool goToWin;
+
 	float radius;
 
 	JUCE_LEAK_DETECTOR(GoalPointObject)

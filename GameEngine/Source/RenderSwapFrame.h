@@ -2,6 +2,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "glm/glm.hpp"
+#include <map>
 
 /** Represents a single renderable frame that is send to GameView to render.
     It includes all data needed to render a frame in OpenGL.
@@ -31,9 +32,25 @@ public:
         return viewMatrix;
     }
 
+	void setAttribute(String key, var value) {
+		attrs[key] = value;
+	}
+
+	var* getAttribute(String key) {
+		std::map<String, var>::iterator it;
+
+		it = attrs.find(key);
+		if (it != attrs.end()) {
+			return &attrs[key];
+		}
+
+		return nullptr;
+	}
+
 private:
     vector<RenderableObject> renderableObjects;
     glm::mat4 viewMatrix;
+	map<String, var> attrs;
     
 	JUCE_LEAK_DETECTOR(RenderSwapFrame)
 };

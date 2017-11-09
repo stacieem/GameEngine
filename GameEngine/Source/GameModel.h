@@ -78,6 +78,7 @@ public:
         return levels.size();
     }
 
+
 	void parseGameModelXml(XmlElement* rootElement) {
 
 		ValueTree gameModelValueTree = ValueTree::fromXml(*rootElement);
@@ -114,6 +115,11 @@ public:
 		gameSerialization.addChild(levelsValueTree, -1, nullptr);
 
 		return gameSerialization;
+	}
+
+
+	OwnedArray<Level>& getLevels() {
+		return levels;
 	}
 
 private:

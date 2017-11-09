@@ -13,15 +13,25 @@
 class GameLogic : public Thread
 {
 public:
-	GameLogic(GameAudio & gameAudio) : Thread("GameLogic"), gameAudio(gameAudio)
+	GameLogic(GameAudio & gameAudio, CriticalSection * objectDeletionLock) : Thread("GameLogic"), gameAudio(gameAudio)
     {
         //inputManager = new InputManager();
 		gamePaused = true;
+        this->objectDeletionLock = objectDeletionLock;
+
+		currentTime = Time::currentTimeMillis();
+		checkTime = 0;
+
+		currLevel = nullptr;
+		victory = new Level("Victory");
+		gameOver = new Level("Game Over");
     }
     
 	~GameLogic()
     {
         gameModelCurrentFrame = nullptr;
+		delete victory;
+		delete gameOver;
 	}
 
 	/** Sets whether or not the game is paused.
@@ -43,10 +53,18 @@ public:
     {
 		gameModelCurrentFrame = curentFrame;
 	}
-    
-	void playerDied() {
-
+	void playerRespawn() {
+		currLevel->resetLevel();
+		b2Vec2 pos = currLevel->getPlayer(0)->getPosition();
+		currLevel->getPlayer(0)->setPosition(pos.x,pos.y);
 	}
+	void playerDied() {
+		currLevel = gameOver;
+		for (auto level : gameModelCurrentFrame->getLevels()) {
+			level->resetLevel();
+		}
+	}
+
 	/** Sets the Render swap frame that will be processed for logic before it
 	is sent to the GameView to be rendered.
 	*/
@@ -87,6 +105,11 @@ public:
 		this->inputManager = inputManager;
 	}
 	
+	void copyPlayerAttributes(Level* currLevel, Level* destLevel) {
+		destLevel->getPlayer(0)->setLives(currLevel->getPlayer(0)->getLives());
+		destLevel->getPlayer(0)->setScore(currLevel->getPlayer(0)->getScore());
+		currLevel->resetLevel();
+	}
 
 private:
 
@@ -94,10 +117,7 @@ private:
 	void run()
     {
         // Set time the very first time GameLogic runs
-		currentTime = Time::currentTimeMillis();
-		int64 checkTime = 0;
 
-		Level * currLevel = gameModelCurrentFrame->getCurrentLevel();
 		// Main Logic loop
 		while (!threadShouldExit())
         {
@@ -116,6 +136,8 @@ private:
 
 			if (gamePaused) {
 				currentTime = Time::currentTimeMillis();
+				DBG("Score");
+				DBG(gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getScore());
 			}
 			else
 			{
@@ -126,18 +148,40 @@ private:
 					switch (obj->getObjType()) {
 					case Enemy:
 						((EnemyObject*)(obj))->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0), deltaTime/1000);
+						
+						if (((EnemyObject*)(obj))->getIsActive() &&
+							((EnemyObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
+							if (gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getLives() - 1 == 0) {
+								playerDied();
+							}
+							else
+							{
+								playerRespawn();
+								gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->
+									setLives(gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getLives() - 1);
+							}
+						}
 						break;
 					case Collectable:
 						if (((CollectableObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
-							gameModelCurrentFrame->getCurrentLevel()->addToScore(gameModelCurrentFrame->getCurrentLevel()->getCollectablePoints());
+							gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->addScore(gameModelCurrentFrame->getCurrentLevel()->getCollectablePoints());
 						}
 						break;
 					case Checkpoint:
-						if (((GoalPointObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
-							if (gameModelCurrentFrame->getCurrentLevelIndex() < gameModelCurrentFrame->getNumLevels() - 1) {
-								gameModelCurrentFrame->setCurrentLevel(gameModelCurrentFrame->getCurrentLevelIndex() + 1);
-								//signal update of inspectors and reload levels/gui
-							}
+						GoalPointObject * chkPoint = (GoalPointObject*)obj;
+						if (chkPoint->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) 
+						{
+								if (chkPoint->getToWin()) {
+									//go to winning level
+									//createVictory();
+									currLevel = victory;
+									//engine.winScreen()
+								}
+								else
+								{
+									copyPlayerAttributes(currLevel,&gameModelCurrentFrame->getLevel(chkPoint->getLevelToGoTo() - 1));
+									gameModelCurrentFrame->setCurrentLevel(chkPoint->getLevelToGoTo()-1);
+								}
 						}
 						break;
 					}
@@ -284,29 +328,50 @@ private:
             // Set camera view matrix
             renderSwapFrame->setViewMatrix(levelCamera.getViewMatrix());
             
-            // Create array of potentially renderable objects in view
+        
             /** FUTURE EFFICIENCY FEATURE:
                 Add in some pre-render visiblity checking. If an object is
                 obviously going to be out of view, do not put it in a render
                 frame.
              */
-            vector<RenderableObject> renderableObjects;
-            for (auto gameObject : currLevel->getGameObjects())
-			{
-                if (gameObject->isRenderable())
+
+            
+            // GameObject deletion is a race condition, because a deleted object
+            // could have a function called on it such as: getRenderableObject()
+            // Therefore, we must lock here
+            objectDeletionLock->enter();
+            
+                // Create array of potentially renderable objects in view
+                /** FUTURE EFFICIENCY FEATURE:
+                    Add in some pre-render visiblity checking. If an object is
+                    obviously going to be out of view, do not put it in a render
+                    frame.
+                 */
+
+                vector<RenderableObject> renderableObjects;
+                for (auto gameObject : currLevel->getGameObjects())
                 {
-                    renderableObjects.push_back(gameObject->getRenderableObject());
-                    
-                    // If the game is playing, make sure no object is selected
-                    if (!isPaused())
+                    if (gameObject->isRenderable())
                     {
-                        renderableObjects.back().isSelected = false;
+                        renderableObjects.push_back(gameObject->getRenderableObject());
+                        
+                        // If the game is playing, make sure no object is selected
+                        if (!isPaused())
+                        {
+                            renderableObjects.back().isSelected = false;
+                        }
                     }
                 }
-			}
+            
+            objectDeletionLock->exit();
+            
             // Add the renderables to the swap frame to send to GameView
             renderSwapFrame->setRenderableObjects(renderableObjects);
  
+			//Add player attributes we want to the render swap frame
+			renderSwapFrame->setAttribute("score", currLevel->getPlayer(0)->getScore());
+			renderSwapFrame->setAttribute("lives", currLevel->getPlayer(0)->getLives());
+
 			// Notify CoreEngine logic is done
 			coreEngineWaitable->signal();
 		}
@@ -333,6 +398,14 @@ private:
 	WorldPhysics world;
 
 	bool gamePaused;
+	int64 checkTime;
+
+	//end game Screens
+	Level* victory;
+	Level* gameOver;
+	Level * currLevel;
+    // GameModel Object synchronization
+    CriticalSection * objectDeletionLock;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(GameLogic)
 };

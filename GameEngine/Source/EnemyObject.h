@@ -20,7 +20,8 @@ public:
 		direction = 1;
 		timeToSwap = 200;	//value that deltaTime will sum to for us to determine we need to switch directions
 		timeElapsed = 0;
-        
+
+		radius = 1.5;
         getPhysicsProperties().setIsStatic(false);
 	}
 
@@ -51,7 +52,24 @@ public:
 	AIType getAIState() {
 		return aiState;
 	}
+	bool collision(PlayerObject& player) {
+		bool damage = false;
+			b2Vec2 dist = (player.getPosition() - getPhysicsProperties().GetPosition());
+			float leng = sqrt(dist.x * dist.x + dist.y*dist.y);
+			if (leng < radius) {	//check if collided
+				if (player.getPosition().y > this->getPhysicsProperties().GetPosition().y) {	//if player kills enemy
+					setActive(false);
+					getPhysicsProperties().setActiveStatus(false);
+					setRenderable(false);
+				}
+				else
+				{
+					damage = true;
+				}
+			}
 
+		return damage;
+	}
 	void decision(PlayerObject& player, double elapsed) {
 		switch (aiState) {
 		case GROUNDPATROL:
@@ -239,7 +257,7 @@ private:
 	int direction;
 	AIType aiState;
 	float detection_radius;
-
+	float radius;
 	JUCE_LEAK_DETECTOR(EnemyObject)
 
 };

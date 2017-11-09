@@ -137,6 +137,7 @@ public:
 			checkTime = 0;
 			gameHUD.setFrameRate((int)(1.0 / avgMilliseconds));
 			//DBG((int)(1.0 / avgMilliseconds));
+
 		}
         
         // Setup Viewport

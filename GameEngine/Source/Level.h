@@ -14,24 +14,24 @@ public:
         // Add a default model
         modelsForRendering.add(new Model());
 		this->levelName = levelName;
-		// Trystan's Multiplayer Test
-		PlayerObject* player = new PlayerObject(worldPhysics, modelsForRendering[0]);
 
+		PlayerObject* player = new PlayerObject(worldPhysics, modelsForRendering[0]);
+		player->setScore(0);
+		player->setLives(1);
 		player->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
-	
+		
+
 		player->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/p1_stand.png"));
+
+
 		player->getRenderableObject().animationProperties.setCanimate(true);
 
 
 		gameObjects.add(player);
 		players.add(player);
 
-
-        player->setModel(modelsForRendering[0]);
-
-		score = 0;
-		enemyPoints = 0;
-		collectablePoints = 0;
+		enemyPoints = 15;
+		collectablePoints = 5;
 		timerSpeed = 0;
 		hasTimer = false;
 		hasScore = false;
@@ -67,6 +67,9 @@ public:
         GameObject * gameObj = new GameObject(worldPhysics, modelsForRendering[0]);
 
 		gameObj->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/brick.png"));
+        gameObj->setModel(modelsForRendering[0]);
+		gameObj->setScore(10);
+        gameObj->setScale(1.0f, 1.0f);
 		gameObjects.add(gameObj);
 	}
     
@@ -84,6 +87,8 @@ public:
 
 
 		enm->getRenderableObject().animationProperties.setCanimate(true);
+		enm->setModel(modelsForRendering[0]);
+		enm->setScale(1.0f, 1.0f);
 		gameObjects.add(enm);
 	}
     
@@ -92,16 +97,20 @@ public:
 		CollectableObject* collectable = new CollectableObject(worldPhysics, modelsForRendering[0]);
 
 		collectable->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/coin.png"));
-
+		collectable->setScore(5);
+		collectable->setModel(modelsForRendering[0]);
+		collectable->setScale(1.0f, 1.0f);
 		gameObjects.add(collectable);
 	}
     
-	void addCheckpoint()
+	void addNewCheckpoint()
     {
 		checkpoint = new GoalPointObject(worldPhysics, modelsForRendering[0]);
 
 		checkpoint->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/checkpoint.png"));
 
+		checkpoint->setModel(modelsForRendering[0]);
+		checkpoint->setScale(1.0f, 1.0f);
 		gameObjects.add(checkpoint);
 	}
 
@@ -153,13 +162,11 @@ public:
     
 	//reset the current level to an original state
 	void resetLevel() {
-		DBG("resetLevel");
 		for (auto  obj : gameObjects) {
-			DBG("obj origin: " << obj->getOrigin().x << " " << obj->getOrigin().y);
-			DBG("obj position: " << obj->getPhysicsProperties().GetPosition().x << " " << obj->getPhysicsProperties().GetPosition().y);
-			
 			obj->setPositionWithPhysics(obj->getOrigin().x, obj->getOrigin().y);
 			obj->getPhysicsProperties().setLinearVelocity(0, 0);
+			obj->setActive(true);
+			obj->setRenderable(true);
 		}
 	}
     
@@ -201,17 +208,11 @@ public:
 	bool isScoreEnabled() {
 		return hasScore;
 	}
-	int getScore() {
-		return score;
-	}
 	int getEnemyPoints() {
 		return enemyPoints;
 	}
 	int getCollectablePoints() {
 		return collectablePoints;
-	}
-	void setScore(int baseScore) {
-		score = baseScore;
 	}
 	void setEnemyPoints(int points) {
 		enemyPoints = points;
@@ -219,44 +220,26 @@ public:
 	void setCollectablePoints(int points) {
 		collectablePoints = points;
 	}
-	void addToScore(int points) {
-		score += points;
-	}
 	
-	//timer properties
-	bool isTimerEnabled() {
-		return hasTimer;
-	}
-	void setTimerEnabled() {
-		hasTimer = !hasTimer;
-	}
-	int getTimer() {
-		return time;
-	}
-	void setTimer(float baseTimer) {
-		score = baseTimer;
-	}
-	void setTimerSpeed(float timeSpeed) {
-		timerSpeed = timeSpeed;
-	}
-	void decrementTimer(float decrement) {
-		time -= decrement;
-	}
-	
-	//checkpoint properties
-	bool isCheckpointEnabled() {
-		return hasCheckpoint;
-	}
-	void setCheckpointEnabled() {
-		hasCheckpoint = !hasCheckpoint;
-		if (hasCheckpoint) {
-			addCheckpoint();
-		}
-		else
-		{
-			removeCheckpoint();
-		}
-	}
+    
+    void deleteObject (GameObject * gameObjectToDelete)
+    {
+        for (int i = 0; i < gameObjects.size(); ++i)
+        {
+            GameObject * curObject = gameObjects[i];
+            // If object found, delete it
+            if (curObject == gameObjectToDelete)
+            {
+                // Remove the object from the physics world
+                worldPhysics.removeObject (curObject->getPhysicsProperties().getBody());
+                
+                // Remove the object from the level
+                gameObjects.remove(i);
+                break;
+            }
+        }
+    }
+
 
 	int getGravityState() {
 		return worldPhysics.getGravityLevel();
@@ -343,12 +326,12 @@ public:
 				CollectableObject* collectable = new CollectableObject(worldPhysics, modelsForRendering[0], gameObjectValueTree);
 				gameObjects.add(collectable);
 			}
-				break;
+					break;
 			case 4: {
 				GoalPointObject* goalPoint = new GoalPointObject(worldPhysics, modelsForRendering[0], gameObjectValueTree);
 				gameObjects.add(goalPoint);
 			}
-				break;
+					break;
 			}
 
 
@@ -369,10 +352,10 @@ private:
     
     /** Name of level */
     String levelName;
-	int score, enemyPoints, collectablePoints;
-	float time, timerSpeed;
+	int enemyPoints, collectablePoints;
+	float Time, timerSpeed;
 	bool hasScore, hasTimer, hasCheckpoint;
-   
+	int score, level;
 	/** Camera view of the current level */
     Camera camera;
 	GoalPointObject* checkpoint;
@@ -402,4 +385,3 @@ private:
     /** Game Players in the level */
 	Array<PlayerObject *> players;
 };
-

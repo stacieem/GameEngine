@@ -34,17 +34,19 @@ public:
 		name = "Game Object";
         
         // By default an object is not renderable
-        renderable = false;
-        
+		setRenderable(false);
+		setModel(model);
+
 		objType = GameObjectType::Generic;
-		lives = 0;
+		lives = 1;
+		score = 0;
 		xVel = 0;
 		yVel = 0;
-		cappedMoveSpeed = 10;
-		cappedJumpSpeed = 30;
+		setActive(true);
+		cappedMoveSpeed = 5;
+		cappedJumpSpeed = 9;
 		setAnimationSpeed(MED);
         physicsProperties.setIsStatic(true);
-		setModel(model);
         updateOrigin();
 		setScale(1.0, 1.0);
     }
@@ -72,11 +74,10 @@ public:
 	{
 
 		setModel(model);
-		cappedMoveSpeed = 10;
-		cappedJumpSpeed = 30;
+		cappedMoveSpeed = 5;
+		cappedJumpSpeed = 9;
+		score = 0;
 		parseFrom(gameObjectValueTree);
-
-
 
 	}
 
@@ -94,7 +95,9 @@ public:
     }
     
     // Rendering Data ==========================================================
-
+	void setRenderable(bool canRender) {
+		renderable = canRender;
+	}
     bool isRenderable()
     {
         return renderable;
@@ -300,6 +303,26 @@ public:
     {
 		lives = newLives;
 	}
+	int getScore()
+	{
+		return score;
+	}
+	void setScore(int newScore)
+	{
+		score = newScore;
+	}
+	void addScore(int points) {
+		score += points;
+	}
+	
+	//active State of object
+	bool getIsActive() {
+		return isActive;
+	}
+	void setActive(bool active) {
+		isActive = active;
+		physicsProperties.setActiveStatus(active);
+	}
 
 	// Animation speed
 	Speed getAnimationSpeed() {
@@ -498,10 +521,10 @@ private:
 	
     /** Name of object */
     String name;
-	int lives;
+	int lives, score;
 	glm::vec2 origin;
     /** Specifies wether or not the object will be rendered visually to the screen */
-    bool renderable;
+    bool renderable, isActive;
     /** 
 		Renderable representation of this object.
      */

@@ -50,7 +50,11 @@ public:
 	void addBlock();
 	void addEnemy();
 	void addCollectable();
+	void addCheckpoint();
 	void toggleGamePause();
+    
+    /** Deletes a GameObject */
+    void deleteGameObject (GameObject * gameObject);
     
     void addLevel();
     void removeLevel(int levelIndex);
@@ -98,6 +102,9 @@ private:
     WaitableEvent logicWaitable;
     WaitableEvent renderWaitable;
     WaitableEvent coreEngineWaitable;
+    
+    // Game Model Synchronization
+    CriticalSection objectDeletionLock;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CoreEngine)
 };
