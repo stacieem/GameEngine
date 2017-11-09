@@ -236,11 +236,11 @@ public:
 
 		ValueTree animationDirectoryTree = valueTree.getChildWithName(Identifier("AnimationDirectory"));
 
-		animationDirectory = File(File::getCurrentWorkingDirectory().getFullPathName() + "/" + animationDirectoryTree.getProperty(Identifier("value")));
+		animationDirectory = File(File::getCurrentWorkingDirectory().getFullPathName() + "/" + animationDirectoryTree.getProperty(Identifier("value")).toString());
 
 		ValueTree idleTextureTree = valueTree.getChildWithName(Identifier("IdleTexture"));
 
-		idleTexture = File(File::getCurrentWorkingDirectory().getFullPathName() + "/" + idleTextureTree.getProperty(Identifier("value")));
+		idleTexture = File(File::getCurrentWorkingDirectory().getFullPathName() + "/" + idleTextureTree.getProperty(Identifier("value")).toString());
 
 		setAnimationTextures(animationDirectory);
 	}
