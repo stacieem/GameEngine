@@ -136,8 +136,7 @@ private:
 
 			if (gamePaused) {
 				currentTime = Time::currentTimeMillis();
-				DBG("Score");
-				DBG(gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getScore());
+				
 			}
 			else
 			{
