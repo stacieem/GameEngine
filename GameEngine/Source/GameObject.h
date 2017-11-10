@@ -144,6 +144,48 @@ public:
         
     }
     
+    /** Sets the 2D position of a GameObject in world coordinates and in the
+        physics world
+     */
+    void setPositionWithPhysics (GLfloat x, GLfloat y)
+    {
+        // Update visual object position
+        renderableObject.position.x = x;
+        renderableObject.position.y = y;
+        
+        // Modify model matrix to translate object to correct position
+        renderableObject.modelMatrix[3][0] = x;
+        renderableObject.modelMatrix[3][1] = y;
+        
+        // Update physical object position
+        physicsProperties.setPosition (x, y);
+        updateOrigin();
+    }
+    
+    /** Offsets the 2D position of a GameObject in world coordinates and in the
+        physics world
+     */
+    void offsetPositionWithPhysics (float xOffset, float yOffset)
+    {
+        // Update visual object position
+        renderableObject.position.x += xOffset;
+        renderableObject.position.y += yOffset;
+        
+        // Modify model matrix to translate object to correct position
+        renderableObject.modelMatrix[3][0] += xOffset;
+        renderableObject.modelMatrix[3][1] += yOffset;
+        
+        // Update physical object position
+        physicsProperties.offsetPosition (xOffset, yOffset);
+        updateOrigin();
+
+    }
+    
+    glm::vec2 getPosition()
+    {
+        return renderableObject.position;
+    }
+    
     /** Scales the rendered Model.
        (Stored vertices in physics and same mesh)
      */
@@ -160,24 +202,6 @@ public:
 	{
 		return glm::vec2(renderableObject.modelMatrix[0][0], renderableObject.modelMatrix[1][1]);
 	}
-
-    /** Sets the 2D position of a GameObject in world coordinates and in the
-        physics world
-     */
-    void setPositionWithPhysics (GLfloat x, GLfloat y)
-    {
-        // Update visual object position
-        renderableObject.position.x = x;
-        renderableObject.position.y = y;
-        
-        // Modify model matrix to translate object to correct position
-        renderableObject.modelMatrix[3][0] = x;
-        renderableObject.modelMatrix[3][1] = y;
-        
-        // Update physical object position
-        physicsProperties.setPosition (x, y);
-		updateOrigin();
-    }
 
     PhysicsProperties & getPhysicsProperties()
     {
@@ -205,6 +229,27 @@ public:
 
         
         // Otherwise return false
+        return false;
+    }
+    
+    /** Specifies whether or not the GameObject is in the given range/
+     */
+    bool isInRange (float xMin, float xMax, float yMin, float yMax)
+    {
+        
+        // First check if center of object is in range
+        if (xMin <= renderableObject.position.x && renderableObject.position.x <= xMax &&
+            yMin <= renderableObject.position.y && renderableObject.position.y <= yMax)
+        {
+            return true;
+        }
+        
+        // If center is not in range, check the position to try to use one of
+        // the other sides of the square to determine if it is inside
+        // . . . 
+        
+        
+        
         return false;
     }
     

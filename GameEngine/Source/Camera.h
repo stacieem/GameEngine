@@ -141,6 +141,17 @@ public:
     }
     
     
+    glm::vec2 getWorldOffsetFromScreen (int widthScreen, int heightScreen, float xScreenOffset, float yScreenOffset)
+    {
+        // BAD: Eventually, this should multiply the screen point by the
+        // inverse projection matrix (this way if the projection changes, so too
+        // will the view plane cordinate)
+        float xWorldOffset = ((float) xScreenOffset / (float) widthScreen * viewPlaneWidth) - viewPlaneWidth / 2.0f;
+        float yWorldOffset = -(((float) yScreenOffset / (float) heightScreen * viewPlaneHeight) - viewPlaneHeight / 2.0f);
+
+        return glm::vec2 (xWorldOffset, yWorldOffset);
+    }
+    
     glm::vec2 getWorldCoordFromScreen (int widthScreen, int heightScreen, float xScreen, float yScreen)
     {
         // YScreen should be interpreted from the top left of the screen

@@ -164,6 +164,17 @@ public:
 		body->SetTransform(b2Vec2(x,y), 0.0);
 	}
     
+    /** Offsets the current physical position
+     */
+    void offsetPosition (float xOffset, float yOffset)
+    {
+        b2Vec2 pos = body->GetPosition();
+        pos.x += xOffset;
+        pos.y += yOffset;
+        
+        body->SetTransform(pos, 0.0);
+    }
+    
     /** Updates the scaling of the physics body based on the scaling of the
         renderable Model
      */

@@ -28,7 +28,7 @@ public:
         return unitLength;
     }
     
-    glm::vec2 getGriddedPostition (glm::vec2 ungriddedPosition)
+    glm::vec2 getGriddedPosition (glm::vec2 ungriddedPosition)
     {
         return glm::vec2(roundToClosestGridUnit(ungriddedPosition.x),
                          roundToClosestGridUnit(ungriddedPosition.y));

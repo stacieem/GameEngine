@@ -80,7 +80,7 @@ void GameEditor::updateInspectors()
     
     // Update Inspectors
 	levelInspector.updateInspector (gameModel);
-   	objInspector.setSelectedObj (worldNavigator.getSelectedObject());
+   	objInspector.setSelectedObjects (worldNavigator.getSelectedObjects());
     
     // Update Navigator
     worldNavigator.setLevelToHandle (gameModel.getCurrentLevel());

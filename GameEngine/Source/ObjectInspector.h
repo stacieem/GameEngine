@@ -13,31 +13,52 @@ Lists the properties of the currently selected unit
 #include "Speed.h"
 
 class ObjectInspector : public Component, public InspectorUpdater,
-	public TextPropertyComponent::Listener,
-	public Value::Listener, FilenameComponentListener {
+public TextPropertyComponent::Listener, public Value::Listener, public FilenameComponentListener
+{
 public:
-	ObjectInspector() {
-		//addAndMakeVisible(scrollBar);
-		//scrollBar.setSliderStyle(juce::Slider::SliderStyle::LinearBarVertical);
+	ObjectInspector()
+    {
 		addAndMakeVisible(propertyPanel);
 		levelToWin.addListener(this);
 		selectedObj = NULL;
 	}
-	~ObjectInspector() {
+    
+	~ObjectInspector() {}
 
-	}
-
-	void setCoreEngine(CoreEngine* engine) {
+	void setCoreEngine (CoreEngine* engine)
+    {
 		coreEngine = engine;
 	}
-	void setSelectedObj(GameObject* obj) {
-
+        
+	void setSelectedObject (GameObject* obj)
+    {
 		selectedObj = obj;
 		updateObj();
-
-
-
 	}
+    
+    /** Sets the selected objects a the inspector should evaluate.
+        
+        IMPLEMENT FEATURE LATER: The Object Inspector should adapt so allow you
+        to set data for multiple objects at once. Right now it just grabs the
+        first available one.
+     */
+    void setSelectedObjects (Array<GameObject *> gameObjects)
+    {
+        if (!gameObjects.isEmpty())
+        {
+            selectedObj = gameObjects[0];
+            updateObj();
+        }
+        else
+        {
+            selectedObj = nullptr;
+            updateObj();
+        }
+    }
+        
+    
+        
+        
 	// JUCE GUI Callbacks ======================================================
 	void paint(Graphics& g) override {
 		//g.fillAll(Colours::coral);

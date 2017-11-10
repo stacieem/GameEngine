@@ -198,6 +198,51 @@ public:
         
         return nullptr;
     }
+    
+    /** Gets the game objects in the specified 2D range in world space.
+        The range is 2 diagonal coordinates of a square.
+     */
+    Array<GameObject *> getObjectsInRange (glm::vec2 coord1, glm::vec2 coord2)
+    {
+        // Calculate mins and max of range from points
+        float xMin;
+        float xMax;
+        float yMin;
+        float yMax;
+        
+        if (coord1.x <= coord2.x)
+        {
+            xMin = coord1.x;
+            xMax = coord2.x;
+        }
+        else
+        {
+            xMin = coord2.x;
+            xMax = coord1.x;
+        }
+        
+        if (coord1.y <= coord2.y)
+        {
+            yMin = coord1.y;
+            yMax = coord2.y;
+        }
+        else
+        {
+            yMin = coord2.y;
+            yMax = coord1.y;
+        }
+        
+        Array<GameObject *> objectsInRange;
+        
+        // For all game objects, if they are in range, add them
+        for (GameObject * gameObject : gameObjects)
+        {
+            if (gameObject->isInRange (xMin, xMax, yMin, yMax))
+                objectsInRange.add (gameObject);
+        }
+        
+        return objectsInRange;
+    }
 	
 	//clean this up
 	//Score properties
@@ -221,21 +266,32 @@ public:
 	}
 	
     
+    /** Deletes a single object from the Level.
+     */
     void deleteObject (GameObject * gameObjectToDelete)
     {
-        for (int i = 0; i < gameObjects.size(); ++i)
+        // Find the object in the level's object's array
+        int indexOfObject = gameObjects.indexOf(gameObjectToDelete);
+        
+        // If object was found in array (it should be)
+        if (indexOfObject != -1)
         {
-            GameObject * curObject = gameObjects[i];
-            // If object found, delete it
-            if (curObject == gameObjectToDelete)
-            {
-                // Remove the object from the physics world
-                worldPhysics.removeObject (curObject->getPhysicsProperties().getBody());
-                
-                // Remove the object from the level
-                gameObjects.remove(i);
-                break;
-            }
+            // Remove the object from the physics world
+            worldPhysics.removeObject (gameObjectToDelete->getPhysicsProperties().getBody());
+            
+            // Remove the object from the level
+            gameObjects.remove(indexOfObject);
+        }
+    }
+    
+    /** Deletes a set of objects from the Level.
+     */
+    void deleteObjects (Array<GameObject *> gameObjectsToDelete)
+    {
+        // For every object to delete, delete it
+        for (GameObject * objectToDelete : gameObjectsToDelete)
+        {
+            deleteObject(objectToDelete);
         }
     }
 

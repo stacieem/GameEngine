@@ -84,9 +84,11 @@ void LevelInspector::updateInspector(GameModel & gameModel)
 	// Set the current level text
 	levelLabel.setText("Level: ", NotificationType::dontSendNotification);
 
+    // Use selected object array to color rows below
+    Array<GameObject *> selectedObjects = worldNavigator.getSelectedObjects();
 
 	// Populate object graph with GameObjects of currently selected level
-	for (auto gameObj : selectedLevel->getGameObjects())
+	for (GameObject * gameObj : selectedLevel->getGameObjects())
 	{
 		// Add to internal array of game objects???
 		gameObjects.addIfNotAlreadyThere(gameObj);
@@ -96,8 +98,8 @@ void LevelInspector::updateInspector(GameModel & gameModel)
 				gameObj->getName(),
 				false);
 
-		// If row of selected object, set its colour to be highlighted
-		if (gameObj == worldNavigator.getSelectedObject())
+		// If row of a selected object, set its colour to be highlighted
+		if (selectedObjects.contains(gameObj))
 		{
 			objectRow->setColour(PropertyComponent::ColourIds::backgroundColourId,
 				SELECTED_ROW_COLOUR);

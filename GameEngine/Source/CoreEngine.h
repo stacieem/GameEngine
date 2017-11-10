@@ -53,8 +53,8 @@ public:
 	void addCheckpoint();
 	void toggleGamePause();
     
-    /** Deletes a GameObject */
-    void deleteGameObject (GameObject * gameObject);
+    /** Deletes a set of GameObjects */
+    void deleteGameObjects (Array<GameObject *> gameObjects);
     
     void addLevel();
     void removeLevel(int levelIndex);

@@ -35,9 +35,6 @@ public:
         // Set no camera
         camera = nullptr;
         
-        // Set no selected object
-        selectedObject = nullptr;
-        
         // Allow the navigator to be seen through
         setOpaque(false);
         
@@ -87,34 +84,119 @@ public:
     /** Gets the selected GameObject (this may be a nullptr if no object is
         currently selected)
      */
-    GameObject * getSelectedObject()
+    Array<GameObject *> getSelectedObjects()
     {
-        return selectedObject;
+        return selectedObjects;
     }
     
-    /** Sets the selected GameObject
+    /** Sets a single selected GameObject
      */
     void setSelectedObject (GameObject * newSelectedObject)
     {
-        // Deselect old renderable object if it exists
-        if (selectedObject != nullptr)
-            selectedObject->setRenderableIsSelected(false);
+        // Deselect old renderable objects if it exists
+        for (auto gameObject : selectedObjects)
+        {
+            gameObject->setRenderableIsSelected(false);
+        }
+        
+        selectedObjects.clear(); // Remove old selected objects
         
         // If there is a new object to be selected
         if (newSelectedObject != nullptr)
         {
             // Save new selected object and set it to being rendered as selected
-            selectedObject = newSelectedObject;
-            selectedObject->setRenderableIsSelected(true);
-        }
-        else
-        {
-            // Set no selected object
-            selectedObject = nullptr;
+            selectedObjects.add (newSelectedObject);
+            newSelectedObject->setRenderableIsSelected(true);
         }
         
         // Update this and other inspectors
         updateInspectorsChangeBroadcaster->sendChangeMessage();
+    }
+    
+    /** Sets the selected GameObjects
+     */
+    void setSelectedObjects (Array<GameObject *> newSelectedObjects)
+    {
+        // Deselect old renderable objects if it exists
+        for (auto gameObject : selectedObjects)
+        {
+            gameObject->setRenderableIsSelected(false);
+        }
+        
+        selectedObjects.clear(); // Remove old selected objects
+        
+        // Add the new selected objects
+        for (auto gameObject : newSelectedObjects)
+        {
+            selectedObjects.add(gameObject);
+            gameObject->setRenderableIsSelected(true);
+        }
+        
+        // Update this and other inspectors
+        updateInspectorsChangeBroadcaster->sendChangeMessage();
+    }
+    
+    /** Sets positions of the selected objects
+     */
+    void moveSelectedObjects (const MouseEvent &event)
+    {
+        // Get world position
+        glm::vec2 worldPosition = camera->getWorldCoordFromScreen(getWidth(), getHeight(), event.position.x, event.position.y);
+        
+        // Make sure the world position is gridded
+        worldPosition = grid.getGriddedPosition(worldPosition);
+        
+        if (lastWorldPosition != worldPosition)
+        {
+            // Calculate offset from last position
+            glm::vec2 offset = worldPosition - lastWorldPosition;
+            
+            // For all objects, set their new position with the offset
+            for (GameObject * object : selectedObjects)
+            {
+                // Set object position to be locked to the grid in case it was not
+                // (eg. Player object moves off grid all the time)
+                glm::vec2 griddedObjectPosition = grid.getGriddedPosition(object->getPosition());
+                object->setPositionWithPhysics(griddedObjectPosition.x, griddedObjectPosition.y);
+                
+                // Offset the position by the new movement
+                object->offsetPositionWithPhysics(offset.x, offset.y);
+            }
+            
+            lastWorldPosition = worldPosition;
+        }
+    }
+    
+    /** Copies the currently selected objects
+     */
+    void copySelectedObjects (const MouseEvent &event)
+    {
+        // Create an array for the new objects that are to be copied
+        Array<GameObject *> newObjects;
+        
+        // For all selected objects, copy them and add them to the level
+        for (GameObject * selectedObject : selectedObjects)
+        {
+            newObjects.add(level->copyObject(selectedObject));
+        }
+        
+        // Set the new selected objects
+        setSelectedObjects (newObjects);
+    }
+    
+    /** Lasso's a group of Objects
+     */
+    void lassoObjects (const MouseEvent &event)
+    {
+        // Calculate world lasso origin
+        Point<int> lassoOrigin = event.getMouseDownPosition();
+        glm::vec2 worldLassoOrigin = camera->getWorldCoordFromScreen(getWidth(), getHeight(), lassoOrigin.x, lassoOrigin.y);
+        
+        // World position
+        glm::vec2 worldPosition = camera->getWorldCoordFromScreen(getWidth(), getHeight(), event.position.x, event.position.y);
+        
+        // Select obects in the range
+        setSelectedObjects (level->getObjectsInRange (worldLassoOrigin, worldPosition));
     }
     
     /** Selects & deselects GameObjects in the GameView
@@ -125,12 +207,34 @@ public:
         {
             // Get the world position from clicking on the screen
             glm::vec2 worldPosition = camera->getWorldCoordFromScreen (getWidth(), getHeight(), event.position.x, event.position.y);
+            lastWorldPosition = grid.getGriddedPosition(worldPosition);
             
             // Get the GameObject at the position in the world
             GameObject * objectToSelect = level->getObjectAtPosition (worldPosition);
             
-            // Set the new selected object (if no object found, this deslects the last object)
-            setSelectedObject(objectToSelect);
+            // If an object was hit
+            if (objectToSelect != nullptr)
+            {
+                // If the object is not contained in the selection, select the
+                // new object
+                if (!selectedObjects.contains(objectToSelect))
+                {
+                    setSelectedObject(objectToSelect);
+                }
+                
+                // If it IS in the selection, this will jump to mouse drag
+                // and allow user to drag the blocks
+            }
+            else
+            {
+                // Set the new selected object to nothing since the objectToSelect
+                // is nothing
+                setSelectedObject(nullptr);
+            
+                // Since no object was selected on click, then user may be
+                // attempting a lasso selection
+                isLassoingObjects = true;
+            }
         }
     }
     
@@ -178,24 +282,28 @@ public:
      */
     void mouseDrag (const MouseEvent &event) override
     {
-        if (isEnabled && level != nullptr && selectedObject != nullptr && event.mouseWasDraggedSinceMouseDown())
+        // If taking dragging input
+        if (isEnabled && level != nullptr && event.mouseWasDraggedSinceMouseDown())
         {
-            // If ALT dragging, make a copy of the object
-            if (event.mods.isAltDown() && isCopyingObject == false)
+            // If user is attempting to lasso objects
+            if (isLassoingObjects)
             {
-                isCopyingObject = true;
-                GameObject * newObject = level->copyObject(selectedObject);
-                setSelectedObject(newObject);
+                lassoObjects(event);
             }
-            
-            // Get the world position from clicking on the screen
-            glm::vec2 worldPosition = camera->getWorldCoordFromScreen(getWidth(), getHeight(), event.position.x, event.position.y);
-            
-            // Get the gridded world position
-            glm::vec2 griddedWorldPosition = grid.getGriddedPostition(worldPosition);
-            
-            // Set position of the object
-            selectedObject->setPositionWithPhysics(griddedWorldPosition.x, griddedWorldPosition.y);
+            else
+            // If user is attempting to move object(s)
+            {
+                // If ALT dragging, make a copy of the object
+                if (event.mods.isAltDown() && isCopyingObject == false)
+                {
+                    isCopyingObject = true;
+                    copySelectedObjects(event);
+                }
+                
+                // Move object positions based on the drag event
+                moveSelectedObjects(event);
+
+            }
         }
     }
     
@@ -203,8 +311,9 @@ public:
      */
     void mouseUp (const MouseEvent &event) override
     {
-        // Reset object copying
+        // Reset user actions
         isCopyingObject = false;
+        isLassoingObjects = false;
     }
     
     /** Translates the Camera when the mouse wheel is scrolled in the X and Y
@@ -260,13 +369,13 @@ public:
     
     bool keyPressed (const KeyPress &key, Component *originatingComponent) override
     {
-        // If delete key, delete object
-        if(isEnabled && (key.isKeyCode(KeyPress::backspaceKey) || key.isKeyCode(KeyPress::deleteKey)) && selectedObject != nullptr)
+        // If delete key, delete object(s) in selection
+        if(isEnabled && (key.isKeyCode(KeyPress::backspaceKey) || key.isKeyCode(KeyPress::deleteKey)) && !selectedObjects.isEmpty())
         {
-            // Delete Object
-            coreEngine->deleteGameObject(selectedObject);
+            // Delete Objects
+            coreEngine->deleteGameObjects(selectedObjects);
             
-            // Deselect object and update all other inspectors
+            // Deselect objects and update all other inspectors
             setSelectedObject(nullptr);
             
             // Keypress was handled
@@ -294,13 +403,20 @@ private:
     /** Currently viewed level */
     Level * level;
     
-    /** Currently selected object */
-    GameObject * selectedObject; // In future, this should be an array of selected objects
+    /** Currently selected objects */
+    Array<GameObject *> selectedObjects;
     
     /** Core Engine to call safe GameModel functions (ex: delete objects) */
     CoreEngine* coreEngine;
     
+    glm::vec2 lastWorldPosition;
+    
+    // User actions
+    /** Signifies the user is copying an object */
     bool isCopyingObject;
+    
+    /** Signifies the user is lassoing a set of objects */
+    bool isLassoingObjects;
     
     WorldGrid grid;
 };
