@@ -105,8 +105,7 @@ public:
         if (newSelectedObject != nullptr)
         {
             // Save new selected object and set it to being rendered as selected
-            selectedObjects.add (newSelectedObject);
-            newSelectedObject->setRenderableIsSelected(true);
+            addObjectToSelection (newSelectedObject);
         }
         
         // Update this and other inspectors
@@ -128,12 +127,20 @@ public:
         // Add the new selected objects
         for (auto gameObject : newSelectedObjects)
         {
-            selectedObjects.add(gameObject);
-            gameObject->setRenderableIsSelected(true);
+            addObjectToSelection (gameObject);
         }
         
         // Update this and other inspectors
         updateInspectorsChangeBroadcaster->sendChangeMessage();
+    }
+    
+    /** Adds an object to the selection and sets it's renderable to highlight
+        the Object.
+     */
+    void addObjectToSelection (GameObject * gameObject)
+    {
+        selectedObjects.add(gameObject);
+        gameObject->setRenderableIsSelected(true);
     }
     
     /** Sets positions of the selected objects
@@ -215,11 +222,20 @@ public:
             // If an object was hit
             if (objectToSelect != nullptr)
             {
-                // If the object is not contained in the selection, select the
-                // new object
+                // If the object is not contained in the selection
                 if (!selectedObjects.contains(objectToSelect))
                 {
-                    setSelectedObject(objectToSelect);
+                    // If shift was held, add the object to the current selection
+                    // If ALT dragging, make a copy of the object
+                    if (event.mods.isShiftDown())
+                    {
+                        addObjectToSelection (objectToSelect);
+                    }
+                    else
+                    {
+                        // Select the object clicked
+                        setSelectedObject(objectToSelect);
+                    }
                 }
                 
                 // If it IS in the selection, this will jump to mouse drag
