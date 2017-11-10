@@ -11,6 +11,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Camera.h"
 #include "InspectorUpdater.h"
+#include "WorldGrid.h"
 
 /** Allows the user to navigate through the game world and select various objects
     to edit the game. Keeps track of the currently selected objects.
@@ -190,8 +191,11 @@ public:
             // Get the world position from clicking on the screen
             glm::vec2 worldPosition = camera->getWorldCoordFromScreen(getWidth(), getHeight(), event.position.x, event.position.y);
             
+            // Get the gridded world position
+            glm::vec2 griddedWorldPosition = grid.getGriddedPostition(worldPosition);
+            
             // Set position of the object
-            selectedObject->setPositionWithPhysics(worldPosition.x, worldPosition.y);
+            selectedObject->setPositionWithPhysics(griddedWorldPosition.x, griddedWorldPosition.y);
         }
     }
     
@@ -297,4 +301,6 @@ private:
     CoreEngine* coreEngine;
     
     bool isCopyingObject;
+    
+    WorldGrid grid;
 };

@@ -118,6 +118,7 @@
 		574490CA1FABB19B004DBC31 /* VertexBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VertexBuffer.h; path = ../../Source/VertexBuffer.h; sourceTree = "<group>"; };
 		574490CB1FABB19B004DBC31 /* WorldPhysics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WorldPhysics.h; path = ../../Source/WorldPhysics.h; sourceTree = "<group>"; };
 		574490D51FACF677004DBC31 /* WorldNavigator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WorldNavigator.h; path = ../../Source/WorldNavigator.h; sourceTree = "<group>"; };
+		57DF85FC1FB4D7C300BE5DFE /* WorldGrid.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WorldGrid.h; path = ../../Source/WorldGrid.h; sourceTree = "<group>"; };
 		57F5598FD8F3E97531BC5EB5 /* include_juce_audio_utils.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_utils.mm; path = ../../JuceLibraryCode/include_juce_audio_utils.mm; sourceTree = SOURCE_ROOT; };
 		5BA064D2FF4E47F6DF098CA3 /* juce_graphics */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_graphics; path = ../../../JUCE/modules/juce_graphics; sourceTree = SOURCE_ROOT; };
 		5D1FC676694048DAC21CAA6A /* include_juce_audio_formats.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_formats.mm; path = ../../JuceLibraryCode/include_juce_audio_formats.mm; sourceTree = SOURCE_ROOT; };
@@ -211,6 +212,7 @@
 				574490A91FABB19B004DBC31 /* GameHUD.h */,
 				574490AA1FABB19B004DBC31 /* GameLogic.h */,
 				574490D51FACF677004DBC31 /* WorldNavigator.h */,
+				57DF85FC1FB4D7C300BE5DFE /* WorldGrid.h */,
 				574490AB1FABB19B004DBC31 /* GameModel.h */,
 				574490AC1FABB19B004DBC31 /* GameObject.h */,
 				574490AD1FABB19B004DBC31 /* GameObjectType.h */,
