@@ -132,11 +132,12 @@ public:
 		avgMilliseconds += ((deltaTime / 1000.0) - avgMilliseconds) * 0.03;
 		currentTime = Time::currentTimeMillis();
 
+		gameHUD.setAttributes(renderSwapFrame->getAttributes());
+
 		// For every second, update the calculated frame rate
 		if (checkTime > 1000) {
 			checkTime = 0;
 			gameHUD.setFrameRate((int)(1.0 / avgMilliseconds));
-			//DBG((int)(1.0 / avgMilliseconds));
 
 		}
         

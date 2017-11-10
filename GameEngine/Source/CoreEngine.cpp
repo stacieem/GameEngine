@@ -239,8 +239,13 @@ void CoreEngine::addBlock()
 
 void CoreEngine::deleteGameObject (GameObject * gameObject)
 {
+
     const ScopedLock scopedLock (objectDeletionLock);
     
+	if (gameObject == gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)) {
+		return;
+	}
+
     gameModelCurrentFrame->getCurrentLevel()->deleteObject(gameObject);
 }
 

@@ -9,61 +9,68 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
-class HealthBar : public Component, public ChangeListener
+class HealthBar : public Component
 {
     
 public:
     
     HealthBar()
     {
+		lives = 1;
 		addAndMakeVisible(lifeLabel);
 		lifeLabel.setText("- LIFE -", dontSendNotification);
 		lifeLabel.setJustificationType(Justification::centredTop);
 		lifeLabel.setFont(Font(14.0f));
 
+		addAndMakeVisible(multiplierLabel);
+		multiplierLabel.setText("x", dontSendNotification);
+		multiplierLabel.setJustificationType(Justification::right);
+		multiplierLabel.setFont(Font(28.0f));
+		 
 		File f = File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/heart.png");
 
 		img = ImageFileFormat::loadFrom(f);
 		img = img.rescaled(30, 30);
-
-		
     }
 
 	void paint(Graphics &g) override
 	{
-		g.drawImageAt(img, 0, 20);
-		g.drawImageAt(img, 35, 20);
-		g.drawImageAt(img, 70, 20);
-		g.drawImageAt(img, 105, 20);
-		g.drawImageAt(img, 140, 20);
+		if (lives > 5) {
+			multiplierLabel.setText("x" + String(lives), dontSendNotification);
+
+			g.drawImageAt(img, 70, 20);
+			multiplierLabel.setVisible(true);
+			return;
+		}
+
+		multiplierLabel.setVisible(false);
+		int x = 0;
+		for (int i = 0; i < lives; i++) {
+			g.drawImageAt(img, x, 20);
+			x += 35;
+		}
+		
+		
 	}
 
     
     void resized() override
     {
 		lifeLabel.setBounds(getLocalBounds());
+		multiplierLabel.setBounds(105, 20, 40, 30);
+   
     }
-    
-    void setChangeBroadcaster (ChangeBroadcaster * changeBroadcaster)
-    {
-        healthChangeBroadcaster = changeBroadcaster;
-    }
-    
-    void changeListenerCallback (ChangeBroadcaster *source) override
-    {
-        // If the data is changed, pull the data
-        if (source == healthChangeBroadcaster)
-        {
-            
-        }
-    }
+
+	void setLives(int lives) {
+		this->lives = lives;
+	}
 
 
 private:
-    ChangeBroadcaster * healthChangeBroadcaster;
 	Label lifeLabel;
+	Label multiplierLabel;
 	Image img;
-
+	int lives;
     
 };
 

@@ -41,7 +41,12 @@ public:
 	Level(ValueTree levelValueTree) {
 
 		modelsForRendering.add(new Model());
-
+		enemyPoints = 15;
+		collectablePoints = 5;
+		timerSpeed = 0;
+		hasTimer = false;
+		hasScore = false;
+		hasCheckpoint = false;
 		parseFrom(levelValueTree);
 	}
 
