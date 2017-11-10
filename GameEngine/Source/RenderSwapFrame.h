@@ -47,6 +47,10 @@ public:
 		return nullptr;
 	}
 
+	map<String, var> getAttributes() {
+		return attrs;
+	}
+
 private:
     vector<RenderableObject> renderableObjects;
     glm::mat4 viewMatrix;

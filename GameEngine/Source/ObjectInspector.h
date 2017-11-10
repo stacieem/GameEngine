@@ -249,7 +249,7 @@ private:
 				//add to panel
 				propertyPanel.addSection("Object Physics", objPhysicsProperties);
 				break;
-			case Enemy:	//ai, maybe differntiate between types of ai with this?
+			case Enemy:	
 				addGenericMovementProperties();
 
 				addEnemyProperties();
@@ -322,6 +322,7 @@ private:
 		combo->setSelectedId(((EnemyObject*)selectedObj)->getAIState() + 1, dontSendNotification);
 		aiState.addListener(this);
 		objBackgroundProperties.add(combo);
+
 	}
 	//base physics properties
 	void addGenericMovementProperties() {
@@ -361,11 +362,8 @@ private:
 		xScale.setValue(var((float)selectedObj->getScale().x));
 		xScale.addListener(this);
 		SliderPropertyComponent* slider = new SliderPropertyComponent(xScale, "x-scale:", 1, 10, .1);
-
-
 		objPhysicsProperties.add(slider);
 
-		//This is going to require a specification of the axis for the game
 		yScale.setValue(var((float)selectedObj->getScale().y));
 		SliderPropertyComponent* slider2 = new SliderPropertyComponent(yScale, "y-scale:", 1, 10, .1);
 		yScale.addListener(this);
@@ -387,7 +385,7 @@ private:
 	void addHudProperties()
 	{
 		playerLives.setValue(var(selectedObj->getLives()));
-		SliderPropertyComponent* playerHealthValue = new SliderPropertyComponent(playerLives, "Lives:", 0, 100, 1);
+		SliderPropertyComponent* playerHealthValue = new SliderPropertyComponent(playerLives, "Lives:", 0, 10, 1);
 		playerLives.addListener(this);
 		objHudProperties.add(playerHealthValue);
 
@@ -405,22 +403,7 @@ private:
 		objNameText->addListener(this);
 
 		objBackgroundProperties.add(objNameText);
-		/*
-		//This is going to require a specification of the axis for the game
-		xPosition.setValue(var((int)selectedObj->getRenderableObject().position.x));
-		xPosition.addListener(this);
-		SliderPropertyComponent* slider = new SliderPropertyComponent(xPosition, "x-Position:", -10, 10, .25);
-
-		//new TextPropertyComponent(xPosition, "x-Position:", 4,false);
-
-		//objBackgroundProperties.add(slider);
-
-		//This is going to require a specification of the axis for the game
-		yPosition.setValue(var((int)selectedObj->getRenderableObject().position.y));
-		SliderPropertyComponent* slider2 = new SliderPropertyComponent(yPosition, "y-Position:", -10, 10, .25);
-		yPosition.addListener(this);
-		//objBackgroundProperties.add(slider2);
-		*/
+	
 		//Note that this is the custom ComboBoxPropertyComponent JUCE docs
 		comboValue.setValue(var((selectedObj->getRenderableObject()).animationProperties.getAnimationSpeed()));
 		ComboBoxPropertyComponent* combo = new ComboBoxPropertyComponent(comboValue, "Animation Speed:");
@@ -454,15 +437,14 @@ private:
 
 	CoreEngine* coreEngine;
 	GameObject* selectedObj;
-	//Slider scrollBar;
-	//selected object properties
+
 	PropertyPanel propertyPanel;
 	Array<PropertyComponent *> objPhysicsProperties;
 	Array<PropertyComponent *> objAudioProperties;
 	Array<PropertyComponent *> objBackgroundProperties;
 	Array<PropertyComponent *> objHudProperties;
 
-	Value objName, objPhysicsX, objPhysicsY, objPhysicsXCap, objPhysicsYCap,
+	Value objName, objPhysicsXCap, objPhysicsYCap,
 
 		   objPhysicsDensity, comboValue, stateComboValue, aiState,
 			playerLives, levelGoTo,levelToWin, xScale, yScale;

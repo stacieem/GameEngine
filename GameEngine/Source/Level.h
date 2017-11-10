@@ -41,7 +41,12 @@ public:
 	Level(ValueTree levelValueTree) {
 
 		modelsForRendering.add(new Model());
-
+		enemyPoints = 15;
+		collectablePoints = 5;
+		timerSpeed = 0;
+		hasTimer = false;
+		hasScore = false;
+		hasCheckpoint = false;
 		parseFrom(levelValueTree);
 	}
 
@@ -291,7 +296,9 @@ public:
         // For every object to delete, delete it
         for (GameObject * objectToDelete : gameObjectsToDelete)
         {
-            deleteObject(objectToDelete);
+            // Do not delete a player
+            if (objectToDelete != getPlayer(0))
+                deleteObject(objectToDelete);
         }
     }
 

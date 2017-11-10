@@ -1929,6 +1929,7 @@
     <ClInclude Include="..\..\Source\RenderableObject.h" />
     <ClInclude Include="..\..\Source\RenderSwapFrame.h" />
     <ClInclude Include="..\..\Source\Resource.h" />
+    <ClInclude Include="..\..\Source\ScoreHUD.h" />
     <ClInclude Include="..\..\Source\SelectObjectButtonPropertyComponent.h" />
     <ClInclude Include="..\..\Source\SelfDeletingPositionalAudioSource.h" />
     <ClInclude Include="..\..\Source\SensorContactListener.h" />

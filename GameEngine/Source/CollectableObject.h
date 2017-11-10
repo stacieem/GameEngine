@@ -26,7 +26,6 @@ public:
 		if (getIsActive()) {
 			b2Vec2 dist = (player.getPosition() - getPhysicsProperties().GetPosition());
 			float leng = sqrt(dist.x * dist.x + dist.y*dist.y);
-			//DBG(leng);
 			if (leng < radius) {
 				collected = true;
 

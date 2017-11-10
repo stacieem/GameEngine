@@ -239,6 +239,7 @@ void CoreEngine::addBlock()
 
 void CoreEngine::deleteGameObjects (Array<GameObject *> gameObjects)
 {
+
     const ScopedLock scopedLock (objectDeletionLock);
     
     gameModelCurrentFrame->getCurrentLevel()->deleteObjects(gameObjects);
