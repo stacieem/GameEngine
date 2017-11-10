@@ -53,27 +53,27 @@ public:
 		//scrollBar.setBounds(getLocalBounds());
 	}
 
-	void buttonClicked(Button* button)
+	void buttonClicked(Button* button) override
 	{
 		if (button == &block)
 		{
 			coreEngine->addBlock();
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
-		if (button == &enemy)
+        else if (button == &enemy)
 		{
 			coreEngine->addEnemy();
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
-		if (button == &collectable)
+		else if (button == &collectable)
 		{
 			coreEngine->addCollectable();
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
-		if (button == &checkpoint)
+		else if (button == &checkpoint)
 		{
 			coreEngine->addCheckpoint();
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
 	}
 

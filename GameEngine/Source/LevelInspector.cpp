@@ -36,15 +36,17 @@ LevelInspector::LevelInspector(WorldNavigator & worldNavigator) :
     gravity.addListener(this);
 	hasCheckPoint.addListener(this);
 }
-LevelInspector::~LevelInspector() {
 
-}
+LevelInspector::~LevelInspector() {}
 
-void LevelInspector::setCoreEngine(CoreEngine* engine) {
+void LevelInspector::setCoreEngine(CoreEngine* engine)
+{
     coreEngine = engine;
 }
+
 // JUCE GUI Callbacks ======================================================
-void LevelInspector::paint(Graphics& g) {
+void LevelInspector::paint(Graphics& g)
+{
     //g.fillAll(Colours::indigo);
 }
 
@@ -135,10 +137,17 @@ void LevelInspector::updateInspector(GameModel & gameModel)
 }
 
 
-void LevelInspector::textPropertyComponentChanged(TextPropertyComponent * component) {
-		if (component->getName() == "Object Name:") {
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
-		}
+void LevelInspector::textPropertyComponentChanged(TextPropertyComponent * component)
+{
+    if (component->getName() == "Object Name:")
+    {
+        updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
+    }
+    // NOTE: If we ever add another textPropertyComponent condition here, we MUST
+    // use else if. Since we are sending "Synchronous" change messages, this
+    // inspector will be updated too. This means that after that call, any
+    // modifications to the TextPropertyComponent pointer of this function could
+    // be bad because the TextPropertyComponent pointer could have been deallocated
 }
 void LevelInspector::resized()
 {
@@ -167,58 +176,57 @@ void LevelInspector::resized()
 
 void LevelInspector::buttonClicked(Button * button) {
 
-		if (button == &playButton)
-		{
-            if (button->getToggleState())
-            {
-                button->setButtonText("Start Game");
-                button->setToggleState(false, NotificationType::dontSendNotification);
-            }
-            else
-            {
-                button->setButtonText("Stop Game");
-                button->setToggleState(true, NotificationType::dontSendNotification);
+    if (button == &playButton)
+    {
+        if (button->getToggleState())
+        {
+            button->setButtonText("Start Game");
+            button->setToggleState(false, NotificationType::dontSendNotification);
+        }
+        else
+        {
+            button->setButtonText("Stop Game");
+            button->setToggleState(true, NotificationType::dontSendNotification);
 
-            }
-            
-			coreEngine->toggleGamePause();
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
-		}
-		else if (button == &addLevelButton)
-		{
-			// Add level and update inspectors
-			coreEngine->addLevel();
-			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
-		}
-		else if (button == &removeLevelButton)
-		{
-			coreEngine->removeLevel(selectedLevelIndex);
-			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
-		} else if (button == &saveLevelButton) {
+        }
+        
+        coreEngine->toggleGamePause();
+        updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
+    }
+    else if (button == &addLevelButton)
+    {
+        // Add level and update inspectors
+        coreEngine->addLevel();
+        updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
+    }
+    else if (button == &removeLevelButton)
+    {
+        coreEngine->removeLevel(selectedLevelIndex);
+        updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
+    } else if (button == &saveLevelButton) {
 
-			coreEngine->saveGame();
+        coreEngine->saveGame();
 
-		}
-		else if (button == &resetLevelButton)
-		{
-			selectedLevel->resetLevel();
-		}
-	}
+    }
+    else if (button == &resetLevelButton)
+    {
+        selectedLevel->resetLevel();
+    }
+}
 
-	void LevelInspector::setChildrenEnabled(bool shouldBeEnabled)
-	{
-		propertyPanel.setEnabled(shouldBeEnabled);
-		levelComboBox.setEnabled(shouldBeEnabled);
-		addLevelButton.setEnabled(shouldBeEnabled);
-		removeLevelButton.setEnabled(shouldBeEnabled);
-		levelLabel.setEnabled(shouldBeEnabled);
-		resetLevelButton.setEnabled(shouldBeEnabled);
-		saveLevelButton.setEnabled(shouldBeEnabled);
-	}
+void LevelInspector::setChildrenEnabled(bool shouldBeEnabled)
+{
+    propertyPanel.setEnabled(shouldBeEnabled);
+    levelComboBox.setEnabled(shouldBeEnabled);
+    addLevelButton.setEnabled(shouldBeEnabled);
+    removeLevelButton.setEnabled(shouldBeEnabled);
+    levelLabel.setEnabled(shouldBeEnabled);
+    resetLevelButton.setEnabled(shouldBeEnabled);
+    saveLevelButton.setEnabled(shouldBeEnabled);
+}
 
-	void LevelInspector::valueChanged(Value &value)
-	{
-    
+void LevelInspector::valueChanged(Value &value)
+{
     if (value.refersToSameSourceAs(gravity)) {
 
         switch ((int)gravity.getValue()) {
@@ -251,7 +259,7 @@ void LevelInspector::comboBoxChanged(ComboBox *comboBoxThatHasChanged)
         // Update Inspector
         coreEngine->setCurrentLevel(comboBoxThatHasChanged->getSelectedItemIndex());
 
-		updateInspectorsChangeBroadcaster->sendChangeMessage();
+		updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
     }
 	
 }

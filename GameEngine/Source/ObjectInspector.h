@@ -76,10 +76,10 @@ public:
 	{
 		if (component->getName() == "Name:") {
 			selectedObj->setName(component->getText());
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
-
-		if (component->getName() == "Texture:") {
+        else if (component->getName() == "Texture:")
+        {
 
 			File textureFile;
 			if (component->getText().isEmpty()) {
@@ -89,16 +89,13 @@ public:
 				textureFile = File(component->getText());
 			}
 			selectedObj->getRenderableObject().animationProperties.setIdleTexture(textureFile);
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
-
-		/*
-		if (component->getName() == "Density:") {
-		float dens = component->getText().getFloatValue()/100;
-		selectedObj->getPhysicsProperties().setDensity(dens);
-		updateInspectorsChangeBroadcaster->sendChangeMessage();
-		}
-		*/
+        // NOTE: MUST BE ELSE IF for all other "component" checks because, when
+        // the inspectors are updated synchronously, this one is also updated
+        // synchronously, therefore the TextPropertyComponent pointer that
+        // originally triggered this callback my now be null, so we cannot check
+        // this condition without causing a crash
 	}
 
 	void valueChanged(Value &value) override
@@ -118,7 +115,7 @@ public:
 
 		}
 
-		if (value.refersToSameSourceAs(objPhysicsYCap)) {
+		else if (value.refersToSameSourceAs(objPhysicsYCap)) {
 			switch ((int)objPhysicsYCap.getValue()) {
 			case 1:
 				selectedObj->setJumpSpeed(Speed::SLOW);
@@ -133,7 +130,7 @@ public:
 
 		}
 
-		if (value.refersToSameSourceAs(comboValue)) {
+		else if (value.refersToSameSourceAs(comboValue)) {
 
 			switch ((int)comboValue.getValue()) {
 			case 1:
@@ -148,7 +145,7 @@ public:
 			}
 		}
 
-		if (value.refersToSameSourceAs(stateComboValue)) {
+		else if (value.refersToSameSourceAs(stateComboValue)) {
 
 			switch ((int)stateComboValue.getValue()) {
 			case 1:
@@ -160,7 +157,7 @@ public:
 			}
 		}
 
-		if (value.refersToSameSourceAs(aiState)) {
+		else if (value.refersToSameSourceAs(aiState)) {
 
 			switch ((int)aiState.getValue()) {
 			case 1:
@@ -183,19 +180,19 @@ public:
 			selectedObj->setLives(value.getValue());
 		}else if (value.refersToSameSourceAs(levelToWin)) {
 			((GoalPointObject*)selectedObj)->setToWin();
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}else if (value.refersToSameSourceAs(levelGoTo)) {
 			((GoalPointObject*)selectedObj)->setLevelToGoTo(levelGoTo.getValue());
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
 
-		if (value.refersToSameSourceAs(xScale)) {
+		else if (value.refersToSameSourceAs(xScale)) {
 
 			float scale = (float)value.getValue();
 			selectedObj->setScale(scale, selectedObj->getScale().y);
 		}
 
-		if (value.refersToSameSourceAs(yScale)) {
+		else if (value.refersToSameSourceAs(yScale)) {
 
 			float scale = (float)value.getValue();
 			selectedObj->setScale(selectedObj->getScale().x,scale);
@@ -207,17 +204,17 @@ public:
 	void filenameComponentChanged(FilenameComponent *fileComponentThatHasChanged) {
 		if (fileComponentThatHasChanged->getName() == "Animation Directory") {
 			selectedObj->getRenderableObject().animationProperties.setAnimationTextures(fileComponentThatHasChanged->getCurrentFile());
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
 
-		if (fileComponentThatHasChanged->getName() == "Choose Idle Texture") {
+		else if (fileComponentThatHasChanged->getName() == "Choose Idle Texture") {
 			selectedObj->getRenderableObject().animationProperties.setIdleTexture(fileComponentThatHasChanged->getCurrentFile());
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
 
-		if (fileComponentThatHasChanged->getName() == "Choose Collision Audio") {
+		else if (fileComponentThatHasChanged->getName() == "Choose Collision Audio") {
 			selectedObj->mapAudioFileToPhysicalAction(fileComponentThatHasChanged->getCurrentFile(), PhysicalAction::collsion);
-			updateInspectorsChangeBroadcaster->sendChangeMessage();
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
 
 	}

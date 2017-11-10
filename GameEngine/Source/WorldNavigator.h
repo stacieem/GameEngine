@@ -109,7 +109,7 @@ public:
         }
         
         // Update this and other inspectors
-        updateInspectorsChangeBroadcaster->sendChangeMessage();
+        updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
     }
     
     /** Sets the selected GameObjects
@@ -131,7 +131,7 @@ public:
         }
         
         // Update this and other inspectors
-        updateInspectorsChangeBroadcaster->sendChangeMessage();
+        updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
     }
     
     /** Adds an object to the selection and sets it's renderable to highlight
