@@ -23,6 +23,15 @@ public:
 		levelToGoTo = 0;
 	}
 
+	/** Copy Constructor - Used to easily make a copy of an existing GameObject
+	(this is directly used by the WorldNavigator when alt-dragging)
+	*/
+	GoalPointObject(GoalPointObject & objectToCopy, WorldPhysics & worldPhysics) : GameObject(objectToCopy, worldPhysics)
+	{
+		radius = objectToCopy.radius;
+		levelToGoTo = objectToCopy.levelToGoTo;
+	}
+
 	bool collision(PlayerObject& player) {
 		bool triggered = false;
 			b2Vec2 dist = (player.getPosition() - getPhysicsProperties().GetPosition());

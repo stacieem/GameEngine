@@ -25,6 +25,20 @@ public:
         getPhysicsProperties().setIsStatic(false);
 	}
 
+	/** Copy Constructor - Used to easily make a copy of an existing GameObject
+	(this is directly used by the WorldNavigator when alt-dragging)
+	*/
+	EnemyObject(EnemyObject & objectToCopy, WorldPhysics & worldPhysics) : GameObject(objectToCopy, worldPhysics)
+	{
+		aiState = objectToCopy.aiState;
+		detection_radius = 7;
+		direction = 1;
+		timeToSwap = 200;	//value that deltaTime will sum to for us to determine we need to switch directions
+		timeElapsed = 0;
+
+		radius = 1.5;
+	}
+
 	EnemyObject(WorldPhysics & worldPhysics, Model* model, ValueTree valueTree) : GameObject(worldPhysics, model, valueTree)
 	{
 

@@ -19,6 +19,15 @@ public:
 		getPhysicsProperties().setIsStatic(true);
 		radius = 1.5;
 	}
+
+	/** Copy Constructor - Used to easily make a copy of an existing GameObject
+	(this is directly used by the WorldNavigator when alt-dragging)
+	*/
+	CollectableObject(CollectableObject & objectToCopy, WorldPhysics & worldPhysics) : GameObject( objectToCopy, worldPhysics)
+	{
+		radius = objectToCopy.radius;
+
+	}
 	~CollectableObject() {}
 
 	bool collision(PlayerObject& player) {

@@ -59,10 +59,10 @@ public:
         this->name = objectToCopy.name;
         this->renderable = objectToCopy.renderable;
         this->renderableObject = objectToCopy.renderableObject;
-        this->xVel = objectToCopy.xVel;
-        this->yVel = objectToCopy.yVel;
+		setMoveSpeed(objectToCopy.getMoveSpeed());
+		setJumpSpeed(objectToCopy.getJumpSpeed());
         this->actionToAudio = objectToCopy.actionToAudio;
-        
+		this->objType = objectToCopy.objType;
         this->physicsProperties.setIsStatic((objectToCopy.getPhysicsProperties().getIsStatic()));
         
         // This seems odd? We want to set origin to wherever an object is placed

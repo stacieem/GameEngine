@@ -79,9 +79,41 @@ public:
 	}
     
     GameObject * copyObject(GameObject * objectToCopy) {
-        GameObject * newObject = new GameObject(*objectToCopy, worldPhysics);
-        gameObjects.add(newObject);
-        return newObject;
+
+		switch (objectToCopy->getObjType()) {
+
+		case Generic: {
+			GameObject* genericObj = new GameObject(*objectToCopy, worldPhysics);
+			gameObjects.add(genericObj);
+			return genericObj;
+		}
+				break;
+		
+		case Player:
+			return objectToCopy;
+			break;
+		case Enemy: {
+			EnemyObject* enm = new EnemyObject(*((EnemyObject*)objectToCopy), worldPhysics);
+			gameObjects.add(enm);
+			return enm;
+		}
+				break;
+		case Collectable: {
+			CollectableObject* collectable = new CollectableObject(*((CollectableObject*)objectToCopy), worldPhysics);
+			gameObjects.add(collectable);
+			return collectable;
+		}
+				break;
+		case Checkpoint: {
+			GoalPointObject* goalPoint = new GoalPointObject(*((GoalPointObject*)objectToCopy), worldPhysics);
+			gameObjects.add(goalPoint);
+			return goalPoint;
+		}
+				break;
+		}
+
+
+        
     }
     
 	void addNewEnemy() {
