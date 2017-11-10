@@ -238,6 +238,10 @@ private:
 			{
 			case Generic:	//environment?
 				addGenericMovementProperties();
+                    
+                //add to panel
+                propertyPanel.addSection("Object Physics", objPhysicsProperties);
+
 				break;
 			case Player:	//player
 				addGenericMovementProperties();
