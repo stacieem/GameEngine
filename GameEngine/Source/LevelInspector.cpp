@@ -20,6 +20,7 @@ LevelInspector::LevelInspector(WorldNavigator & worldNavigator) :
     addAndMakeVisible(addLevelButton);
     addAndMakeVisible(removeLevelButton);
 	addAndMakeVisible(resetLevelButton);
+	addAndMakeVisible(resetGameButton);
 	addAndMakeVisible(saveLevelButton);
 
     addLevelButton.setButtonText("+");
@@ -27,9 +28,11 @@ LevelInspector::LevelInspector(WorldNavigator & worldNavigator) :
     levelLabel.setJustificationType(Justification::centred);
 
 	resetLevelButton.setButtonText("Reset Current Level");
+	resetGameButton.setButtonText("Reset Game");
     addLevelButton.addListener(this);
     removeLevelButton.addListener(this);
 	resetLevelButton.addListener(this);
+	resetGameButton.addListener(this);
     levelComboBox.addListener(this);
 	hasTimer.addListener(this);
 	hasScore.addListener(this);
@@ -158,6 +161,7 @@ void LevelInspector::resized()
     playButton.setBounds(bounds.removeFromTop(lineHeight));
 	saveLevelButton.setBounds(bounds.removeFromTop(lineHeight));
 	resetLevelButton.setBounds(bounds.removeFromTop(lineHeight));
+	resetGameButton.setBounds(bounds.removeFromTop(lineHeight));
     // Level Selection
     juce::Rectangle<int> levelSelectRow = bounds.removeFromTop(lineHeight);
 
@@ -212,6 +216,16 @@ void LevelInspector::buttonClicked(Button * button) {
     {
         selectedLevel->resetLevel();
     }
+	else if (button == &resetGameButton)
+	{
+		for (auto level : coreEngine->getGameModel().getLevels()) {
+			level->resetLevel();
+			level->getPlayer(0)->setScore(0);
+			level->getPlayer(0)->setCurrLives(level->getPlayer(0)->getLives());
+		}
+		coreEngine->getGameModel().setCurrentLevel(0);
+		coreEngine->getGameModel().setIsGameOver(false);
+	}
 }
 
 void LevelInspector::setChildrenEnabled(bool shouldBeEnabled)
@@ -222,6 +236,7 @@ void LevelInspector::setChildrenEnabled(bool shouldBeEnabled)
     removeLevelButton.setEnabled(shouldBeEnabled);
     levelLabel.setEnabled(shouldBeEnabled);
     resetLevelButton.setEnabled(shouldBeEnabled);
+	resetGameButton.setEnabled(shouldBeEnabled);
     saveLevelButton.setEnabled(shouldBeEnabled);
 }
 

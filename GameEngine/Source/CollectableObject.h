@@ -42,6 +42,7 @@ public:
 				getPhysicsProperties().setActiveStatus(false);
 				setRenderable(false);
 
+				
 			}
 		}
 		return collected;

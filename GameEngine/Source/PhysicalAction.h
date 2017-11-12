@@ -12,4 +12,4 @@
     to map certain media (audio files, textures, etc.) to be triggered when a
     specific action occurs.
  */
-enum PhysicalAction { collsion, inRange };
+enum PhysicalAction { collsion, inRange, death };

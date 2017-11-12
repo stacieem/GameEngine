@@ -38,8 +38,9 @@ public:
 		setModel(model);
 
 		objType = GameObjectType::Generic;
-		lives = 1;
-		score = 0;
+
+		setScore(0);
+		setLives(1);
 		xVel = 0;
 		yVel = 0;
 		setActive(true);
@@ -347,14 +348,30 @@ public:
 	void setLives(int newLives)
     {
 		lives = newLives;
+		currLives = newLives;
 	}
+	int getCurrLives() {
+		return currLives;
+	}
+	void setCurrLives(int newLives) {
+		currLives = newLives;
+	}
+
 	int getScore()
 	{
 		return score;
 	}
+	int getCurrScore() {
+		return currScore;
+	}
 	void setScore(int newScore)
 	{
 		score = newScore;
+		currScore = newScore;
+	}
+
+	void addCurrScore(int points) {
+		currScore += points;
 	}
 	void addScore(int points) {
 		score += points;
@@ -443,13 +460,13 @@ public:
 
 		ValueTree livesTree = valueTree.getChildWithName(Identifier("Lives"));
 		lives = livesTree.getProperty(Identifier("value"));
-
+		currLives = lives;
 		renderableObject.parseFrom(valueTree.getChildWithName(Identifier("RenderableObject")));
 
 		physicsProperties.parseFrom(valueTree.getChildWithName(Identifier("PhysicsProperties")));
 
 		glm::vec2 scale;
-
+		setScore(0);
 		ValueTree scaleTree = valueTree.getChildWithName(Identifier("Scale"));
 		scale.x = scaleTree.getProperty(Identifier("x"));
 		scale.y = scaleTree.getProperty(Identifier("y"));
@@ -567,6 +584,7 @@ private:
     /** Name of object */
     String name;
 	int lives, score;
+	int currLives, currScore;
 	glm::vec2 origin;
     /** Specifies wether or not the object will be rendered visually to the screen */
     bool renderable, isActive;

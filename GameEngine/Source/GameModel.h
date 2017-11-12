@@ -22,6 +22,7 @@ public:
 		// Initialize Current Level
 		levels.add(new Level("Tha Swag"));
 		currentLevel = 0;
+		isGameOver = false;
 	}
 
 
@@ -57,7 +58,12 @@ public:
             setCurrentLevel(0);
         }
     }
-
+	bool getIsGameOver() {
+		return isGameOver;
+	}
+	void setIsGameOver(bool gameState) {
+		isGameOver = gameState;
+	}
 	Level * getCurrentLevel()
 	{
 		return levels[currentLevel];
@@ -92,7 +98,7 @@ public:
 		for (ValueTree levelTree : levelsValueTree) {
 			levels.add(new Level(levelTree));
 		}
-
+		isGameOver = false;
 	}
 
 	ValueTree serializeToValueTree() {
@@ -125,7 +131,7 @@ public:
 private:
 	OwnedArray<Level> levels;
 	int currentLevel;
-
+	bool isGameOver;
 	String name;
 
 };

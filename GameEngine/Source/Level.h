@@ -16,8 +16,7 @@ public:
 		this->levelName = levelName;
 
 		PlayerObject* player = new PlayerObject(worldPhysics, modelsForRendering[0]);
-		player->setScore(0);
-		player->setLives(1);
+
 		player->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
 		
 
@@ -32,10 +31,6 @@ public:
 
 		enemyPoints = 15;
 		collectablePoints = 5;
-		timerSpeed = 0;
-		hasTimer = false;
-		hasScore = false;
-		hasCheckpoint = false;
 	}
 
 	Level(ValueTree levelValueTree) {
@@ -43,10 +38,6 @@ public:
 		modelsForRendering.add(new Model());
 		enemyPoints = 15;
 		collectablePoints = 5;
-		timerSpeed = 0;
-		hasTimer = false;
-		hasScore = false;
-		hasCheckpoint = false;
 		parseFrom(levelValueTree);
 	}
 
@@ -280,15 +271,7 @@ public:
         
         return objectsInRange;
     }
-	
-	//clean this up
-	//Score properties
-	void setScoreEnabled() {
-		hasScore = !hasScore;
-	}
-	bool isScoreEnabled() {
-		return hasScore;
-	}
+
 	int getEnemyPoints() {
 		return enemyPoints;
 	}
@@ -447,9 +430,6 @@ private:
     /** Name of level */
     String levelName;
 	int enemyPoints, collectablePoints;
-	float Time, timerSpeed;
-	bool hasScore, hasTimer, hasCheckpoint;
-	int score, level;
 	/** Camera view of the current level */
     Camera camera;
 	GoalPointObject* checkpoint;

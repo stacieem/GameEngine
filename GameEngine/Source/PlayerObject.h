@@ -87,9 +87,6 @@ public:
 private:
 
 	GLfloat linearDamp;
-
-
-
 	Speed move;
 	Speed jump;
 

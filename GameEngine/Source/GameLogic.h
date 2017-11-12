@@ -23,8 +23,6 @@ public:
 		checkTime = 0;
 
 		currLevel = nullptr;
-		victory = new Level("Victory");
-		gameOver = new Level("Game Over");
     }
     
 	~GameLogic()
@@ -34,6 +32,20 @@ public:
 		delete gameOver;
 	}
 
+	/*
+		Establish appearance of victory and gameover levels
+	*/
+	void createVictory() {
+		victory = new Level("Victory");
+		victory->addNewBlock();
+		victory->getGameObjects().getLast()->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/victory.png"));
+	}
+	void createGameOver() {
+		gameOver = new Level("Game Over");
+		gameOver->addNewBlock();
+		gameOver->getGameObjects().getLast()->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/gameOver.png"));
+
+	}
 	/** Sets whether or not the game is paused.
 	*/
 	void setPaused(bool paused)
@@ -55,14 +67,12 @@ public:
 	}
 	void playerRespawn() {
 		currLevel->resetLevel();
-		b2Vec2 pos = currLevel->getPlayer(0)->getPosition();
-		currLevel->getPlayer(0)->setPosition(pos.x,pos.y);
+		currLevel->getPlayer(0)->setScore(currLevel->getPlayer(0)->getScore());
 	}
 	void playerDied() {
+		gameOver->getPlayer(0)->setScore(currLevel->getPlayer(0)->getCurrScore());
+		gameOver->getPlayer(0)->setLives(0);
 		currLevel = gameOver;
-		for (auto level : gameModelCurrentFrame->getLevels()) {
-			level->resetLevel();
-		}
 	}
 
 	/** Sets the Render swap frame that will be processed for logic before it
@@ -106,18 +116,21 @@ public:
 	}
 	
 	void copyPlayerAttributes(Level* currLevel, Level* destLevel) {
-		destLevel->getPlayer(0)->setLives(currLevel->getPlayer(0)->getLives());
-		destLevel->getPlayer(0)->setScore(currLevel->getPlayer(0)->getScore());
+		destLevel->getPlayer(0)->setCurrLives(currLevel->getPlayer(0)->getCurrLives());
+		
+		destLevel->getPlayer(0)->setScore(currLevel->getPlayer(0)->getCurrScore());
 		currLevel->resetLevel();
 	}
 
 private:
 
-
 	void run()
     {
         // Set time the very first time GameLogic runs
+		gameModelCurrentFrame->setCurrentLevel(0);
 
+		createVictory();
+		createGameOver();
 		// Main Logic loop
 		while (!threadShouldExit())
         {
@@ -125,7 +138,9 @@ private:
 			logicWaitable->wait();
             
             // Grab current level
-            currLevel = gameModelCurrentFrame->getCurrentLevel();
+			if (!gameModelCurrentFrame->getIsGameOver()) {
+				currLevel = gameModelCurrentFrame->getCurrentLevel();
+			}
 
 
 			// Calculate time
@@ -134,7 +149,7 @@ private:
 			currentTime = newTime;
 			checkTime += deltaTime;
 
-			if (gamePaused) {
+			if (gamePaused || gameModelCurrentFrame->getIsGameOver()) {
 				currentTime = Time::currentTimeMillis();
 				
 			}
@@ -143,49 +158,59 @@ private:
 				//	process each object (I'm sure if we looked more into contact listeners or bit masking we could've figured this out
 				//	however this is the quickest solution i could think of)
 				//	ai motions
-				for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
-					switch (obj->getObjType()) {
-					case Enemy:
-						((EnemyObject*)(obj))->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0), deltaTime/1000);
-						
-						if (((EnemyObject*)(obj))->getIsActive() &&
-							((EnemyObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
-							if (gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getLives() - 1 == 0) {
-								playerDied();
-							}
-							else
-							{
-								playerRespawn();
-								gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->
-									setLives(gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getLives() - 1);
-							}
-						}
-						break;
-					case Collectable:
-						if (((CollectableObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
-							gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->addScore(gameModelCurrentFrame->getCurrentLevel()->getCollectablePoints());
-						}
-						break;
-					case Checkpoint:
-						GoalPointObject * chkPoint = (GoalPointObject*)obj;
-						if (chkPoint->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) 
-						{
-								if (chkPoint->getToWin()) {
-									//go to winning level
-									//createVictory();
-									currLevel = victory;
-									//engine.winScreen()
+					for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
+						switch (obj->getObjType()) {
+						case Enemy:
+							((EnemyObject*)(obj))->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0), deltaTime / 1000);
+
+							if (((EnemyObject*)(obj))->getIsActive() &&
+								((EnemyObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
+								if (gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getCurrLives() - 1 == 0) {
+									playerDied();
+										File * audioFile = gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getAudioFileForAction(PhysicalAction::death);
+
+										// If audio file was not in the map, do nothing
+										if (audioFile != nullptr)
+										{
+											gameAudio.playAudioFile(*audioFile, false);
+										}
+									
+									gameModelCurrentFrame->setIsGameOver(true);
 								}
 								else
 								{
-									copyPlayerAttributes(currLevel,&gameModelCurrentFrame->getLevel(chkPoint->getLevelToGoTo() - 1));
-									gameModelCurrentFrame->setCurrentLevel(chkPoint->getLevelToGoTo()-1);
+									playerRespawn();
+									gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->
+										setCurrLives(gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getCurrLives() - 1);
 								}
+
+							}
+							break;
+						case Collectable:
+							if (((CollectableObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
+								gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->addCurrScore(gameModelCurrentFrame->getCurrentLevel()->getCollectablePoints());
+							}
+							break;
+						case Checkpoint:
+							GoalPointObject * chkPoint = (GoalPointObject*)obj;
+							if (chkPoint->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)))
+							{
+								if (chkPoint->getToWin()) {
+									copyPlayerAttributes(currLevel, victory);
+									gameModelCurrentFrame->setIsGameOver(true);
+									currLevel = victory;
+								}
+								else if(chkPoint->getLevelToGoTo()-1 != gameModelCurrentFrame->getCurrentLevelIndex())
+								{
+									copyPlayerAttributes(currLevel, &gameModelCurrentFrame->getLevel(chkPoint->getLevelToGoTo() - 1));
+									gameModelCurrentFrame->setCurrentLevel(chkPoint->getLevelToGoTo() - 1);
+								}
+							}
+							break;
 						}
-						break;
 					}
 				}
-			}
+		
 			//locks in the commands for this iteration
 			inputManager->getCommands(newCommands);
 
@@ -279,16 +304,7 @@ private:
             Camera & levelCamera = currLevel->getCamera();
 			
             // Only do these things while the game is playing
-			if (!gamePaused) {
-                
-                // Process AI (this should be a function)
-                /*for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
-                    if (obj->getObjType() == GameObjectType::Enemy) {
-                        EnemyObject* objEnemy = (EnemyObject*)(obj);
-                        objEnemy->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0), deltaTime);
-                    }
-                }*/
-                
+			if (!gamePaused) {                
 				// Process Physics - processes physics and updates objects positions
 				currLevel->processWorldPhysics(deltaTime);
 
@@ -368,8 +384,8 @@ private:
             renderSwapFrame->setRenderableObjects(renderableObjects);
  
 			//Add player attributes we want to the render swap frame
-			renderSwapFrame->setAttribute("score", currLevel->getPlayer(0)->getScore());
-			renderSwapFrame->setAttribute("lives", currLevel->getPlayer(0)->getLives());
+			renderSwapFrame->setAttribute("score", currLevel->getPlayer(0)->getCurrScore());
+			renderSwapFrame->setAttribute("lives", currLevel->getPlayer(0)->getCurrLives());
 
 			// Notify CoreEngine logic is done
 			coreEngineWaitable->signal();

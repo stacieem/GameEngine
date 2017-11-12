@@ -217,6 +217,11 @@ public:
 			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 		}
 
+		else if (fileComponentThatHasChanged->getName() == "Choose Death Audio") {
+			selectedObj->mapAudioFileToPhysicalAction(fileComponentThatHasChanged->getCurrentFile(), PhysicalAction::death);
+			updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
+		}
+
 	}
 
 private:
@@ -347,18 +352,6 @@ private:
 		combo->setSelectedId(selectedObj->getJumpSpeed() + 1, dontSendNotification);
 		objPhysicsYCap.addListener(this);
 		objPhysicsProperties.add(combo);
-		/*
-		objPhysicsFriction.setValue(var(selectedObj->getPhysicsProperties().getFriction()));
-		SliderPropertyComponent* objFrictionText = new SliderPropertyComponent(objPhysicsFriction, "Friction:", 0, 1.0, 0.1);
-		objPhysicsFriction.addListener(this);
-		objPhysicsProperties.add(objFrictionText);
-
-		objPhysicsRestitution.setValue(var(selectedObj->getPhysicsProperties().getRestitution()));
-		SliderPropertyComponent* objRestitutionText = new SliderPropertyComponent(objPhysicsRestitution, "Bounciness:", 0, 10.0, 0.1);
-		objPhysicsRestitution.addListener(this);
-		objPhysicsProperties.add(objRestitutionText);
-
-		*/
 
 		xScale.setValue(var((float)selectedObj->getScale().x));
 		xScale.addListener(this);
@@ -434,6 +427,12 @@ private:
 		FilenamePropertyComponent* collisionAudio = new FilenamePropertyComponent("Choose Collision Audio", (collisionAudioFile == nullptr) ? File() : *collisionAudioFile, false, false, false, "", "", "Select a file");
 		collisionAudio->addListener(this);
 		objAudioProperties.add(collisionAudio);
+
+		File * deathAudioFile = selectedObj->getAudioFileForAction(PhysicalAction::death);
+
+		FilenamePropertyComponent* deathAudio = new FilenamePropertyComponent("Choose Death Audio", (deathAudioFile == nullptr) ? File() : *deathAudioFile, false, false, false, "", "", "Select a file");
+		deathAudio->addListener(this);
+		objAudioProperties.add(deathAudio);
 	}
 
 	CoreEngine* coreEngine;

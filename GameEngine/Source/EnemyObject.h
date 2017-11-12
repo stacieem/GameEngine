@@ -47,6 +47,7 @@ public:
 		direction = 1;
 		timeToSwap = 200;	//value that deltaTime will sum to for us to determine we need to switch directions
 		timeElapsed = 0;
+		radius = 1.5;
 
 	}
 
@@ -75,6 +76,7 @@ public:
 					setActive(false);
 					getPhysicsProperties().setActiveStatus(false);
 					setRenderable(false);
+
 				}
 				else
 				{
