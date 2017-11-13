@@ -38,6 +38,7 @@ public:
 		modelsForRendering.add(new Model());
 		enemyPoints = 15;
 		collectablePoints = 5;
+		addBoundFloor();
 		parseFrom(levelValueTree);
 	}
 
@@ -374,6 +375,9 @@ public:
 			}
 			else if (gameObject->getObjType() == Collectable) {
 				gameObjectsValueTree.addChild(((CollectableObject*)gameObject)->serializeToValueTree(), -1, nullptr);
+			}
+			else if (gameObject->getObjType() == Bounds) {
+				
 			}
 			else {
 				gameObjectsValueTree.addChild(gameObject->serializeToValueTree(), -1, nullptr);

@@ -275,7 +275,7 @@ public:
      */
     void mapAudioFileToPhysicalAction (File audioFile, PhysicalAction action)
     {
-        actionToAudio.insert(std::pair<PhysicalAction, File>(action, audioFile));
+        actionToAudio[action] = audioFile;
     }
 
     /** Gets the audio to play when a specific PhysicalAction occurs in the game.
@@ -479,6 +479,28 @@ public:
 		scale.x = scaleTree.getProperty(Identifier("x"));
 		scale.y = scaleTree.getProperty(Identifier("y"));
 		setScale(scale.x, scale.y);
+
+		ValueTree audioActionsValueTree = valueTree.getChildWithName(Identifier("ActionToAudio"));
+
+
+		for (ValueTree audioActionTree : audioActionsValueTree) {
+			int physicalActionInt = audioActionTree.getProperty(Identifier("action"));
+
+			switch (physicalActionInt) {
+
+			case 0:
+				actionToAudio[collsion] = File(File::getCurrentWorkingDirectory().getFullPathName() + "/" + audioActionTree.getProperty(Identifier("file")).toString());
+				break;
+			case 1:
+				actionToAudio[inRange] = File(File::getCurrentWorkingDirectory().getFullPathName() + "/" + audioActionTree.getProperty(Identifier("file")).toString());
+				break;
+			case 2:
+				
+				actionToAudio[death] = File(File::getCurrentWorkingDirectory().getFullPathName() + "/" + audioActionTree.getProperty(Identifier("file")).toString());
+				break;
+			}
+			
+		}
 	}
 
 	ValueTree serializeToValueTree() {
@@ -580,12 +602,11 @@ public:
 		livesTree.setProperty(Identifier("value"), var(lives), nullptr);
 		gameObjectSerialization.addChild(livesTree, -1, nullptr);
 
-		/*ValueTree actionToAudioTree = ValueTree("ActionToAudio");
+		ValueTree actionToAudioTree = ValueTree("ActionToAudio");
 
 
 		for (std::map<PhysicalAction,File>::iterator it = actionToAudio.begin(); it != actionToAudio.end(); ++it)
 		{
-
 			ValueTree audioActionTree = ValueTree("AudioAction");
 			audioActionTree.setProperty(Identifier("file"), var(it->second.getRelativePathFrom(File::getCurrentWorkingDirectory())), nullptr);
 
@@ -608,10 +629,9 @@ public:
 
 			actionToAudioTree.addChild(audioActionTree, -1, nullptr);
 
-			
 		}
 
-		gameObjectSerialization.addChild(actionToAudioTree, -1, nullptr);*/
+		gameObjectSerialization.addChild(actionToAudioTree, -1, nullptr);
 		
 
 		return gameObjectSerialization;
