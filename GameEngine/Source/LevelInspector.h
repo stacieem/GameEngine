@@ -50,7 +50,8 @@ private:
     TextButton removeLevelButton;
 	TextButton saveLevelButton;
 	TextButton resetLevelButton;
-    
+	TextButton resetGameButton;
+
 	CoreEngine* coreEngine;
 	TextButton playButton;
 	OwnedArray<TextButton> buttons;

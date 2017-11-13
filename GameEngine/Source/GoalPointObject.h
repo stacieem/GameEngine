@@ -20,7 +20,15 @@ public:
 	{
 		parseFrom(valueTree);
 		radius = 1.5;
-		levelToGoTo = 0;
+	}
+
+	/** Copy Constructor - Used to easily make a copy of an existing GameObject
+	(this is directly used by the WorldNavigator when alt-dragging)
+	*/
+	GoalPointObject(GoalPointObject & objectToCopy, WorldPhysics & worldPhysics) : GameObject(objectToCopy, worldPhysics)
+	{
+		radius = objectToCopy.radius;
+		levelToGoTo = objectToCopy.levelToGoTo;
 	}
 
 	bool collision(PlayerObject& player) {

@@ -43,20 +43,20 @@ public:
          when the body moves, so does the shape.
          */
         
-		 groundBody->CreateFixture(&groundBox, 0.0f);
+		// groundBody->CreateFixture(&groundBox, 0.0f);
 		bodyDef.position.Set(0.0f, 6.1f);
-		groundBody = world.CreateBody(&bodyDef);
-		groundBody->CreateFixture(&groundBox, 0.0f);
+		//groundBody = world.CreateBody(&bodyDef);
+		//groundBody->CreateFixture(&groundBox, 0.0f);
 
 		
 		bodyDef.position.Set(-8.7f, 0.0f);
-		groundBody = world.CreateBody(&bodyDef);
+		//groundBody = world.CreateBody(&bodyDef);
 
 		//groundBody->CreateFixture(&wallBox, 0.0f);
 
-		bodyDef.position.Set(8.7f, 0.0f);
+		//bodyDef.position.Set(8.7f, 0.0f);
 		world.SetAllowSleeping(false);
-		groundBody = world.CreateBody(&bodyDef);
+		//groundBody = world.CreateBody(&bodyDef);
 		//groundBody->CreateFixture(&wallBox, 0.0f);
 		gravityLev = Normal;
 	}
@@ -88,28 +88,6 @@ public:
         }
 	}
 
-	/**************************************************************************
-	*
-	*	remove the object at a given index position in the bodyList
-	*	remember that the ground is the first object created
-	**************************************************************************/
-//	void removeObj(int index)
-//	{
-//		if (index < world.GetBodyCount())
-//		{
-//			int pos = 0;
-//			for (b2Body* bodyObject = world.GetBodyList() ; bodyObject || pos < index;++pos)
-//			{
-//				b2Body* oldBody = bodyObject;
-//				bodyObject = bodyObject->GetNext();
-//				if (pos == index)
-//				{
-//					world.DestroyBody(oldBody);
-//				}
-//			}
-//		}
-//	}
-    
     void removeObject (b2Body * bodyToDestroy)
     {
         world.DestroyBody (bodyToDestroy);

@@ -10,7 +10,7 @@ public:
 	{
 		setName("Player");
 		objType = GameObjectType::Player;
-		setMoveSpeed(Speed::MED);
+		setMoveSpeed(Speed::SLOW);
 		setJumpSpeed(Speed::SLOW);
         getPhysicsProperties().setIsStatic(false);
 	}
@@ -23,8 +23,8 @@ public:
 		*/
 		getPhysicsProperties().setFriction(0.5f);
 
-		//origin = getPhysicsProperties().GetPosition();
 		parseFrom(valueTree);
+
 	}
 
 	~PlayerObject(){}
@@ -50,7 +50,7 @@ public:
 	void moveLeft()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x -= getRunSpeedVelocity();
+		store.x -= getRunSpeedVelocity() / 2;
 		if (store.x < -cappedMoveSpeed) {
 			store.x = -cappedMoveSpeed;
 		}
@@ -59,7 +59,7 @@ public:
 	void moveRight()
 	{
 		b2Vec2 store = getPhysicsProperties().getLinearVel();
-		store.x += getRunSpeedVelocity();
+		store.x += getRunSpeedVelocity() / 2;
 		if (store.x > cappedMoveSpeed) {
 			store.x = cappedMoveSpeed;
 		}
@@ -87,9 +87,6 @@ public:
 private:
 
 	GLfloat linearDamp;
-
-
-
 	Speed move;
 	Speed jump;
 

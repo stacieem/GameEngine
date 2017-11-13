@@ -19,10 +19,20 @@ public:
 		getPhysicsProperties().setIsStatic(true);
 		radius = 1.5;
 	}
+
+	/** Copy Constructor - Used to easily make a copy of an existing GameObject
+	(this is directly used by the WorldNavigator when alt-dragging)
+	*/
+	CollectableObject(CollectableObject & objectToCopy, WorldPhysics & worldPhysics) : GameObject( objectToCopy, worldPhysics)
+	{
+		radius = objectToCopy.radius;
+
+	}
 	~CollectableObject() {}
 
-	bool collision(PlayerObject& player) {
+	bool collision(PlayerObject& player, GameAudio& audio) {
 		bool collected = false;
+		radius = 1.5;
 		if (getIsActive()) {
 			b2Vec2 dist = (player.getPosition() - getPhysicsProperties().GetPosition());
 			float leng = sqrt(dist.x * dist.x + dist.y*dist.y);
@@ -33,6 +43,13 @@ public:
 				getPhysicsProperties().setActiveStatus(false);
 				setRenderable(false);
 
+				File * audioFile = getAudioFileForAction(PhysicalAction::death);
+
+				// If audio file was not in the map, do nothing
+				if (audioFile != nullptr)
+				{
+					audio.playAudioFile(*audioFile, false);
+				}
 			}
 		}
 		return collected;
@@ -49,6 +66,7 @@ public:
 
 		GameObject::parseFrom(valueTree);
 
+		radius = 1.5;
 	}
 
 private:

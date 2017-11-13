@@ -19,7 +19,7 @@
 #include "RenderableObject.h"
 #include <algorithm>
 #include "GameObjectType.h"
-
+#include "GameAudio.h"
 /** Represents an Object that holds vertices that can be rendered by OpenGL.
  */
 class GameObject
@@ -38,13 +38,14 @@ public:
 		setModel(model);
 
 		objType = GameObjectType::Generic;
-		lives = 1;
-		score = 0;
+
+		setScore(0);
+		setLives(1);
 		xVel = 0;
 		yVel = 0;
 		setActive(true);
-		cappedMoveSpeed = 5;
-		cappedJumpSpeed = 9;
+		cappedMoveSpeed = 6;
+		cappedJumpSpeed = 15;
 		setAnimationSpeed(MED);
         physicsProperties.setIsStatic(true);
         updateOrigin();
@@ -59,10 +60,10 @@ public:
         this->name = objectToCopy.name;
         this->renderable = objectToCopy.renderable;
         this->renderableObject = objectToCopy.renderableObject;
-        this->xVel = objectToCopy.xVel;
-        this->yVel = objectToCopy.yVel;
+		setMoveSpeed(objectToCopy.getMoveSpeed());
+		setJumpSpeed(objectToCopy.getJumpSpeed());
         this->actionToAudio = objectToCopy.actionToAudio;
-        
+		this->objType = objectToCopy.objType;
         this->physicsProperties.setIsStatic((objectToCopy.getPhysicsProperties().getIsStatic()));
         
         // This seems odd? We want to set origin to wherever an object is placed
@@ -74,8 +75,8 @@ public:
 	{
 
 		setModel(model);
-		cappedMoveSpeed = 5;
-		cappedJumpSpeed = 9;
+		cappedMoveSpeed = 6;
+		cappedJumpSpeed = 15;
 		score = 0;
 		parseFrom(gameObjectValueTree);
 
@@ -274,7 +275,7 @@ public:
      */
     void mapAudioFileToPhysicalAction (File audioFile, PhysicalAction action)
     {
-        actionToAudio.insert(std::pair<PhysicalAction, File>(action, audioFile));
+        actionToAudio[action] = audioFile;
     }
 
     /** Gets the audio to play when a specific PhysicalAction occurs in the game.
@@ -316,13 +317,13 @@ public:
 		this->jumpSpeed = jumpspeed;
 		switch (this->jumpSpeed) {
 		case FAST:
-			yVel = 12;
-			break;
-		case MED:
 			yVel = 10;
 			break;
+		case MED:
+			yVel = 8;
+			break;
 		case SLOW:
-			yVel = 7;
+			yVel = 6;
 			break;
 		}
 	}
@@ -338,7 +339,10 @@ public:
 	{
 		return objType;
 	}
-
+	void setObjType(GameObjectType type)
+	{
+		objType = type;
+	}
 	// Player Lives 
 	int getLives()
     {
@@ -347,14 +351,30 @@ public:
 	void setLives(int newLives)
     {
 		lives = newLives;
+		currLives = newLives;
 	}
+	int getCurrLives() {
+		return currLives;
+	}
+	void setCurrLives(int newLives) {
+		currLives = newLives;
+	}
+
 	int getScore()
 	{
 		return score;
 	}
+	int getCurrScore() {
+		return currScore;
+	}
 	void setScore(int newScore)
 	{
 		score = newScore;
+		currScore = newScore;
+	}
+
+	void addCurrScore(int points) {
+		currScore += points;
 	}
 	void addScore(int points) {
 		score += points;
@@ -399,6 +419,9 @@ public:
 		case 4:
 			objType = Checkpoint;
 			break;
+		case 5:
+			objType = Bounds;
+			break;
 		}
 
 		ValueTree moveSpeedTree = valueTree.getChildWithName(Identifier("MoveSpeed"));
@@ -435,7 +458,9 @@ public:
 
 		ValueTree renderableTree = valueTree.getChildWithName(Identifier("Renderable"));
 		renderable = renderableTree.getProperty(Identifier("value"));
-
+		if (!renderable) {
+			setActive(false);
+		}
 		ValueTree originTree = valueTree.getChildWithName(Identifier("Origin"));
 		origin.x = originTree.getProperty(Identifier("x"));
 		origin.y = originTree.getProperty(Identifier("y"));
@@ -443,17 +468,39 @@ public:
 
 		ValueTree livesTree = valueTree.getChildWithName(Identifier("Lives"));
 		lives = livesTree.getProperty(Identifier("value"));
-
+		currLives = lives;
 		renderableObject.parseFrom(valueTree.getChildWithName(Identifier("RenderableObject")));
 
 		physicsProperties.parseFrom(valueTree.getChildWithName(Identifier("PhysicsProperties")));
 
 		glm::vec2 scale;
-
+		setScore(0);
 		ValueTree scaleTree = valueTree.getChildWithName(Identifier("Scale"));
 		scale.x = scaleTree.getProperty(Identifier("x"));
 		scale.y = scaleTree.getProperty(Identifier("y"));
 		setScale(scale.x, scale.y);
+
+		ValueTree audioActionsValueTree = valueTree.getChildWithName(Identifier("ActionToAudio"));
+
+
+		for (ValueTree audioActionTree : audioActionsValueTree) {
+			int physicalActionInt = audioActionTree.getProperty(Identifier("action"));
+
+			switch (physicalActionInt) {
+
+			case 0:
+				actionToAudio[collsion] = File(File::getCurrentWorkingDirectory().getFullPathName() + "/" + audioActionTree.getProperty(Identifier("file")).toString());
+				break;
+			case 1:
+				actionToAudio[inRange] = File(File::getCurrentWorkingDirectory().getFullPathName() + "/" + audioActionTree.getProperty(Identifier("file")).toString());
+				break;
+			case 2:
+				
+				actionToAudio[death] = File(File::getCurrentWorkingDirectory().getFullPathName() + "/" + audioActionTree.getProperty(Identifier("file")).toString());
+				break;
+			}
+			
+		}
 	}
 
 	ValueTree serializeToValueTree() {
@@ -555,6 +602,37 @@ public:
 		livesTree.setProperty(Identifier("value"), var(lives), nullptr);
 		gameObjectSerialization.addChild(livesTree, -1, nullptr);
 
+		ValueTree actionToAudioTree = ValueTree("ActionToAudio");
+
+
+		for (std::map<PhysicalAction,File>::iterator it = actionToAudio.begin(); it != actionToAudio.end(); ++it)
+		{
+			ValueTree audioActionTree = ValueTree("AudioAction");
+			audioActionTree.setProperty(Identifier("file"), var(it->second.getRelativePathFrom(File::getCurrentWorkingDirectory())), nullptr);
+
+			int physicalActionInt;
+
+			switch (it->first) {
+
+			case collsion:
+				physicalActionInt = 0;
+				break;
+			case inRange:
+				physicalActionInt = 1;
+				break;
+			case death:
+				physicalActionInt = 2;
+				break;
+			}
+
+			audioActionTree.setProperty(Identifier("action"), var(physicalActionInt), nullptr);
+
+			actionToAudioTree.addChild(audioActionTree, -1, nullptr);
+
+		}
+
+		gameObjectSerialization.addChild(actionToAudioTree, -1, nullptr);
+		
 
 		return gameObjectSerialization;
 	}
@@ -567,6 +645,7 @@ private:
     /** Name of object */
     String name;
 	int lives, score;
+	int currLives, currScore;
 	glm::vec2 origin;
     /** Specifies wether or not the object will be rendered visually to the screen */
     bool renderable, isActive;

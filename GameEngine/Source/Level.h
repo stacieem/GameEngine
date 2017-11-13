@@ -16,8 +16,7 @@ public:
 		this->levelName = levelName;
 
 		PlayerObject* player = new PlayerObject(worldPhysics, modelsForRendering[0]);
-		player->setScore(0);
-		player->setLives(1);
+
 		player->getRenderableObject().animationProperties.setAnimationTextures(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/alien/walk/"));
 		
 
@@ -26,16 +25,12 @@ public:
 
 		player->getRenderableObject().animationProperties.setCanimate(true);
 
-
+		player->setPosition(player->getPosition().x, player->getPosition().y+2);
 		gameObjects.add(player);
 		players.add(player);
-
 		enemyPoints = 15;
 		collectablePoints = 5;
-		timerSpeed = 0;
-		hasTimer = false;
-		hasScore = false;
-		hasCheckpoint = false;
+		addBoundFloor();
 	}
 
 	Level(ValueTree levelValueTree) {
@@ -43,10 +38,7 @@ public:
 		modelsForRendering.add(new Model());
 		enemyPoints = 15;
 		collectablePoints = 5;
-		timerSpeed = 0;
-		hasTimer = false;
-		hasScore = false;
-		hasCheckpoint = false;
+		addBoundFloor();
 		parseFrom(levelValueTree);
 	}
 
@@ -66,6 +58,7 @@ public:
 
 	void addNewObject() {
 		gameObjects.add(new GameObject(worldPhysics, modelsForRendering[0]));
+		//gameObjects.getLast()->setPosition(players[0]->getPhysicsProperties().GetPosition().x, players[0]->getPhysicsProperties().GetPosition().y + 5);
 	}
 
 	void addNewBlock() {
@@ -76,12 +69,45 @@ public:
 		gameObj->setScore(10);
         gameObj->setScale(1.0f, 1.0f);
 		gameObjects.add(gameObj);
+		//gameObjects.getLast()->setPosition(players[0]->getPhysicsProperties().GetPosition().x, players[0]->getPhysicsProperties().GetPosition().y + 5);
 	}
     
     GameObject * copyObject(GameObject * objectToCopy) {
-        GameObject * newObject = new GameObject(*objectToCopy, worldPhysics);
-        gameObjects.add(newObject);
-        return newObject;
+
+		switch (objectToCopy->getObjType()) {
+
+		case Generic: {
+			GameObject* genericObj = new GameObject(*objectToCopy, worldPhysics);
+			gameObjects.add(genericObj);
+			return genericObj;
+		}
+				break;
+		
+		case Player:
+			return objectToCopy;
+			break;
+		case Enemy: {
+			EnemyObject* enm = new EnemyObject(*((EnemyObject*)objectToCopy), worldPhysics);
+			gameObjects.add(enm);
+			return enm;
+		}
+				break;
+		case Collectable: {
+			CollectableObject* collectable = new CollectableObject(*((CollectableObject*)objectToCopy), worldPhysics);
+			gameObjects.add(collectable);
+			return collectable;
+		}
+				break;
+		case Checkpoint: {
+			GoalPointObject* goalPoint = new GoalPointObject(*((GoalPointObject*)objectToCopy), worldPhysics);
+			gameObjects.add(goalPoint);
+			return goalPoint;
+		}
+				break;
+		}
+
+
+        
     }
     
 	void addNewEnemy() {
@@ -94,6 +120,7 @@ public:
 		enm->getRenderableObject().animationProperties.setCanimate(true);
 		enm->setScale(1.0f, 1.0f);
 		gameObjects.add(enm);
+		//gameObjects.getLast()->setPosition(players[0]->getPhysicsProperties().GetPosition().x, players[0]->getPhysicsProperties().GetPosition().y + 5);
 	}
     
 	void addNewCollectable()
@@ -104,6 +131,7 @@ public:
 		collectable->setScore(5);
 		collectable->setScale(1.0f, 1.0f);
 		gameObjects.add(collectable);
+		//gameObjects.getLast()->setPosition(players[0]->getPhysicsProperties().GetPosition().x, players[0]->getPhysicsProperties().GetPosition().y + 5);
 	}
     
 	void addNewCheckpoint()
@@ -126,7 +154,20 @@ public:
 			i++;
 		}
 	}
-
+	void addBoundFloor() {
+			addNewBlock();
+			GameObject* obj = getGameObjects().getLast();
+			obj->setPositionWithPhysics(obj->getOrigin().x, -9);
+			obj->getPhysicsProperties().setLinearVelocity(0, 0);
+			obj->getPhysicsProperties().setFriction(0.0);
+			obj->setObjType(Bounds);
+			obj->setName("Killing Floor");
+			obj->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/death.png"));
+			obj->setActive(true);
+			obj->setScale(10000000, 1);
+			obj->setRenderable(true);
+			floor = obj;
+	}
 	const OwnedArray<GameObject> & getGameObjects()
 	{
 		return gameObjects;
@@ -168,6 +209,9 @@ public:
 			obj->setActive(true);
 			obj->setRenderable(true);
 		}
+		players[0]->setScore(players[0]->getScore());
+		players[0]->setLives(players[0]->getLives());
+
 	}
     
 	//Return the WorldPhysics for this level
@@ -244,15 +288,7 @@ public:
         
         return objectsInRange;
     }
-	
-	//clean this up
-	//Score properties
-	void setScoreEnabled() {
-		hasScore = !hasScore;
-	}
-	bool isScoreEnabled() {
-		return hasScore;
-	}
+
 	int getEnemyPoints() {
 		return enemyPoints;
 	}
@@ -335,6 +371,15 @@ public:
 			else if (gameObject->getObjType() == Enemy) {
 				gameObjectsValueTree.addChild(((EnemyObject*)gameObject)->serializeToValueTree(), -1, nullptr);
 			}
+			else if (gameObject->getObjType() == Checkpoint) {
+				gameObjectsValueTree.addChild(((GoalPointObject*)gameObject)->serializeToValueTree(), -1, nullptr);
+			}
+			else if (gameObject->getObjType() == Collectable) {
+				gameObjectsValueTree.addChild(((CollectableObject*)gameObject)->serializeToValueTree(), -1, nullptr);
+			}
+			else if (gameObject->getObjType() == Bounds) {
+				
+			}
 			else {
 				gameObjectsValueTree.addChild(gameObject->serializeToValueTree(), -1, nullptr);
 			}
@@ -395,6 +440,9 @@ public:
 
 		}
 	}
+	GameObject* getFloor() {
+		return floor;
+	}
 private:
     
     /** Updates positions from all objects from the Physics updates
@@ -410,10 +458,8 @@ private:
     
     /** Name of level */
     String levelName;
+	GameObject* floor;
 	int enemyPoints, collectablePoints;
-	float Time, timerSpeed;
-	bool hasScore, hasTimer, hasCheckpoint;
-	int score, level;
 	/** Camera view of the current level */
     Camera camera;
 	GoalPointObject* checkpoint;

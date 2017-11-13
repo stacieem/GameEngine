@@ -35,7 +35,7 @@ public:
 		//create the objects collision box with properties
 		dynamicBox.SetAsBox(0.5f, 0.5f);
 		fixtureDef.shape = &dynamicBox;
-		fixtureDef.friction = 1.0f;
+		fixtureDef.friction = .5f;
 		fixtureDef.restitution = 0.0f;
 		fixtureDef.density = 1.0f;
 

@@ -26,7 +26,7 @@ public:
         addAndMakeVisible(healthBar);
 		addAndMakeVisible(scoreHUD);
 		// Setup frame rate label
-		addAndMakeVisible(frameRateLabel);
+		//addAndMakeVisible(frameRateLabel);
 
 		frameRateLabel.setJustificationType(Justification::topRight);
 		frameRateLabel.setFont(Font(14.0f));

@@ -25,6 +25,20 @@ public:
         getPhysicsProperties().setIsStatic(false);
 	}
 
+	/** Copy Constructor - Used to easily make a copy of an existing GameObject
+	(this is directly used by the WorldNavigator when alt-dragging)
+	*/
+	EnemyObject(EnemyObject & objectToCopy, WorldPhysics & worldPhysics) : GameObject(objectToCopy, worldPhysics)
+	{
+		aiState = objectToCopy.aiState;
+		detection_radius = 7;
+		direction = 1;
+		timeToSwap = 200;	//value that deltaTime will sum to for us to determine we need to switch directions
+		timeElapsed = 0;
+
+		radius = 1.5;
+	}
+
 	EnemyObject(WorldPhysics & worldPhysics, Model* model, ValueTree valueTree) : GameObject(worldPhysics, model, valueTree)
 	{
 
@@ -33,6 +47,7 @@ public:
 		direction = 1;
 		timeToSwap = 200;	//value that deltaTime will sum to for us to determine we need to switch directions
 		timeElapsed = 0;
+		radius = 1.5;
 
 	}
 
@@ -52,15 +67,24 @@ public:
 	AIType getAIState() {
 		return aiState;
 	}
-	bool collision(PlayerObject& player) {
+	bool collision(PlayerObject& player, GameAudio &audio, int points) {
 		bool damage = false;
 			b2Vec2 dist = (player.getPosition() - getPhysicsProperties().GetPosition());
 			float leng = sqrt(dist.x * dist.x + dist.y*dist.y);
 			if (leng < radius) {	//check if collided
-				if (player.getPosition().y > this->getPhysicsProperties().GetPosition().y) {	//if player kills enemy
+				if (player.getPosition().y > this->getPhysicsProperties().GetPosition().y+.3) {	//if player kills enemy
 					setActive(false);
 					getPhysicsProperties().setActiveStatus(false);
 					setRenderable(false);
+
+					File * audioFile = getAudioFileForAction(PhysicalAction::death);
+
+					// If audio file was not in the map, do nothing
+					if (audioFile != nullptr)
+					{
+						audio.playAudioFile(*audioFile, false);
+					}
+					player.addCurrScore(points);
 				}
 				else
 				{
@@ -71,6 +95,7 @@ public:
 		return damage;
 	}
 	void decision(PlayerObject& player, double elapsed) {
+		
 		switch (aiState) {
 		case GROUNDPATROL:
 			if (timeElapsed >= timeToSwap) {
