@@ -641,6 +641,10 @@ public:
 		return gameObjectSerialization;
 	}
 
+	File getIdleTexture() {
+		return renderableObject.animationProperties.getIdleTexture();
+	}
+
 protected:
 	GameObjectType objType;
 	float cappedMoveSpeed, cappedJumpSpeed;

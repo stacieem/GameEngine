@@ -66,11 +66,13 @@ public:
 	}
 
 	void setLifeTexture(File file) {
-		if (file == file) {
+		if (texFile == file) {
 			return;
 		}
+		texFile = file;
 		img = ImageFileFormat::loadFrom(file);
 		img = img.rescaled(30, 30);
+		
 	}
 
 

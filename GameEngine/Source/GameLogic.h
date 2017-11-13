@@ -415,6 +415,8 @@ private:
 			//Add player attributes we want to the render swap frame
 			renderSwapFrame->setAttribute("score", currLevel->getPlayer(0)->getCurrScore());
 			renderSwapFrame->setAttribute("lives", currLevel->getPlayer(0)->getCurrLives());
+			renderSwapFrame->setAttribute("playerLifeTexture", currLevel->getPlayer(0)->getIdleTexture().getFullPathName());
+
 
 			// Notify CoreEngine logic is done
 			coreEngineWaitable->signal();

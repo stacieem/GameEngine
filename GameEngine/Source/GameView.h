@@ -133,7 +133,6 @@ public:
 		currentTime = Time::currentTimeMillis();
 
 		gameHUD.setAttributes(renderSwapFrame->getAttributes());
-
 		// For every second, update the calculated frame rate
 		if (checkTime > 1000) {
 			checkTime = 0;

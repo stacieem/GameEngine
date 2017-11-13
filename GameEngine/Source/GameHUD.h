@@ -79,6 +79,7 @@ public:
 	void setAttributes(map<String,var> attrs) {
 		healthBar.setLives(attrs["lives"]);
 		scoreHUD.setScore(attrs["score"]);
+		healthBar.setLifeTexture(File(attrs["playerLifeTexture"].toString()));
 	}
 
     
