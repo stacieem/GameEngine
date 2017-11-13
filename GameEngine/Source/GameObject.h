@@ -31,7 +31,7 @@ public:
     {
 
         // Come up with better default naming
-		name = "Game Object";
+		name = "Block";
         
         // By default an object is not renderable
 		setRenderable(false);
@@ -458,13 +458,12 @@ public:
 
 		ValueTree renderableTree = valueTree.getChildWithName(Identifier("Renderable"));
 		renderable = renderableTree.getProperty(Identifier("value"));
-		if (!renderable) {
+		renderable = true;
+		/*if (!renderable) {
 			setActive(false);
-		}
-		ValueTree originTree = valueTree.getChildWithName(Identifier("Origin"));
-		origin.x = originTree.getProperty(Identifier("x"));
-		origin.y = originTree.getProperty(Identifier("y"));
-		setPositionWithPhysics(origin.x, origin.y);
+		}*/
+		setActive(true);
+		
 
 		ValueTree livesTree = valueTree.getChildWithName(Identifier("Lives"));
 		lives = livesTree.getProperty(Identifier("value"));
@@ -472,6 +471,11 @@ public:
 		renderableObject.parseFrom(valueTree.getChildWithName(Identifier("RenderableObject")));
 
 		physicsProperties.parseFrom(valueTree.getChildWithName(Identifier("PhysicsProperties")));
+
+		ValueTree originTree = valueTree.getChildWithName(Identifier("Origin"));
+		origin.x = originTree.getProperty(Identifier("x"));
+		origin.y = originTree.getProperty(Identifier("y"));
+		setPositionWithPhysics(origin.x, origin.y);
 
 		glm::vec2 scale;
 		setScore(0);

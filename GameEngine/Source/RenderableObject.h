@@ -51,7 +51,7 @@ struct RenderableObject
 		ValueTree renderableObjectSerialization = ValueTree("RenderableObject");
 
 		//Serialize position
-		ValueTree positionMatrixValueTree = ValueTree("Position");
+		/*ValueTree positionMatrixValueTree = ValueTree("Position");
 
 		for (int i = 0; i < 4; i++) {
 			
@@ -81,7 +81,7 @@ struct RenderableObject
 		}
 
 		renderableObjectSerialization.addChild(modelMatrixValueTree, -1, nullptr);
-
+		*/
 		//Serialize animation properties
 		renderableObjectSerialization.addChild(animationProperties.serializeToValueTree(), -1, nullptr);
 
@@ -90,7 +90,7 @@ struct RenderableObject
 
 	void parseFrom(ValueTree valueTree) {
 
-		ValueTree viewMatrixValueTree = valueTree.getChildWithName(Identifier("ModelMatrix"));
+		/*ValueTree viewMatrixValueTree = valueTree.getChildWithName(Identifier("ModelMatrix"));
 
 		Array<double> vals;
 
@@ -109,9 +109,9 @@ struct RenderableObject
 		for (ValueTree vt : positionValueTree) {
 			double val = vt.getProperty(Identifier("value"));
 			pos.add(val);
-		}
+		}*/
 
-		position = glm::vec4(pos[0], pos[1], pos[2], pos[3]);
+		//position = glm::vec4(pos[0], pos[1], pos[2], pos[3]);
 
 		//Animation properties
 		animationProperties.parseFrom(valueTree.getChildWithName(Identifier("AnimationProperties")));

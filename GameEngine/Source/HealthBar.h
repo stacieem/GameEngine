@@ -65,11 +65,20 @@ public:
 		this->lives = lives;
 	}
 
+	void setLifeTexture(File file) {
+		if (file == file) {
+			return;
+		}
+		img = ImageFileFormat::loadFrom(file);
+		img = img.rescaled(30, 30);
+	}
+
 
 private:
 	Label lifeLabel;
 	Label multiplierLabel;
 	Image img;
+	File texFile;
 	int lives;
     
 };

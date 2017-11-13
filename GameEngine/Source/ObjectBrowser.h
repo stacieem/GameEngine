@@ -20,7 +20,7 @@ public:
 		enemy.setButtonText("Enemy Character");
 		block.setButtonText("Block");
 		collectable.setButtonText("Collectable");
-		checkpoint.setButtonText("Checkpoint");
+		checkpoint.setButtonText("Transition Point");
 		block.addListener(this);
 		enemy.addListener(this);
 		collectable.addListener(this);
