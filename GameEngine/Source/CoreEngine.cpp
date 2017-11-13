@@ -42,6 +42,7 @@ CoreEngine::CoreEngine() : Thread("CoreEngine"), gameLogic(gameAudio, &objectDel
 			gameModelCurrentFrame = new GameModel();
 		}
 	}
+	gameModelCurrentFrame->setIsGameOver(false);
     
 	renderSwapFrameA = new RenderSwapFrame();
 	renderSwapFrameB = new RenderSwapFrame();

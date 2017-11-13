@@ -32,6 +32,7 @@ public:
 
 	bool collision(PlayerObject& player, GameAudio& audio) {
 		bool collected = false;
+		radius = 1.5;
 		if (getIsActive()) {
 			b2Vec2 dist = (player.getPosition() - getPhysicsProperties().GetPosition());
 			float leng = sqrt(dist.x * dist.x + dist.y*dist.y);
@@ -65,6 +66,7 @@ public:
 
 		GameObject::parseFrom(valueTree);
 
+		radius = 1.5;
 	}
 
 private:

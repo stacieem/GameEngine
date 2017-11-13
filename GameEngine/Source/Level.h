@@ -25,7 +25,7 @@ public:
 
 		player->getRenderableObject().animationProperties.setCanimate(true);
 
-
+		player->setPosition(player->getPosition().x, player->getPosition().y+2);
 		gameObjects.add(player);
 		players.add(player);
 		enemyPoints = 15;
@@ -58,6 +58,7 @@ public:
 
 	void addNewObject() {
 		gameObjects.add(new GameObject(worldPhysics, modelsForRendering[0]));
+		//gameObjects.getLast()->setPosition(players[0]->getPhysicsProperties().GetPosition().x, players[0]->getPhysicsProperties().GetPosition().y + 5);
 	}
 
 	void addNewBlock() {
@@ -68,6 +69,7 @@ public:
 		gameObj->setScore(10);
         gameObj->setScale(1.0f, 1.0f);
 		gameObjects.add(gameObj);
+		//gameObjects.getLast()->setPosition(players[0]->getPhysicsProperties().GetPosition().x, players[0]->getPhysicsProperties().GetPosition().y + 5);
 	}
     
     GameObject * copyObject(GameObject * objectToCopy) {
@@ -119,6 +121,7 @@ public:
 		enm->setModel(modelsForRendering[0]);
 		enm->setScale(1.0f, 1.0f);
 		gameObjects.add(enm);
+		//gameObjects.getLast()->setPosition(players[0]->getPhysicsProperties().GetPosition().x, players[0]->getPhysicsProperties().GetPosition().y + 5);
 	}
     
 	void addNewCollectable()
@@ -130,6 +133,7 @@ public:
 		collectable->setModel(modelsForRendering[0]);
 		collectable->setScale(1.0f, 1.0f);
 		gameObjects.add(collectable);
+		//gameObjects.getLast()->setPosition(players[0]->getPhysicsProperties().GetPosition().x, players[0]->getPhysicsProperties().GetPosition().y + 5);
 	}
     
 	void addNewCheckpoint()
