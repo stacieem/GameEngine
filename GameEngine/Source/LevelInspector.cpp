@@ -27,8 +27,8 @@ LevelInspector::LevelInspector(WorldNavigator & worldNavigator) :
     removeLevelButton.setButtonText("-");
     levelLabel.setJustificationType(Justification::centred);
 
-	resetLevelButton.setButtonText("Reset Current Level");
-	resetGameButton.setButtonText("Reset Game");
+	resetLevelButton.setButtonText("Restart Level");
+	resetGameButton.setButtonText("Restart Game");
     addLevelButton.addListener(this);
     removeLevelButton.addListener(this);
 	resetLevelButton.addListener(this);
@@ -239,6 +239,7 @@ void LevelInspector::buttonClicked(Button * button) {
 		}
 		coreEngine->getGameModel().setCurrentLevel(0);
 		coreEngine->getGameModel().setIsGameOver(false);
+		updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
 	}
 }
 
