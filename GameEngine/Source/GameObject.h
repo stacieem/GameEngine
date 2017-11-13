@@ -580,6 +580,39 @@ public:
 		livesTree.setProperty(Identifier("value"), var(lives), nullptr);
 		gameObjectSerialization.addChild(livesTree, -1, nullptr);
 
+		/*ValueTree actionToAudioTree = ValueTree("ActionToAudio");
+
+
+		for (std::map<PhysicalAction,File>::iterator it = actionToAudio.begin(); it != actionToAudio.end(); ++it)
+		{
+
+			ValueTree audioActionTree = ValueTree("AudioAction");
+			audioActionTree.setProperty(Identifier("file"), var(it->second.getRelativePathFrom(File::getCurrentWorkingDirectory())), nullptr);
+
+			int physicalActionInt;
+
+			switch (it->first) {
+
+			case collsion:
+				physicalActionInt = 0;
+				break;
+			case inRange:
+				physicalActionInt = 1;
+				break;
+			case death:
+				physicalActionInt = 2;
+				break;
+			}
+
+			audioActionTree.setProperty(Identifier("action"), var(physicalActionInt), nullptr);
+
+			actionToAudioTree.addChild(audioActionTree, -1, nullptr);
+
+			
+		}
+
+		gameObjectSerialization.addChild(actionToAudioTree, -1, nullptr);*/
+		
 
 		return gameObjectSerialization;
 	}

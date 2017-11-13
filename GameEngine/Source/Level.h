@@ -369,6 +369,12 @@ public:
 			else if (gameObject->getObjType() == Enemy) {
 				gameObjectsValueTree.addChild(((EnemyObject*)gameObject)->serializeToValueTree(), -1, nullptr);
 			}
+			else if (gameObject->getObjType() == Checkpoint) {
+				gameObjectsValueTree.addChild(((GoalPointObject*)gameObject)->serializeToValueTree(), -1, nullptr);
+			}
+			else if (gameObject->getObjType() == Collectable) {
+				gameObjectsValueTree.addChild(((CollectableObject*)gameObject)->serializeToValueTree(), -1, nullptr);
+			}
 			else {
 				gameObjectsValueTree.addChild(gameObject->serializeToValueTree(), -1, nullptr);
 			}

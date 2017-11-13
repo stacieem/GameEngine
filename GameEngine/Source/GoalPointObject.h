@@ -20,7 +20,6 @@ public:
 	{
 		parseFrom(valueTree);
 		radius = 1.5;
-		levelToGoTo = 1;
 	}
 
 	/** Copy Constructor - Used to easily make a copy of an existing GameObject
