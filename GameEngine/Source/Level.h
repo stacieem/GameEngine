@@ -166,6 +166,7 @@ public:
 			obj->setActive(true);
 			obj->setScale(10000000, 1);
 			obj->setRenderable(true);
+			floor = obj;
 	}
 	const OwnedArray<GameObject> & getGameObjects()
 	{
@@ -439,6 +440,9 @@ public:
 
 		}
 	}
+	GameObject* getFloor() {
+		return floor;
+	}
 private:
     
     /** Updates positions from all objects from the Physics updates
@@ -454,6 +458,7 @@ private:
     
     /** Name of level */
     String levelName;
+	GameObject* floor;
 	int enemyPoints, collectablePoints;
 	/** Camera view of the current level */
     Camera camera;
