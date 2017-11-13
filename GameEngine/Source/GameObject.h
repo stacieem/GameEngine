@@ -19,7 +19,7 @@
 #include "RenderableObject.h"
 #include <algorithm>
 #include "GameObjectType.h"
-
+#include "GameAudio.h"
 /** Represents an Object that holds vertices that can be rendered by OpenGL.
  */
 class GameObject
@@ -44,8 +44,8 @@ public:
 		xVel = 0;
 		yVel = 0;
 		setActive(true);
-		cappedMoveSpeed = 5;
-		cappedJumpSpeed = 9;
+		cappedMoveSpeed = 6;
+		cappedJumpSpeed = 15;
 		setAnimationSpeed(MED);
         physicsProperties.setIsStatic(true);
         updateOrigin();
@@ -317,13 +317,13 @@ public:
 		this->jumpSpeed = jumpspeed;
 		switch (this->jumpSpeed) {
 		case FAST:
-			yVel = 12;
-			break;
-		case MED:
 			yVel = 10;
 			break;
+		case MED:
+			yVel = 8;
+			break;
 		case SLOW:
-			yVel = 7;
+			yVel = 6;
 			break;
 		}
 	}
@@ -339,7 +339,10 @@ public:
 	{
 		return objType;
 	}
-
+	void setObjType(GameObjectType type)
+	{
+		objType = type;
+	}
 	// Player Lives 
 	int getLives()
     {
@@ -416,6 +419,9 @@ public:
 		case 4:
 			objType = Checkpoint;
 			break;
+		case 5:
+			objType = Bounds;
+			break;
 		}
 
 		ValueTree moveSpeedTree = valueTree.getChildWithName(Identifier("MoveSpeed"));
@@ -452,7 +458,9 @@ public:
 
 		ValueTree renderableTree = valueTree.getChildWithName(Identifier("Renderable"));
 		renderable = renderableTree.getProperty(Identifier("value"));
-
+		if (!renderable) {
+			setActive(false);
+		}
 		ValueTree originTree = valueTree.getChildWithName(Identifier("Origin"));
 		origin.x = originTree.getProperty(Identifier("x"));
 		origin.y = originTree.getProperty(Identifier("y"));

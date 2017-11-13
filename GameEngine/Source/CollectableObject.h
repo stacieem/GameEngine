@@ -30,7 +30,7 @@ public:
 	}
 	~CollectableObject() {}
 
-	bool collision(PlayerObject& player) {
+	bool collision(PlayerObject& player, GameAudio& audio) {
 		bool collected = false;
 		if (getIsActive()) {
 			b2Vec2 dist = (player.getPosition() - getPhysicsProperties().GetPosition());
@@ -42,7 +42,13 @@ public:
 				getPhysicsProperties().setActiveStatus(false);
 				setRenderable(false);
 
-				
+				File * audioFile = getAudioFileForAction(PhysicalAction::death);
+
+				// If audio file was not in the map, do nothing
+				if (audioFile != nullptr)
+				{
+					audio.playAudioFile(*audioFile, false);
+				}
 			}
 		}
 		return collected;

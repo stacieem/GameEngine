@@ -39,12 +39,13 @@ public:
 		victory = new Level("Victory");
 		victory->addNewBlock();
 		victory->getGameObjects().getLast()->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/victory.png"));
+		victory->getGameObjects().getLast()->setScale(12, 12);
 	}
 	void createGameOver() {
 		gameOver = new Level("Game Over");
 		gameOver->addNewBlock();
 		gameOver->getGameObjects().getLast()->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/gameOver.png"));
-
+		gameOver->getGameObjects().getLast()->setScale(12, 12);
 	}
 	/** Sets whether or not the game is paused.
 	*/
@@ -68,13 +69,34 @@ public:
 	void playerRespawn() {
 		currLevel->resetLevel();
 		currLevel->getPlayer(0)->setScore(currLevel->getPlayer(0)->getScore());
+		File * audioFile = gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getAudioFileForAction(PhysicalAction::death);
+
+		// If audio file was not in the map, do nothing
+		if (audioFile != nullptr)
+		{
+			gameAudio.playAudioFile(*audioFile, false);
+		}
 	}
 	void playerDied() {
-		gameOver->getPlayer(0)->setScore(currLevel->getPlayer(0)->getCurrScore());
+		gameOver->getPlayer(0)->setScore(currLevel->getPlayer(0)->getScore());
 		gameOver->getPlayer(0)->setLives(0);
+		File * audioFile = gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getAudioFileForAction(PhysicalAction::death);
+
+		// If audio file was not in the map, do nothing
+		if (audioFile != nullptr)
+		{
+			gameAudio.playAudioFile(*audioFile, false);
+		}
 		currLevel = gameOver;
 	}
-
+	bool boundsCollision() {
+		bool dead = false;
+		if((currLevel->getPlayer(0)->getPhysicsProperties().GetPosition() - 
+			currLevel->getGameObjects()[1]->getPhysicsProperties().GetPosition()).y < 1.5) {
+			dead = true;
+		}
+		return dead;
+	}
 	/** Sets the Render swap frame that will be processed for logic before it
 	is sent to the GameView to be rendered.
 	*/
@@ -158,23 +180,28 @@ private:
 				//	process each object (I'm sure if we looked more into contact listeners or bit masking we could've figured this out
 				//	however this is the quickest solution i could think of)
 				//	ai motions
+				if (boundsCollision()) {
+					if (gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getCurrLives() - 1 == 0) {
+						playerDied();
+						gameModelCurrentFrame->setIsGameOver(true);
+					}
+					else
+					{
+						playerRespawn();
+						gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->
+							setCurrLives(gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getCurrLives() - 1);
+
+					}
+				}
 					for (GameObject* obj : gameModelCurrentFrame->getCurrentLevel()->getGameObjects()) {
 						switch (obj->getObjType()) {
 						case Enemy:
 							((EnemyObject*)(obj))->decision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0), deltaTime / 1000);
 
 							if (((EnemyObject*)(obj))->getIsActive() &&
-								((EnemyObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
+								((EnemyObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0), gameAudio,currLevel->getEnemyPoints())) {
 								if (gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getCurrLives() - 1 == 0) {
 									playerDied();
-										File * audioFile = gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getAudioFileForAction(PhysicalAction::death);
-
-										// If audio file was not in the map, do nothing
-										if (audioFile != nullptr)
-										{
-											gameAudio.playAudioFile(*audioFile, false);
-										}
-									
 									gameModelCurrentFrame->setIsGameOver(true);
 								}
 								else
@@ -182,12 +209,13 @@ private:
 									playerRespawn();
 									gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->
 										setCurrLives(gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getCurrLives() - 1);
+
 								}
 
 							}
 							break;
 						case Collectable:
-							if (((CollectableObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0))) {
+							if (((CollectableObject*)(obj))->collision(*gameModelCurrentFrame->getCurrentLevel()->getPlayer(0), gameAudio)) {
 								gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->addCurrScore(gameModelCurrentFrame->getCurrentLevel()->getCollectablePoints());
 							}
 							break;
@@ -204,6 +232,7 @@ private:
 								{
 									copyPlayerAttributes(currLevel, &gameModelCurrentFrame->getLevel(chkPoint->getLevelToGoTo() - 1));
 									gameModelCurrentFrame->setCurrentLevel(chkPoint->getLevelToGoTo() - 1);
+									currLevel->getPlayer(0)->getPhysicsProperties().setLinearVelocity(0, 0);
 								}
 							}
 							break;

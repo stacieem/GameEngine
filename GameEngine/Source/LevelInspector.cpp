@@ -96,22 +96,24 @@ void LevelInspector::updateInspector(GameModel & gameModel)
 	for (GameObject * gameObj : selectedLevel->getGameObjects())
 	{
 		// Add to internal array of game objects???
-		gameObjects.addIfNotAlreadyThere(gameObj);
-		SelectObjectButtonPropertyComponent* objectRow =
-			new SelectObjectButtonPropertyComponent(gameObjects.indexOf(gameObj),
-				selectedObjectValue,
-				gameObj->getName(),
-				false);
+		if (gameObj->getName() != "Killing Floor") {
+			gameObjects.addIfNotAlreadyThere(gameObj);
+			SelectObjectButtonPropertyComponent* objectRow =
+				new SelectObjectButtonPropertyComponent(gameObjects.indexOf(gameObj),
+					selectedObjectValue,
+					gameObj->getName(),
+					false);
 
-		// If row of a selected object, set its colour to be highlighted
-		if (selectedObjects.contains(gameObj))
-		{
-			objectRow->setColour(PropertyComponent::ColourIds::backgroundColourId,
-				SELECTED_ROW_COLOUR);
+			// If row of a selected object, set its colour to be highlighted
+			if (selectedObjects.contains(gameObj))
+			{
+				objectRow->setColour(PropertyComponent::ColourIds::backgroundColourId,
+					SELECTED_ROW_COLOUR);
+			}
+
+			// Add the row to the graph
+			levelObjGraphProperties.add(objectRow);
 		}
-
-		// Add the row to the graph
-		levelObjGraphProperties.add(objectRow);
 	}
 
 	propertyPanel.addSection("Object Graph", levelObjGraphProperties);

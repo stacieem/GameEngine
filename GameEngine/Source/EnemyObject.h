@@ -67,16 +67,24 @@ public:
 	AIType getAIState() {
 		return aiState;
 	}
-	bool collision(PlayerObject& player) {
+	bool collision(PlayerObject& player, GameAudio &audio, int points) {
 		bool damage = false;
 			b2Vec2 dist = (player.getPosition() - getPhysicsProperties().GetPosition());
 			float leng = sqrt(dist.x * dist.x + dist.y*dist.y);
 			if (leng < radius) {	//check if collided
-				if (player.getPosition().y > this->getPhysicsProperties().GetPosition().y) {	//if player kills enemy
+				if (player.getPosition().y > this->getPhysicsProperties().GetPosition().y+.3) {	//if player kills enemy
 					setActive(false);
 					getPhysicsProperties().setActiveStatus(false);
 					setRenderable(false);
 
+					File * audioFile = getAudioFileForAction(PhysicalAction::death);
+
+					// If audio file was not in the map, do nothing
+					if (audioFile != nullptr)
+					{
+						audio.playAudioFile(*audioFile, false);
+					}
+					player.addCurrScore(points);
 				}
 				else
 				{
@@ -87,6 +95,7 @@ public:
 		return damage;
 	}
 	void decision(PlayerObject& player, double elapsed) {
+		
 		switch (aiState) {
 		case GROUNDPATROL:
 			if (timeElapsed >= timeToSwap) {

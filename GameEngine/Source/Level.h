@@ -28,9 +28,9 @@ public:
 
 		gameObjects.add(player);
 		players.add(player);
-
 		enemyPoints = 15;
 		collectablePoints = 5;
+		addBoundFloor();
 	}
 
 	Level(ValueTree levelValueTree) {
@@ -153,7 +153,19 @@ public:
 			i++;
 		}
 	}
-
+	void addBoundFloor() {
+			addNewBlock();
+			GameObject* obj = getGameObjects().getLast();
+			obj->setPositionWithPhysics(obj->getOrigin().x, -9);
+			obj->getPhysicsProperties().setLinearVelocity(0, 0);
+			obj->getPhysicsProperties().setFriction(0.0);
+			obj->setObjType(Bounds);
+			obj->setName("Killing Floor");
+			obj->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/death.png"));
+			obj->setActive(true);
+			obj->setScale(10000000, 1);
+			obj->setRenderable(true);
+	}
 	const OwnedArray<GameObject> & getGameObjects()
 	{
 		return gameObjects;
@@ -195,6 +207,9 @@ public:
 			obj->setActive(true);
 			obj->setRenderable(true);
 		}
+		players[0]->setScore(players[0]->getScore());
+		players[0]->setLives(players[0]->getLives());
+
 	}
     
 	//Return the WorldPhysics for this level

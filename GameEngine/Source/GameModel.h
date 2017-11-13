@@ -34,6 +34,7 @@ public:
 
 		parseGameModelXml(elem);
 
+		isGameOver = false;
 	}
 
 	~GameModel(){}
@@ -54,8 +55,8 @@ public:
     {
         if (levels.size() > 1 && levelIndex < levels.size())
         {
+			setCurrentLevel(0);
             levels.remove(levelIndex);
-            setCurrentLevel(0);
         }
     }
 	bool getIsGameOver() {

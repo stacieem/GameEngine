@@ -290,6 +290,13 @@ private:
 
 	}
 
+	//more specific 
+	void addPhysicsElements() {
+
+	}
+
+	
+
 	void addGoalPointProperties() {
 
 
@@ -344,11 +351,11 @@ private:
 		objPhysicsProperties.add(combo);
 
 		objPhysicsYCap.setValue(var(selectedObj->getJumpSpeed()));
-		combo = new ComboBoxPropertyComponent(objPhysicsYCap, "Jump Speed:");
-		combo->setTextWhenNothingSelected("Choose Jump Speed");
-		combo->addItem("Fast", 3);
+		combo = new ComboBoxPropertyComponent(objPhysicsYCap, "Jump Height:");
+		combo->setTextWhenNothingSelected("Choose Jump Height");
+		combo->addItem("High", 3);
 		combo->addItem("Medium", 2);
-		combo->addItem("Slow", 1);
+		combo->addItem("Low", 1);
 		combo->setSelectedId(selectedObj->getJumpSpeed() + 1, dontSendNotification);
 		objPhysicsYCap.addListener(this);
 		objPhysicsProperties.add(combo);
