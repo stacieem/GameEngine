@@ -67,8 +67,10 @@ public:
 		gameModelCurrentFrame = curentFrame;
 	}
 	void playerRespawn() {
+		int lives = currLevel->getPlayer(0)->getCurrLives() - 1;
 		currLevel->resetLevel();
 		currLevel->getPlayer(0)->setScore(currLevel->getPlayer(0)->getScore());
+		currLevel->getPlayer(0)->setCurrLives(lives);
 		File * audioFile = gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getAudioFileForAction(PhysicalAction::death);
 
 		// If audio file was not in the map, do nothing
@@ -188,8 +190,6 @@ private:
 					else
 					{
 						playerRespawn();
-						gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->
-							setCurrLives(gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getCurrLives() - 1);
 
 					}
 				}
@@ -207,8 +207,6 @@ private:
 								else
 								{
 									playerRespawn();
-									gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->
-										setCurrLives(gameModelCurrentFrame->getCurrentLevel()->getPlayer(0)->getCurrLives() - 1);
 
 								}
 
