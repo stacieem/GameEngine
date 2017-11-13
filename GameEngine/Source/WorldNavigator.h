@@ -38,8 +38,10 @@ public:
         // Allow the navigator to be seen through
         setOpaque(false);
         
-        // Set default is not copying object
+        // Set default user actions
         isCopyingObject = false;
+        isLassoingObjects = false;
+        isMovingThroughWorld = false;
         
         // Allow keypresses to be received
         setWantsKeyboardFocus(true);
@@ -143,6 +145,25 @@ public:
         gameObject->setRenderableIsSelected(true);
     }
     
+    /** Allows the camera to be moved from a right-click drag
+     */
+    void moveCamera (const MouseEvent &event)
+    {
+        // Get origin click position
+        Point<int> clickOrigin = event.getMouseDownPosition();
+        glm::vec2 worldClickOrigin = camera->getWorldCoordFromScreen(getWidth(), getHeight(), clickOrigin.x, clickOrigin.y);
+        
+        // Get world position
+        glm::vec2 worldPosition = camera->getWorldCoordFromScreen(getWidth(), getHeight(), event.position.x, event.position.y);
+        
+        // Calculate offset
+        glm::vec2 offset = worldPosition - worldClickOrigin;
+        
+        // Set camera to new poition
+        glm::vec2 newCameraPosition = cameraOrigin + offset;
+        camera->setPositionXY(newCameraPosition.x, newCameraPosition.y);
+    }
+    
     /** Sets positions of the selected objects
      */
     void moveSelectedObjects (const MouseEvent &event)
@@ -210,7 +231,8 @@ public:
      */
     void mouseDown (const MouseEvent &event) override
     {
-        if (isEnabled && level != nullptr)
+        // If left mouse button select objects
+        if (isEnabled && level != nullptr && event.mods.isLeftButtonDown())
         {
             // Get the world position from clicking on the screen
             glm::vec2 worldPosition = camera->getWorldCoordFromScreen (getWidth(), getHeight(), event.position.x, event.position.y);
@@ -251,6 +273,13 @@ public:
                 // attempting a lasso selection
                 isLassoingObjects = true;
             }
+        }
+        
+        // If right mouse button, move through world
+        if (isEnabled && level != nullptr && event.mods.isRightButtonDown())
+        {
+            isMovingThroughWorld = true;
+            cameraOrigin = glm::vec2(camera->getPosition());
         }
     }
     
@@ -306,6 +335,11 @@ public:
             {
                 lassoObjects(event);
             }
+            else if (isMovingThroughWorld)
+            // If user is attempting to move their view of the world
+            {
+                moveCamera(event);
+            }
             else
             // If user is attempting to move object(s)
             {
@@ -330,6 +364,7 @@ public:
         // Reset user actions
         isCopyingObject = false;
         isLassoingObjects = false;
+        isMovingThroughWorld = false;
     }
     
     /** Translates the Camera when the mouse wheel is scrolled in the X and Y
@@ -427,12 +462,18 @@ private:
     
     glm::vec2 lastWorldPosition;
     
+    /** The origin position of the camera for moving */
+    glm::vec2 cameraOrigin;
+    
     // User actions
     /** Signifies the user is copying an object */
     bool isCopyingObject;
     
     /** Signifies the user is lassoing a set of objects */
     bool isLassoingObjects;
+    
+    /** Signigies the user is moving through the world */
+    bool isMovingThroughWorld;
     
     WorldGrid grid;
 };

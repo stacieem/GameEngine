@@ -92,7 +92,6 @@ public:
 
 
 		enm->getRenderableObject().animationProperties.setCanimate(true);
-		enm->setModel(modelsForRendering[0]);
 		enm->setScale(1.0f, 1.0f);
 		gameObjects.add(enm);
 	}
@@ -103,7 +102,6 @@ public:
 
 		collectable->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/coin.png"));
 		collectable->setScore(5);
-		collectable->setModel(modelsForRendering[0]);
 		collectable->setScale(1.0f, 1.0f);
 		gameObjects.add(collectable);
 	}
@@ -113,8 +111,6 @@ public:
 		checkpoint = new GoalPointObject(worldPhysics, modelsForRendering[0]);
 
 		checkpoint->getRenderableObject().animationProperties.setIdleTexture(File(File::getCurrentWorkingDirectory().getFullPathName() + "/textures/checkpoint.png"));
-
-		checkpoint->setModel(modelsForRendering[0]);
 		checkpoint->setScale(1.0f, 1.0f);
 		gameObjects.add(checkpoint);
 	}

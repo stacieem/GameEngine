@@ -123,7 +123,10 @@ public:
 	}
 
 private:
+    /** Levels of the game */
 	OwnedArray<Level> levels;
+    
+    /** ID of current level*/
 	int currentLevel;
 
 	String name;

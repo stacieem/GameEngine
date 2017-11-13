@@ -197,7 +197,8 @@ void CoreEngine::swapRenderFramesBetweenLogicAndRender()
 void CoreEngine::run() {
     while (true)
     {
-	
+        // Make sure to wait for logic and render threads to end before killing
+        // Core Engine
 		if (threadShouldExit()) {
 			logicWaitable.signal();
 			renderWaitable.signal();

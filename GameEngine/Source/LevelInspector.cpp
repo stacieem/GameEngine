@@ -202,7 +202,19 @@ void LevelInspector::buttonClicked(Button * button) {
     else if (button == &removeLevelButton)
     {
         coreEngine->removeLevel(selectedLevelIndex);
-        updateInspectorsChangeBroadcaster->sendSynchronousChangeMessage();
+        
+        // NOTE: THIS IS VERY BAD
+        // This should be synchronous. I had to make it asynchronous because I
+        // was getting an error and didn't have time for a better solution.
+        // This is only masking a deeper error:
+        // When we delete a level, there is data being referenced in the level
+        // (Model data) that is still used in Logic and/or render. We would
+        // have to wait for two loops of core engine to finish to properly
+        // delete it, but we are lucky in that, this asynchronous message
+        // causes enough delay that there is no bad access error.
+        updateInspectorsChangeBroadcaster->sendChangeMessage();
+        
+        
     } else if (button == &saveLevelButton) {
 
         coreEngine->saveGame();
