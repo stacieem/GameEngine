@@ -92,7 +92,7 @@ public:
 	bool boundsCollision() {
 		bool dead = false;
 		if((currLevel->getPlayer(0)->getPhysicsProperties().GetPosition() - 
-			currLevel->getGameObjects()[1]->getPhysicsProperties().GetPosition()).y < 1.5) {
+			currLevel->getGameObjects()[1]->getPhysicsProperties().GetPosition()).y < 1.5 ) {
 			dead = true;
 		}
 		return dead;

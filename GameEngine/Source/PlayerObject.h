@@ -23,8 +23,8 @@ public:
 		*/
 		getPhysicsProperties().setFriction(0.5f);
 
-		//origin = getPhysicsProperties().GetPosition();
 		parseFrom(valueTree);
+
 	}
 
 	~PlayerObject(){}
