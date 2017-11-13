@@ -75,8 +75,8 @@ public:
 	{
 
 		setModel(model);
-		cappedMoveSpeed = 5;
-		cappedJumpSpeed = 9;
+		cappedMoveSpeed = 6;
+		cappedJumpSpeed = 15;
 		score = 0;
 		parseFrom(gameObjectValueTree);
 
