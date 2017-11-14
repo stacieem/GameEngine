@@ -41,14 +41,13 @@ public:
 
 	EnemyObject(WorldPhysics & worldPhysics, Model* model, ValueTree valueTree) : GameObject(worldPhysics, model, valueTree)
 	{
-
 		detection_radius = 7;
-		setName("Enemy");
 		direction = 1;
 		timeToSwap = 200;	//value that deltaTime will sum to for us to determine we need to switch directions
 		timeElapsed = 0;
 		radius = 1.5;
 
+		parseFrom(valueTree);
 	}
 
 	~EnemyObject() {}
@@ -256,7 +255,7 @@ public:
 		ValueTree aiStateValueTree = valueTree.getChildWithName(Identifier("AIState"));
 
 		int aiStateInt = aiStateValueTree.getProperty(Identifier("value"));
-
+		DBG(aiStateInt);
 		switch (aiStateInt) {
 		case 0:
 			changeAI(NONE);
