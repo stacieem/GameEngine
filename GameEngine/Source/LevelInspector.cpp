@@ -224,6 +224,9 @@ void LevelInspector::buttonClicked(Button * button) {
     } else if (button == &saveLevelButton) {
 
         coreEngine->saveGame();
+		AlertWindow::showMessageBoxAsync(AlertWindow::InfoIcon,
+			"Game Saved",
+			"");
 
     }
     else if (button == &resetLevelButton)
