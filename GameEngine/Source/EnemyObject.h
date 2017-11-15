@@ -18,7 +18,7 @@ public:
 		detection_radius = 7;
 		setName("Enemy");
 		direction = 1;
-		timeToSwap = 200;	//value that deltaTime will sum to for us to determine we need to switch directions
+		timeToSwap = 100;	//value that deltaTime will sum to for us to determine we need to switch directions
 		timeElapsed = 0;
 
 		radius = 1.5;
@@ -33,7 +33,7 @@ public:
 		aiState = objectToCopy.aiState;
 		detection_radius = 7;
 		direction = 1;
-		timeToSwap = 200;	//value that deltaTime will sum to for us to determine we need to switch directions
+		timeToSwap = 100;	//value that deltaTime will sum to for us to determine we need to switch directions
 		timeElapsed = 0;
 
 		radius = 1.5;
@@ -43,7 +43,7 @@ public:
 	{
 		detection_radius = 7;
 		direction = 1;
-		timeToSwap = 200;	//value that deltaTime will sum to for us to determine we need to switch directions
+		timeToSwap = 100;	//value that deltaTime will sum to for us to determine we need to switch directions
 		timeElapsed = 0;
 		radius = 1.5;
 
