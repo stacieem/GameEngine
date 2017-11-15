@@ -232,6 +232,13 @@ private:
 									gameModelCurrentFrame->setCurrentLevel(chkPoint->getLevelToGoTo() - 1);
 									currLevel->getPlayer(0)->getPhysicsProperties().setLinearVelocity(0, 0);
 								}
+								File * audioFile = chkPoint->getAudioFileForAction(PhysicalAction::death);
+
+								// If audio file was not in the map, do nothing
+								if (audioFile != nullptr)
+								{
+									gameAudio.playAudioFile(*audioFile, false);
+								}
 							}
 							break;
 						}
